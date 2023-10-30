@@ -1,6 +1,9 @@
 package tudor.work.model;
 
 
+import com.google.inject.BindingAnnotation;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
@@ -13,7 +16,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Data
 @Entity
+@Builder
 @Table(name = "exercise")
+@AllArgsConstructor
 public class Exercise {
 
     @Id
@@ -51,5 +56,8 @@ public class Exercise {
     },mappedBy = "exercises")
     @JsonIgnore
     private Set<Workout> workouts;
+
+
+    private boolean isExerciseExclusive;
 
 }
