@@ -32,14 +32,10 @@ public class Exercise {
     private String description;
 
     private String mediaUrl;
-//
-//    //this field indicates if the exercise has been added by a coach or teh admin(isExclusive == true ==> has been added by coach)
-//    private Boolean isExclusive;
 
-    //the id of the coach/admin that has added the exercise
-    @ManyToOne
-    @JoinColumn(name = "adder_id")
-    private User adder;
+//    @ManyToOne
+//    @JoinColumn(name = "adder_id")
+//    private User adder;
 
     @ManyToOne
     @JoinColumn(name = "difficulty_id")

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.model.Exercise;
+import tudor.work.model.User;
 import tudor.work.repository.ExerciseRepository;
 import tudor.work.repository.UserRepository;
 
@@ -21,7 +22,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PayingUserService payingUserService;
     private final ExerciseService exerciseService;
     private final ExerciseRepository exerciseRepository;
     private final AuthorityService authorityService;
@@ -39,25 +39,27 @@ public class UserService {
     }
 
 
-    public ExerciseDto getExerciseByName(String name) throws NotFoundException,RuntimeException {
+    public ExerciseDto getExerciseByName(String name) throws NotFoundException, RuntimeException {
         Exercise exercise = exerciseRepository.findByName(name).stream().findFirst().orElseThrow(() -> (new NotFoundException("exercise not found")));
 
-        if(exercise.isExerciseExclusive() && !authorityService.isUserExclusive()) {
+        if (exercise.isExerciseExclusive() && !authorityService.isUserExclusive()) {
 
             throw new RuntimeException("user does not have access!");
-        }
-        else
-        {
+        } else {
             return ExerciseDto
                     .builder()
                     .name(exercise.getName())
                     .description(exercise.getDescription())
                     .mediaUrl(exercise.getMediaUrl())
                     .isExerciseExclusive(exercise.isExerciseExclusive())
-                    .adder(exercise.getAdder())
                     .category(exercise.getCategory())
                     .difficulty(exercise.getDifficulty())
                     .build();
         }
     }
+
+    public User getUserByName(String name) throws NotFoundException {
+        return userRepository.findByUsername(name).orElseThrow(() -> new NotFoundException("user " + name + " not found"));
+    }
+
 }

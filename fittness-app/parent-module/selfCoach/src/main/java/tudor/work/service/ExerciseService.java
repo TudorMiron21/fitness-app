@@ -26,10 +26,9 @@ public class ExerciseService {
                         .description(exercise.getDescription())
                         .mediaUrl(exercise.getMediaUrl())
                         .isExerciseExclusive(exercise.isExerciseExclusive())
-                        .adder(exercise.getAdder())
                         .category(exercise.getCategory())
                         .difficulty(exercise.getDifficulty())
-//                        .workouts(exercise.getWorkouts())
+                        .workouts(exercise.getWorkouts())
                         .build()
         ).collect(Collectors.toList());
     }
@@ -43,21 +42,19 @@ public class ExerciseService {
                         .description(exercise.getDescription())
                         .mediaUrl(exercise.getMediaUrl())
                         .isExerciseExclusive(exercise.isExerciseExclusive())
-                        .adder(exercise.getAdder())
                         .category(exercise.getCategory())
                         .difficulty(exercise.getDifficulty())
-//                        .workouts(exercise.getWorkouts())
+                        .workouts(exercise.getWorkouts())
                         .build()
         ).collect(Collectors.toList());
     }
 
-    public Optional<Exercise> getExerciseByName(String name){
+    public Optional<Exercise> getExerciseByName(String name) {
 
         return exerciseRepository.findByName(name);
     }
 
-    public void saveExercise(Exercise exercise)
-    {
+    public void saveExercise(Exercise exercise) {
         exerciseRepository.save(exercise);
     }
 

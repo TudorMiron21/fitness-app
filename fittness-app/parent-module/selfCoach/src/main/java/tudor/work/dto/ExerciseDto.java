@@ -30,16 +30,11 @@ public class ExerciseDto {
 //    //this field indicates if the exercise has been added by a coach or teh admin(isExclusive == true ==> has been added by coach)
     private boolean isExerciseExclusive;
 
-    //the id of the coach/admin that has added the exercise
-
-    private User adder;
-
-
     @JsonDeserialize(using = DifficultyDeserializer.class)
     private Difficulty difficulty;
     @JsonDeserialize(using = CategoryDeserializer.class)
     private Category category;
 
-//    private Set<Workout> workouts;
+    private Set<Workout> workouts;
 
 }
