@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.WorkoutDto;
+import tudor.work.exceptions.AdminUpdateLocalWorkoutException;
 import tudor.work.exceptions.AuthenticationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.service.AdminService;
@@ -24,29 +25,6 @@ public class AdminController {
 
     private final AdminService adminService;
     private final AuthorityService authorityService;
-
-    @GetMapping("/get")
-    public String get() {
-        return "GET:: admin controller";
-    }
-
-//    @PostMapping
-//    @PreAuthorize("hasAuthority(admin:write)")
-//    public String post() {
-//        return "POST:: admin controller";
-//    }
-
-    @PutMapping
-    @PreAuthorize("hasAuthority(admin:update)")
-    public String put() {
-        return "PUT:: admin controller";
-    }
-
-    @DeleteMapping
-    @PreAuthorize("hasAuthority(admin:delete)")
-    public String delete() {
-        return "DELETE:: admin controller";
-    }
 
     @PostMapping("/addExercise")
     public ResponseEntity<String> addExercise(@RequestBody ExerciseDto exercise) {
@@ -77,20 +55,48 @@ public class AdminController {
 
     @PutMapping("/addExerciseToWorkout")
     public ResponseEntity<String> addExerciseToWorkout(@RequestParam(name = "exerciseName") String exerciseName, @RequestParam(name = "workoutName") String workoutName) {
-        try{
-            adminService.addExerciseToWorkout(exerciseName,workoutName);
-            ResponseEntity.status(HttpStatus.OK).body("exercise "+ exerciseName+ " added to workout "+workoutName +" successfully");
-        }
-        catch(AuthenticationExceptionHandler aeh)
-        {
+        try {
+            adminService.addExerciseToWorkout(exerciseName, workoutName);
+            ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseName + " added to workout " + workoutName + " successfully");
+        } catch (AuthenticationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
-        }catch(NotFoundException nfe){
+        } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("exercise/workout not found in the database");
-        }catch(RuntimeException re)
-        {
+        } catch (AdminUpdateLocalWorkoutException auwe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("admin cannot update local workouts");
         }
         return null;
+    }
+
+    @DeleteMapping("/deleteWorkout/{workoutName}")
+    public ResponseEntity<String> deleteWorkout(@PathVariable(name = "workoutName") String workoutName) {
+        try {
+            adminService.deleteWorkout(workoutName);
+            ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " deleted successfully");
+        } catch (NotFoundException nfe) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout " + workoutName + " not found in the database");
+        } catch (AuthenticationExceptionHandler aeh) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
+        } catch (AdminUpdateLocalWorkoutException auwe) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("admin cannot delete local workouts");
+        }
+        return null;
+    }
+
+    @DeleteMapping("deleteExerciseFromWorkout/{exerciseName}/{workoutName}")
+    public ResponseEntity<String> deleteExerciseFromWorkout(@PathVariable(name = "exerciseName") String exerciseName, @PathVariable(name = "workoutName") String workoutName) {
+        try {
+            adminService.deleteExerciseFromWorkout(exerciseName, workoutName);
+            ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseName + " from workout " + workoutName + " deleted successfully");
+        } catch (NotFoundException nfe) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout/exercise not found");
+        } catch (AuthenticationExceptionHandler aeh) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
+        } catch (AdminUpdateLocalWorkoutException auwe) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("admin cannot delete exercises from local workouts");
+        }
+        return null;
+
     }
 
 

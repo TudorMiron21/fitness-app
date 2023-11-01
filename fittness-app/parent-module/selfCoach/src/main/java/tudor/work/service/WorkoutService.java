@@ -30,7 +30,15 @@ public class WorkoutService {
         return workoutRepository.findByName(workoutName);
     }
 
+    public Workout getReference(Long id)
+    {
+        return workoutRepository.getOne(id);
+    }
 
+    public void deleteWorkout(Workout workout)
+    {
+        workoutRepository.delete(workout);
+    }
 
 
 }

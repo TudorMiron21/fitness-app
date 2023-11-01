@@ -15,4 +15,6 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     Optional<Exercise> findByName(String name);
 
+
+
 }

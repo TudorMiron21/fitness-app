@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.WorkoutDto;
+import tudor.work.exceptions.AdminUpdateLocalWorkoutException;
 import tudor.work.exceptions.AuthenticationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.model.Exercise;
@@ -14,6 +15,7 @@ import tudor.work.model.Workout;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -53,29 +55,25 @@ public class AdminService {
     }
 
     @Transactional
-    public void addWorkout(WorkoutDto workoutDto) throws DuplicatesException,NotFoundException, AuthenticationExceptionHandler {
+    public void addWorkout(WorkoutDto workoutDto) throws DuplicatesException, NotFoundException, AuthenticationExceptionHandler {
 
         if (authorityService.isAdmin()) {
 
-            try{
-            Workout workout = Workout
-                    .builder()
-                    .name(workoutDto.getName())
-                    .description(workoutDto.getDescription())
-                    .exercises(workoutDto.getExercises())
-                    .adder(authorityService.getUser())
-                    .isDeleted(false)
-                    .isGlobal(true)
-                    .build();
+            try {
+                Workout workout = Workout
+                        .builder()
+                        .name(workoutDto.getName())
+                        .description(workoutDto.getDescription())
+                        .exercises(workoutDto.getExercises())
+                        .adder(authorityService.getUser())
+                        .isDeleted(false)
+                        .isGlobal(true)
+                        .build();
 
                 workoutService.saveWorkout(workout);
-            }
-            catch (DuplicatesException de)
-            {
+            } catch (DuplicatesException de) {
                 throw new DuplicatesException("workout already in database");
-            }
-            catch (NotFoundException nfe)
-            {
+            } catch (NotFoundException nfe) {
                 throw new NotFoundException("User not found");
             }
 
@@ -84,38 +82,31 @@ public class AdminService {
         }
     }
 
-    public void addExerciseToWorkout(String exerciseName , String workoutName) throws AuthenticationExceptionHandler, NotFoundException, RuntimeException
-    {
+    @Transactional
+    public void addExerciseToWorkout(String exerciseName, String workoutName) throws AuthenticationExceptionHandler, NotFoundException, RuntimeException {
 
         if (authorityService.isAdmin()) {
 
             Optional<Workout> workout = workoutService.findWorkoutByName(workoutName);
-            if(workout.isPresent())
-            {
-                log.info("is global:"+workout.get().isGlobal());
+            if (workout.isPresent()) {
                 Workout workoutActual = workout.get();
-
-                //TODO: it always enters the else of this if.See why
-                if(workoutActual.isGlobal())
-                {
+                if (workoutActual.isGlobal()) {
 
                     Optional<Exercise> exercise = exerciseService.getExerciseByName(exerciseName);
-                    if(exercise.isPresent())
-                    {
-                        workoutActual.getExercises().add(exercise.get());
-                        workoutService.saveWorkout(workoutActual);
-                    }
-                    else {
+                    if (exercise.isPresent()) {
+
+                        Exercise exerciseActual = exercise.get();
+                        workoutActual.addExercise(exerciseService.getExerciseReference(exerciseActual.getId()));
+
+//                        exerciseActual.addWorkout(workoutActual);
+
+                    } else {
                         throw new NotFoundException("exercise not found in the database");
                     }
+                } else {
+                    throw new AdminUpdateLocalWorkoutException("admin cannot update local workouts");
                 }
-                else
-                {
-                    throw new RuntimeException("admin cannot update local workouts");
-                }
-
-            }
-            else {
+            } else {
                 throw new NotFoundException("workout not found in the database");
             }
 
@@ -123,5 +114,45 @@ public class AdminService {
             throw new AuthenticationExceptionHandler("user not authenticated");
         }
     }
+
+    public void deleteWorkout(String workoutName) throws NotFoundException, AuthenticationExceptionHandler {
+        if (authorityService.isAdmin()) {
+            Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout not found in the database"));
+            if (workout.isGlobal()) {
+                workoutService.deleteWorkout(workout);
+            } else {
+                throw new AdminUpdateLocalWorkoutException("admin cannot delete local workouts");
+            }
+        } else {
+            throw new AuthenticationExceptionHandler("user not authenticated");
+        }
+
+    }
+
+    public void deleteExerciseFromWorkout(String exerciseName, String workoutName)throws AuthenticationExceptionHandler , NotFoundException
+    {
+        //TODO: make this work man
+        if (authorityService.isAdmin()) {
+            Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout not found in the database"));
+            if (workout.isGlobal()) {
+
+                for (Exercise exercise: workout.getExercises()) {
+                    if(exercise.getName().equals(exerciseName))
+                    {
+                        workout.removeExercise(exercise);
+                    }
+                    else {
+                        throw new NotFoundException("exercise not present in workout exercise set");
+                    }
+                }
+            } else {
+                throw new AdminUpdateLocalWorkoutException("admin cannot delete local workouts");
+            }
+        } else {
+            throw new AuthenticationExceptionHandler("user not authenticated");
+        }
+    }
+
+
 
 }

@@ -1,7 +1,7 @@
 package tudor.work.model;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -10,7 +10,10 @@ import java.util.Set;
 @Entity
 @Table(name = "workout")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class Workout {
 
     @Id
@@ -21,11 +24,7 @@ public class Workout {
 
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE,
-            CascadeType.REMOVE
-    })
+    @ManyToMany()
     @JoinTable(name = "Exercise_Workout", joinColumns = @JoinColumn(name = "id_workout"), inverseJoinColumns = @JoinColumn(name = "id_exercise"))
     Set<Exercise> exercises = new HashSet<>();
 
@@ -36,4 +35,14 @@ public class Workout {
     private boolean isGlobal;
 
     private boolean isDeleted = false;
+
+    public void addExercise(Exercise exercise)
+    {
+        this.exercises.add(exercise);
+    }
+
+    public void removeExercise(Exercise exercise)
+    {
+        this.exercises.remove(exercise);
+    }
 }

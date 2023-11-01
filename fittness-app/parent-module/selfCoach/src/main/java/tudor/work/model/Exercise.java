@@ -1,15 +1,10 @@
 package tudor.work.model;
 
 
-import com.google.inject.BindingAnnotation;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 
@@ -19,6 +14,7 @@ import java.util.Set;
 @Builder
 @Table(name = "exercise")
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Exercise {
 
     @Id
@@ -45,15 +41,17 @@ public class Exercise {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE,
-            CascadeType.REMOVE
-    },mappedBy = "exercises")
+    @ManyToMany(mappedBy = "exercises")
     @JsonIgnore
     private Set<Workout> workouts;
 
 
     private boolean isExerciseExclusive;
+
+    public void addWorkout(Workout workout)
+    {
+        this.workouts.add(workout);
+    }
+
 
 }

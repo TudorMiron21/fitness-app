@@ -45,7 +45,7 @@ public class ExercisesDeserialiser extends StdDeserializer<Set<Exercise>>
                 }
                 else{
                     //this is the case in which an exercise is not found in the database
-                    throw new IOException("exercise already in the database");
+                    throw new IOException("exercise not found in the database");
                 }
             }
         }

@@ -58,5 +58,10 @@ public class ExerciseService {
         exerciseRepository.save(exercise);
     }
 
+    public Exercise getExerciseReference(Long exerciseId)
+    {
+        return exerciseRepository.getOne(exerciseId);
+    }
+
 
 }
