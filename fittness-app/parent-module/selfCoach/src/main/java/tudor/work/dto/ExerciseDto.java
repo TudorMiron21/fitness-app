@@ -26,6 +26,9 @@ public class ExerciseDto {
     private String description;
 
     private String mediaUrl;
+
+    private String coverPhotoUrl;
+
     //
 //    //this field indicates if the exercise has been added by a coach or teh admin(isExclusive == true ==> has been added by coach)
     private boolean isExerciseExclusive;

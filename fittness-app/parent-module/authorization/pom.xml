@@ -65,6 +65,24 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.sun.mail</groupId>-->
+<!--            <artifactId>javax.mail</artifactId>-->
+<!--        </dependency>-->
+
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -77,6 +95,8 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+
+
 
     </dependencies>
 </project>

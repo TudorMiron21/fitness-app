@@ -14,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class Workout {
 
     @Id
@@ -24,7 +25,9 @@ public class Workout {
 
     private String description;
 
-    @ManyToMany()
+    private String coverPhotoUrl;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "Exercise_Workout", joinColumns = @JoinColumn(name = "id_workout"), inverseJoinColumns = @JoinColumn(name = "id_exercise"))
     Set<Exercise> exercises = new HashSet<>();
 
@@ -36,13 +39,11 @@ public class Workout {
 
     private boolean isDeleted = false;
 
-    public void addExercise(Exercise exercise)
-    {
+    public void addExercise(Exercise exercise) {
         this.exercises.add(exercise);
     }
 
-    public void removeExercise(Exercise exercise)
-    {
+    public void removeExercise(Exercise exercise) {
         this.exercises.remove(exercise);
     }
 }

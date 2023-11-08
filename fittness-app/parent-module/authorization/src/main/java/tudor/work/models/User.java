@@ -8,15 +8,14 @@ import javax.persistence.*;
 import java.util.Collection;
 
 
-
-@Data
-@NoArgsConstructor
+@Setter
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
 @Entity
 @Table(name = "_user")
 public class User implements UserDetails {
-
-
 
 
     @Id
@@ -36,6 +35,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
+    private String resetPasswordToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -15,6 +15,7 @@ import java.util.Set;
 @Table(name = "exercise")
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class Exercise {
 
     @Id
@@ -29,6 +30,8 @@ public class Exercise {
 
     private String mediaUrl;
 
+    private String coverPhotoUrl;
+
 //    @ManyToOne
 //    @JoinColumn(name = "adder_id")
 //    private User adder;
@@ -41,17 +44,17 @@ public class Exercise {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToMany(mappedBy = "exercises")
-    @JsonIgnore
-    private Set<Workout> workouts;
+//    @ManyToMany(targetEntity = Workout.class,mappedBy = "exercises")
+//    @JsonIgnore
+//    private Set<Workout> workouts;
 
 
     private boolean isExerciseExclusive;
 
-    public void addWorkout(Workout workout)
-    {
-        this.workouts.add(workout);
-    }
+//    public void addWorkout(Workout workout)
+//    {
+//        this.workouts.add(workout);
+//    }
 
 
 }

@@ -21,9 +21,12 @@ public class WorkoutDto {
 
     private String name;
     private String description;
+    private String coverPhotoUrl;
 
     @JsonDeserialize(using = ExercisesDeserialiser.class)
     private Set<Exercise> exercises;
+
+
 //
 //    @JsonDeserialize(using = UserDeserializer.class)
 //    private User adder;

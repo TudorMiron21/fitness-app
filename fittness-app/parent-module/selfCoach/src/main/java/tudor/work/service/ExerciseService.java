@@ -28,7 +28,7 @@ public class ExerciseService {
                         .isExerciseExclusive(exercise.isExerciseExclusive())
                         .category(exercise.getCategory())
                         .difficulty(exercise.getDifficulty())
-                        .workouts(exercise.getWorkouts())
+//                        .workouts(exercise.getWorkouts())
                         .build()
         ).collect(Collectors.toList());
     }
@@ -44,7 +44,7 @@ public class ExerciseService {
                         .isExerciseExclusive(exercise.isExerciseExclusive())
                         .category(exercise.getCategory())
                         .difficulty(exercise.getDifficulty())
-                        .workouts(exercise.getWorkouts())
+//                        .workouts(exercise.getWorkouts())
                         .build()
         ).collect(Collectors.toList());
     }

@@ -33,6 +33,9 @@ public class User implements UserDetails {
 
     private String password;
 
+    private String resetPasswordToken;
+
+
     @Enumerated(EnumType.STRING)
     private Roles role;
 

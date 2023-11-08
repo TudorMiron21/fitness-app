@@ -44,7 +44,7 @@ public class AdminService {
                     .isExerciseExclusive(exercise.isExerciseExclusive())
                     .category(exercise.getCategory())
                     .difficulty(exercise.getDifficulty())
-                    .workouts(exercise.getWorkouts())
+//                    .workouts(exercise.getWorkouts())
                     .build();
 
             exerciseService.saveExercise(newExercise);
@@ -94,12 +94,8 @@ public class AdminService {
 
                     Optional<Exercise> exercise = exerciseService.getExerciseByName(exerciseName);
                     if (exercise.isPresent()) {
-
                         Exercise exerciseActual = exercise.get();
-                        workoutActual.addExercise(exerciseService.getExerciseReference(exerciseActual.getId()));
-
-//                        exerciseActual.addWorkout(workoutActual);
-
+                        workoutActual.getExercises().add(exerciseActual);
                     } else {
                         throw new NotFoundException("exercise not found in the database");
                     }
@@ -129,9 +125,10 @@ public class AdminService {
 
     }
 
+    @Transactional
     public void deleteExerciseFromWorkout(String exerciseName, String workoutName)throws AuthenticationExceptionHandler , NotFoundException
     {
-        //TODO: make this work man
+        //TODO : does not really work
         if (authorityService.isAdmin()) {
             Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout not found in the database"));
             if (workout.isGlobal()) {
@@ -152,7 +149,5 @@ public class AdminService {
             throw new AuthenticationExceptionHandler("user not authenticated");
         }
     }
-
-
 
 }

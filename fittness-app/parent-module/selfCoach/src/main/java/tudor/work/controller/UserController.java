@@ -9,6 +9,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.ExerciseDto;
+import tudor.work.dto.WorkoutDto;
+import tudor.work.exceptions.UserAccessException;
+import tudor.work.model.Workout;
 import tudor.work.service.AuthorityService;
 import tudor.work.service.UserService;
 
@@ -21,7 +24,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-    private final  AuthorityService authorityService;
+    private final AuthorityService authorityService;
 
     //    @GetMapping
 //    public String get() {
@@ -44,12 +47,12 @@ public class UserController {
 
 
     //this controller gets all the exercises available from the database depending on the authorities of the user
-    @GetMapping()
+    @GetMapping("/exercises")
     public List<ExerciseDto> getAllExercises() {
         return userService.getAllExercises();
     }
 
-    @GetMapping("/exerciseName")
+    @GetMapping("/exercises/exerciseName")
     public ResponseEntity<?> getExerciseByName(@RequestParam(name = "name") String name) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(userService.getExerciseByName(name));
@@ -62,6 +65,24 @@ public class UserController {
 
         }
 
+    }
+
+    @GetMapping("/workouts")
+    public ResponseEntity<?> getAllWorkouts() {
+        List<WorkoutDto> workouts = userService.getAllWorkouts();
+        return ResponseEntity.status(HttpStatus.OK).body(workouts);
+    }
+
+    @GetMapping("/workouts/workoutName")
+    public ResponseEntity<?> getWorkoutByName(@RequestParam(name = "name") String name) {
+        try {
+            WorkoutDto workout = userService.getWorkoutByName(name);
+            return ResponseEntity.status(HttpStatus.OK).body(workout);
+        } catch (NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(nfe.getMessage());
+        } catch (UserAccessException uae) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(uae.getMessage());
+        }
     }
 
 

@@ -1,28 +1,31 @@
 package tudor.work.model;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import javax.persistence.*;
+
+@Entity
+@Table
+@Data
+@EqualsAndHashCode
+@Builder
 public class UserHistoryExercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
     @ManyToOne
+    @JoinColumn(name = "id_exercise")
     private Exercise exercise;
 
     @ManyToOne
-    private User user;
-
-
-    @ManyToOne
+    @JoinColumn(name = "id_userHistoryModule")
     private UserHistoryModule userHistoryModule;
 
-    //this represents the number of current number of seconds
+    //this represents the current number of seconds
     private Long currNoSeconds;
-
 
     private boolean isDone;
 

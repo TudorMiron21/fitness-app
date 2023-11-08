@@ -8,7 +8,9 @@ import tudor.work.model.Workout;
 import tudor.work.repository.WorkoutRepository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,11 @@ public class WorkoutService {
     public void deleteWorkout(Workout workout)
     {
         workoutRepository.delete(workout);
+    }
+
+    public List<Workout> getAllWorkouts(){
+
+       return workoutRepository.findAll();
     }
 
 
