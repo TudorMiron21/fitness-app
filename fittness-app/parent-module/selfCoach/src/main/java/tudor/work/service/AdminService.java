@@ -64,6 +64,7 @@ public class AdminService {
                         .builder()
                         .name(workoutDto.getName())
                         .description(workoutDto.getDescription())
+                        .coverPhotoUrl(workoutDto.getCoverPhotoUrl())
                         .exercises(workoutDto.getExercises())
                         .adder(authorityService.getUser())
                         .isDeleted(false)

@@ -10,8 +10,10 @@ class Workout{
     Workout({
     required this.name,
     required this.description,
-    required this.coverPhotoUrl,
+    this.coverPhotoUrl ='',
     required this.exercises,
   });
+
+
 
 }
