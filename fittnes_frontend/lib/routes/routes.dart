@@ -9,11 +9,16 @@ import 'package:get/get.dart';
 
 class AppPage {
   static List<GetPage> routes = [
-    GetPage(name: navbar, page: () => const NavBar()),
-    GetPage(name: home, page: () => HomePage()),
-    GetPage(name: discover, page: () => const DiscoverPage()),
-    GetPage(name: search, page: () => const SearchPage()),
-    GetPage(name: profile, page: () => const ProfilePage()),
+    GetPage(
+      name: navbar,
+      page: () => const NavBar(),
+      children: [
+        GetPage(name: home, page: () => HomePage()),
+        GetPage(name: discover, page: () => const DiscoverPage()),
+        GetPage(name: search, page: () => const SearchPage()),
+        GetPage(name: profile, page: () => const ProfilePage()),
+      ],
+    ),
     GetPage(name: login, page: () => LoginPage()),
     GetPage(name: register, page: () => const Register()),
   ];

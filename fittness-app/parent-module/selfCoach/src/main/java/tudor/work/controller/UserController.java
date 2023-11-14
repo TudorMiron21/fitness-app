@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.WorkoutDto;
+import tudor.work.exceptions.AuthorizationExceptionHandler;
+import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
 import tudor.work.model.Workout;
 import tudor.work.service.AuthorityService;
@@ -85,6 +87,33 @@ public class UserController {
         }
     }
 
+    @PostMapping("/workout")
+    public ResponseEntity<?> addWorkout(WorkoutDto workout) {
 
+        try {
+            userService.addWorkout(workout);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("user " + authorityService.getUserName() + " not found");
+
+        } catch (DuplicatesException de) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(de.getMessage());
+        }
+
+        return null;
+    }
+
+
+    @PutMapping("/workout/{exerciseName}/{workoutName}")
+    public ResponseEntity<?> addExerciseToWorkout(@PathVariable(name = "exerciseName") String exerciseName, @PathVariable(name = "workoutName") String workoutName) {
+
+        try {
+            userService.addExerciseToWorkout(exerciseName,workoutName);
+            return ResponseEntity.status(HttpStatus.OK).body("exercise "+exerciseName+ " added successfully to the workout " + workoutName);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (AuthorizationExceptionHandler e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
 }
 

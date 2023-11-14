@@ -10,7 +10,7 @@ class TokenChecker {
       return false;
     }
     Uri url = Uri.parse(
-        'http://192.168.191.182:8080/api/v1/auth/validateToken?token=$authToken');
+        'http://172.16.37.249:8080/api/v1/auth/validateToken?token=$authToken');
 
     try {
       final response = await get(url);

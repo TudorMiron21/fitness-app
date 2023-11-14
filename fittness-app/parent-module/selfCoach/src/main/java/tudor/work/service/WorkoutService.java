@@ -21,8 +21,13 @@ public class WorkoutService {
     @Transactional
     public void saveWorkout(Workout workout) throws DuplicatesException {
 
-        if (workoutRepository.findByName(workout.getName()).isPresent()) {
-            throw new DuplicatesException("workout already in database");
+        Optional<Workout> foundWorkout = workoutRepository.findByName(workout.getName());
+        if (foundWorkout.isPresent()) {
+            if (!foundWorkout.get().isGlobal()) {//this is used for when an admin posts a workout but a workout with the same name is already posted by a user
+                workoutRepository.save(workout);
+            } else {
+                throw new DuplicatesException("workout already in database");
+            }
         } else {
             workoutRepository.save(workout);
         }
@@ -32,19 +37,17 @@ public class WorkoutService {
         return workoutRepository.findByName(workoutName);
     }
 
-    public Workout getReference(Long id)
-    {
+    public Workout getReference(Long id) {
         return workoutRepository.getOne(id);
     }
 
-    public void deleteWorkout(Workout workout)
-    {
+    public void deleteWorkout(Workout workout) {
         workoutRepository.delete(workout);
     }
 
-    public List<Workout> getAllWorkouts(){
+    public List<Workout> getAllWorkouts() {
 
-       return workoutRepository.findAll();
+        return workoutRepository.findAll();
     }
 
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fittnes_frontend/components/bottom_nav.dart';
 import 'package:fittnes_frontend/components/my_button.dart';
 import 'package:fittnes_frontend/components/my_textfield.dart';
 import 'package:fittnes_frontend/components/square_tile.dart';
@@ -57,7 +58,7 @@ class _RegisterState extends State<Register> {
 
       String loginDataJson = json.encode(registerData);
 
-      Uri url = Uri.parse('http://192.168.191.182:8080/api/v1/auth/register');
+      Uri url = Uri.parse('http://172.16.37.249:8080/api/v1/auth/register');
 
       Response response =
           await post(url, headers: headers, body: loginDataJson);
@@ -76,7 +77,7 @@ class _RegisterState extends State<Register> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => NavBar(),
           ),
         );
       } else if (response.statusCode == 400) //bad request

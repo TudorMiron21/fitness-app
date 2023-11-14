@@ -2,31 +2,20 @@ package tudor.work.auth;
 
 import javassist.NotFoundException;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import tudor.work.dto.AuthResponse;
-import tudor.work.dto.ForgotPasswordRequestDto;
 import tudor.work.dto.LoginRequest;
 import tudor.work.dto.RegisterRequest;
 import tudor.work.exception.EmailNotFoundException;
 import tudor.work.exception.RegisterException;
-import tudor.work.jwt.JwtService;
 import tudor.work.service.AuthService;
-import tudor.work.utils.AbsoluteUrlResover;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 @RestController
@@ -86,7 +75,7 @@ public class AuthController {
 
         try {
             String randToken = userService.resetPassword(email);
-            String resetPasswordLink = "http://localhost:8080/api/v1/auth/resetPassword?token=" + randToken;
+            String resetPasswordLink = "http://localhost:8080/resetPassword?token=" + randToken;
             userService.sendResetPasswdLink(email, resetPasswordLink);
             return ResponseEntity.status(HttpStatus.OK).body(resetPasswordLink);
         } catch (EmailNotFoundException enf) {
@@ -96,7 +85,7 @@ public class AuthController {
 
 
 //    @GetMapping("/resetPassword")
-//    public ModelAndView resetPasswordHandler(@RequestParam("token") String randToken) {
+//    public String resetPasswordHandler(@RequestParam("token") String randToken) {
 //        try {
 //            ModelAndView mav = new ModelAndView("reset_password_form");
 //            userService.getUserByResetToken(randToken);
@@ -109,6 +98,17 @@ public class AuthController {
 //        }
 //    }
 
+//    @GetMapping("/resetPassword")
+//
+//    public String resetPassword(@RequestParam(name = "token")String token, Model page){
+//        try {
+//            userService.getUserByResetToken(token);
+//            page.addAttribute("token",token);
+//            return "reset_password_form.html";
+//        } catch (NotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 }
 

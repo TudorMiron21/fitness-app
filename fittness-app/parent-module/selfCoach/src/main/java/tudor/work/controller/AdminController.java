@@ -12,6 +12,7 @@ import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.WorkoutDto;
 import tudor.work.exceptions.AdminUpdateLocalWorkoutException;
 import tudor.work.exceptions.AuthenticationExceptionHandler;
+import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.service.AdminService;
 import tudor.work.service.AuthorityService;
@@ -33,7 +34,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.OK).body("exercise added successfully");
         } catch (DuplicatesException de) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("exercise " + exercise.getName() + " already exists");
-        } catch (AuthenticationExceptionHandler aeh) {
+        } catch (AuthorizationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
         }
     }
@@ -46,7 +47,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.OK).body("workout added successfully");
         } catch (DuplicatesException de) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout " + workoutDto.getName() + " already exists");
-        } catch (AuthenticationExceptionHandler aeh) {
+        } catch (AuthorizationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " not found");
@@ -58,7 +59,7 @@ public class AdminController {
         try {
             adminService.addExerciseToWorkout(exerciseName, workoutName);
             ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseName + " added to workout " + workoutName + " successfully");
-        } catch (AuthenticationExceptionHandler aeh) {
+        } catch (AuthorizationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("exercise/workout not found in the database");
@@ -75,7 +76,7 @@ public class AdminController {
             ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " deleted successfully");
         } catch (NotFoundException nfe) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout " + workoutName + " not found in the database");
-        } catch (AuthenticationExceptionHandler aeh) {
+        } catch (AuthorizationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
         } catch (AdminUpdateLocalWorkoutException auwe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("admin cannot delete local workouts");
@@ -90,7 +91,7 @@ public class AdminController {
             ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseName + " from workout " + workoutName + " deleted successfully");
         } catch (NotFoundException nfe) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout/exercise not found");
-        } catch (AuthenticationExceptionHandler aeh) {
+        } catch (AuthorizationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
         } catch (AdminUpdateLocalWorkoutException auwe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("admin cannot delete exercises from local workouts");

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.WorkoutDto;
 import tudor.work.exceptions.AdminUpdateLocalWorkoutException;
-import tudor.work.exceptions.AuthenticationExceptionHandler;
+import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.model.Exercise;
 import tudor.work.model.Workout;
@@ -28,7 +28,7 @@ public class AdminService {
     private final WorkoutService workoutService;
 
     @Transactional
-    public void addExercise(ExerciseDto exercise) throws DuplicatesException, AuthenticationExceptionHandler {
+    public void addExercise(ExerciseDto exercise) throws DuplicatesException, AuthorizationExceptionHandler {
 
         if (authorityService.isAdmin()) {
             //checks if the exercise already exists in the database
@@ -41,6 +41,7 @@ public class AdminService {
                     .name(exercise.getName())
                     .description(exercise.getDescription())
                     .mediaUrl(exercise.getMediaUrl())
+                    .coverPhotoUrl(exercise.getCoverPhotoUrl())
                     .isExerciseExclusive(exercise.isExerciseExclusive())
                     .category(exercise.getCategory())
                     .difficulty(exercise.getDifficulty())
@@ -49,13 +50,13 @@ public class AdminService {
 
             exerciseService.saveExercise(newExercise);
         } else {
-            throw new AuthenticationExceptionHandler("user not authenticated");
+            throw new AuthorizationExceptionHandler("user not authorised");
         }
 
     }
 
     @Transactional
-    public void addWorkout(WorkoutDto workoutDto) throws DuplicatesException, NotFoundException, AuthenticationExceptionHandler {
+    public void addWorkout(WorkoutDto workoutDto) throws DuplicatesException, NotFoundException, AuthorizationExceptionHandler {
 
         if (authorityService.isAdmin()) {
 
@@ -79,12 +80,12 @@ public class AdminService {
             }
 
         } else {
-            throw new AuthenticationExceptionHandler("user not authenticated");
+            throw new AuthorizationExceptionHandler("user not authorised");
         }
     }
 
     @Transactional
-    public void addExerciseToWorkout(String exerciseName, String workoutName) throws AuthenticationExceptionHandler, NotFoundException, RuntimeException {
+    public void addExerciseToWorkout(String exerciseName, String workoutName) throws AuthorizationExceptionHandler, NotFoundException, RuntimeException {
 
         if (authorityService.isAdmin()) {
 
@@ -108,11 +109,11 @@ public class AdminService {
             }
 
         } else {
-            throw new AuthenticationExceptionHandler("user not authenticated");
+            throw new AuthorizationExceptionHandler("user not authorised");
         }
     }
 
-    public void deleteWorkout(String workoutName) throws NotFoundException, AuthenticationExceptionHandler {
+    public void deleteWorkout(String workoutName) throws NotFoundException, AuthorizationExceptionHandler {
         if (authorityService.isAdmin()) {
             Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout not found in the database"));
             if (workout.isGlobal()) {
@@ -121,13 +122,13 @@ public class AdminService {
                 throw new AdminUpdateLocalWorkoutException("admin cannot delete local workouts");
             }
         } else {
-            throw new AuthenticationExceptionHandler("user not authenticated");
+            throw new AuthorizationExceptionHandler("user not authorised");
         }
 
     }
 
     @Transactional
-    public void deleteExerciseFromWorkout(String exerciseName, String workoutName)throws AuthenticationExceptionHandler , NotFoundException
+    public void deleteExerciseFromWorkout(String exerciseName, String workoutName)throws AuthorizationExceptionHandler , NotFoundException
     {
         //TODO : does not really work
         if (authorityService.isAdmin()) {
@@ -147,7 +148,7 @@ public class AdminService {
                 throw new AdminUpdateLocalWorkoutException("admin cannot delete local workouts");
             }
         } else {
-            throw new AuthenticationExceptionHandler("user not authenticated");
+            throw new AuthorizationExceptionHandler("user not authorised");
         }
     }
 

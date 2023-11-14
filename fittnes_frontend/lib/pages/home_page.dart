@@ -1,3 +1,4 @@
+import 'package:fittnes_frontend/pages/exercise_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:fittnes_frontend/models/workout.dart';
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.get(
-      Uri.parse('http://192.168.191.182:8080/api/selfCoach/user/workouts'),
+      Uri.parse('http://172.16.37.249:8080/api/selfCoach/user/workouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -126,6 +127,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                         onTap: () {
                           // Add navigation or other actions when ListTile is tapped
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ExercisePage(exercises: workout.exercises, workoutName: workout.name,),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -148,7 +156,7 @@ class _HomePageState extends State<HomePage> {
             ),
             elevation: 5, // Add elevation for a subtle shadow effect
           ),
-          child: Row(
+          child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
