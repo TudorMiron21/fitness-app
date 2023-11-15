@@ -47,18 +47,79 @@ class _HomePageState extends State<HomePage> {
             .toList() as List<Exercise>;
 
         return Workout(
-          name: json['name'],
-          description: json['description'],
-          difficultyLevel: json['difficultyLevel'],
-          coverPhotoUrl: json['coverPhotoUrl'] ?? "",
-          exercises: exerciseList,
-        );
+            name: json['name'],
+            description: json['description'],
+            difficultyLevel: json['difficultyLevel'],
+            coverPhotoUrl: json['coverPhotoUrl'] ?? "",
+            exercises: exerciseList,
+            likedByUser: json['likedByUser']);
       }).toList();
 
       return workouts;
     } else {
       throw Exception(
           'Failed to load workouts. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<void> likeWorkout(Workout workout) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.put(
+      Uri.parse('http://192.168.191.182:8080/api/selfCoach/user/likeWorkout/' +
+          workout.name),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) //OK
+    {
+      setState(() {
+        workout.likedByUser = true;
+      });
+    } else {
+      throw Exception(
+          'Failed to like workout. Status code: ${response.statusCode}');
+    }
+    // TODO: Implement the API call to like the workout
+    // Use the workout.id to identify the workout to like
+  }
+
+  Future<void> unlikeWorkout(Workout workout) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    // TODO: Implement the API call to unlike the workout
+    // Use the workout.id to identify the workout to unlike
+    final response = await http.delete(
+      Uri.parse(
+          'http://192.168.191.182:8080/api/selfCoach/user/unlikeWorkout/' +
+              workout.name),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) //OK
+    {
+      setState(() {
+        workout.likedByUser = false;
+      });
+    } else {
+      throw Exception(
+          'Failed to like workout. Status code: ${response.statusCode}');
     }
   }
 
@@ -169,6 +230,22 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ],
+                      ),
+                      trailing: GestureDetector(
+                        onTap: () {
+                          if (workout.likedByUser) {
+                            unlikeWorkout(workout);
+                          } else {
+                            likeWorkout(workout);
+                          }
+                        },
+                        child: Icon(
+                          workout.likedByUser
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color:
+                              workout.likedByUser ? Colors.red : Colors.white,
+                        ),
                       ),
                       onTap: () {
                         Navigator.push(

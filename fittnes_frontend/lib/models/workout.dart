@@ -1,4 +1,5 @@
 import 'package:fittnes_frontend/models/exercise.dart';
+import 'package:flutter/material.dart';
 
 class Workout{
 
@@ -7,6 +8,7 @@ class Workout{
   final String coverPhotoUrl;
   final double difficultyLevel;
   final List<Exercise> exercises;
+  bool likedByUser;
 
 
     Workout({
@@ -15,6 +17,7 @@ class Workout{
     this.coverPhotoUrl ='',
     required this.difficultyLevel,
     required this.exercises,
+    required this.likedByUser
   });
 
 

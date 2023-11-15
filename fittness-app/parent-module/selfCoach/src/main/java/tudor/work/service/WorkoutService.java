@@ -1,9 +1,11 @@
 package tudor.work.service;
 
 
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tudor.work.exceptions.DuplicatesException;
+import tudor.work.model.User;
 import tudor.work.model.Workout;
 import tudor.work.repository.WorkoutRepository;
 
@@ -48,6 +50,21 @@ public class WorkoutService {
     public List<Workout> getAllWorkouts() {
 
         return workoutRepository.findAll();
+    }
+
+    public boolean isWorkoutLikedByUser(Workout workout,User user) throws NotFoundException {
+
+        return workoutRepository
+                .findById(workout.getId())
+                .orElseThrow(()->new NotFoundException("workout " + workout.getName() + " not found"))
+                .getLikers()
+                .stream()
+                .anyMatch(user1 -> user1.equals(user));
+    }
+
+    public Long getNoLikes(Workout workout)
+    {
+        return (long) workout.getLikers().size();
     }
 
 

@@ -87,7 +87,7 @@ public class AdminService {
 
     private Double calculateDifficultyLevel(Set<Exercise> exercises) {
 
-        return exercises.stream().mapToDouble( exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
+        return exercises.stream().mapToDouble(exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
     }
 
     @Transactional
@@ -104,14 +104,16 @@ public class AdminService {
                     if (exercise.isPresent()) {
                         Exercise exerciseActual = exercise.get();
                         workoutActual.getExercises().add(exerciseActual);
+                        Double currDifficultyLevel = workoutActual.getDifficultyLevel();
+                        workoutActual.setDifficultyLevel((currDifficultyLevel + exerciseActual.getDifficulty().getDifficultyLevelNumber()) / (long) workoutActual.getExercises().size());
                     } else {
-                        throw new NotFoundException("exercise not found in the database");
+                        throw new NotFoundException("exercise "+ exerciseName+" not found in the database");
                     }
                 } else {
                     throw new AdminUpdateLocalWorkoutException("admin cannot update local workouts");
                 }
             } else {
-                throw new NotFoundException("workout not found in the database");
+                throw new NotFoundException("workout "+workoutName+" not found in the database");
             }
 
         } else {
@@ -134,19 +136,16 @@ public class AdminService {
     }
 
     @Transactional
-    public void deleteExerciseFromWorkout(String exerciseName, String workoutName)throws AuthorizationExceptionHandler , NotFoundException
-    {
+    public void deleteExerciseFromWorkout(String exerciseName, String workoutName) throws AuthorizationExceptionHandler, NotFoundException {
         //TODO : does not really work
         if (authorityService.isAdmin()) {
             Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout not found in the database"));
             if (workout.isGlobal()) {
 
-                for (Exercise exercise: workout.getExercises()) {
-                    if(exercise.getName().equals(exerciseName))
-                    {
+                for (Exercise exercise : workout.getExercises()) {
+                    if (exercise.getName().equals(exerciseName)) {
                         workout.removeExercise(exercise);
-                    }
-                    else {
+                    } else {
                         throw new NotFoundException("exercise not present in workout exercise set");
                     }
                 }

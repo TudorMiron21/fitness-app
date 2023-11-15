@@ -21,6 +21,9 @@ public class WorkoutDto {
     private String description;
     private String coverPhotoUrl;
     private Double difficultyLevel;
+    private boolean isLikedByUser;
+
+    private Long noLikes;
 
 
     @JsonDeserialize(using = ExercisesDeserialiser.class)

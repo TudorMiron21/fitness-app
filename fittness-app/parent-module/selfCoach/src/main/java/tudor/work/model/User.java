@@ -1,5 +1,6 @@
 package tudor.work.model;
 
+import javassist.NotFoundException;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity(name = "_user")
 @Table(name = "_user")
+@EqualsAndHashCode
 public class User implements UserDetails {
 
 
@@ -39,6 +41,25 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
+    @ManyToMany(fetch = FetchType.LAZY,cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "User_Workouts",
+    joinColumns = @JoinColumn(name = "id_user"),
+    inverseJoinColumns = @JoinColumn(name = "id_workout"))
+    private Set<Workout> likedWorkouts;
+
+
+    public void likeWorkout(Workout workout)
+    {
+        this.likedWorkouts.add(workout);
+    }
+
+    public void unlikeWorkout(Workout workout) throws NotFoundException {
+        boolean removed = this.likedWorkouts.remove(workout);
+
+        if (!removed) {
+            throw new NotFoundException("workout not found");
+        }
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

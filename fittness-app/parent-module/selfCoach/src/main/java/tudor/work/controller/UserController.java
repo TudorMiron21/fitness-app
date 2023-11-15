@@ -115,5 +115,30 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
+
+
+    @PutMapping("/likeWorkout/{workoutName}")
+    public ResponseEntity<?> likeWorkout(@PathVariable(name = "workoutName") String workoutName)
+    {
+        try {
+            userService.likeWorkout(workoutName);
+            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " liked by user " + authorityService.getUserName());
+
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/unlikeWorkout/{workoutName}")
+    public ResponseEntity<?> unlikeWorkout(@PathVariable(name = "workoutName") String workoutName)
+    {
+        try {
+            userService.unlikeWorkout(workoutName);
+            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " unliked by user " + authorityService.getUserName());
+
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }
 

@@ -13,8 +13,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
-@ToString
+
+//This is the fucking solution for my problems
+@ToString(exclude = "likers")
+@EqualsAndHashCode(exclude = "likers")
 public class Workout {
 
     @Id
@@ -35,6 +37,12 @@ public class Workout {
     @ManyToOne
     @JoinColumn(name = "adder_id")
     private User adder;
+
+
+    @ManyToMany(mappedBy = "likedWorkouts")
+    @JsonIgnore
+    private Set<User> likers;
+
     private boolean isGlobal;
 
     private boolean isDeleted = false;

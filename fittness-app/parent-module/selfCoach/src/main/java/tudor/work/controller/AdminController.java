@@ -61,7 +61,7 @@ public class AdminController {
         } catch (AuthorizationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
         } catch (NotFoundException nfe) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("exercise/workout not found in the database");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(nfe.getMessage());
         } catch (AdminUpdateLocalWorkoutException auwe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("admin cannot update local workouts");
         }

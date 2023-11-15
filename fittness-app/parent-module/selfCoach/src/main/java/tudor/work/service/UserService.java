@@ -90,15 +90,22 @@ public class UserService {
 
         return Stream.concat(adminWorkouts.stream(), userWorkouts.stream())
                 .toList().stream().map(workout ->
-                        WorkoutDto.
-                                builder().
-                                name(workout.getName()).
-                                description(workout.getDescription()).
-                                coverPhotoUrl(workout.getCoverPhotoUrl()).
-                                difficultyLevel(workout.getDifficultyLevel()).
-
-                                exercises(workout.getExercises())
-                                .build()
+                        {
+                            try {
+                                return WorkoutDto.
+                                        builder().
+                                        name(workout.getName()).
+                                        description(workout.getDescription()).
+                                        coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                        difficultyLevel(workout.getDifficultyLevel()).
+                                        isLikedByUser(workoutService.isWorkoutLikedByUser(workout,authorityService.getUser())).
+                                        noLikes(workoutService.getNoLikes(workout)).
+                                        exercises(workout.getExercises())
+                                        .build();
+                            } catch (NotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                 ).toList();
     }
 
@@ -148,6 +155,23 @@ public class UserService {
             throw new AuthorizationExceptionHandler("user " + authorityService.getUserName() + " is not allowed to change global workouts");
         }
 
+
+    }
+
+    @Transactional
+    public void likeWorkout(String workoutName) throws NotFoundException {
+        Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout " + workoutName + " not found"));
+
+        authorityService.getUser().likeWorkout(workout);
+
+    }
+
+    @Transactional
+
+    public void unlikeWorkout(String workoutName) throws NotFoundException {
+        Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout " + workoutName + " not found"));
+
+        authorityService.getUser().unlikeWorkout(workout);
 
     }
 }
