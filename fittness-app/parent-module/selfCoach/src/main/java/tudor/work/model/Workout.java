@@ -39,6 +39,8 @@ public class Workout {
 
     private boolean isDeleted = false;
 
+    private Double difficultyLevel;
+
     public void addExercise(Exercise exercise) {
         this.exercises.add(exercise);
     }

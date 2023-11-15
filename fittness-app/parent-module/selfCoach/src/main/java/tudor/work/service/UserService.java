@@ -95,6 +95,8 @@ public class UserService {
                                 name(workout.getName()).
                                 description(workout.getDescription()).
                                 coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                difficultyLevel(workout.getDifficultyLevel()).
+
                                 exercises(workout.getExercises())
                                 .build()
                 ).toList();
@@ -109,6 +111,7 @@ public class UserService {
                     name(workout.getName()).
                     description(workout.getDescription()).
                     coverPhotoUrl(workout.getCoverPhotoUrl()).
+                    difficultyLevel(workout.getDifficultyLevel()).
                     exercises(workout.getExercises())
                     .build();
         } else {

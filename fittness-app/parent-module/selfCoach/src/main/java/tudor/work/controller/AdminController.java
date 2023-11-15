@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.WorkoutDto;
 import tudor.work.exceptions.AdminUpdateLocalWorkoutException;
-import tudor.work.exceptions.AuthenticationExceptionHandler;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.service.AdminService;

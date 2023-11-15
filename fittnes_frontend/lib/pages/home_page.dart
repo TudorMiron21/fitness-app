@@ -1,10 +1,10 @@
-import 'package:fittnes_frontend/pages/exercise_page.dart';
 import 'package:flutter/material.dart';
-import 'package:fittnes_frontend/models/exercise.dart';
-import 'package:fittnes_frontend/models/workout.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:fittnes_frontend/models/exercise.dart';
+import 'package:fittnes_frontend/models/workout.dart';
+import 'package:fittnes_frontend/pages/exercise_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.get(
-      Uri.parse('http://172.16.37.249:8080/api/selfCoach/user/workouts'),
+      Uri.parse('http://192.168.191.182:8080/api/selfCoach/user/workouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
         return Workout(
           name: json['name'],
           description: json['description'],
+          difficultyLevel: json['difficultyLevel'],
           coverPhotoUrl: json['coverPhotoUrl'] ?? "",
           exercises: exerciseList,
         );
@@ -65,115 +66,174 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     // Your home page content here
     return Scaffold(
-        body: FutureBuilder<List<Workout>>(
-          future: fetchWorkouts(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                  child:
-                      CircularProgressIndicator()); // Center the loading indicator
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              // Display the list of workouts using ListView.builder
-// Inside the ListView.builder
-// Inside the ListView.builder
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  Workout workout = snapshot.data![index];
-                  return Card(
-                    elevation: 5,
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Container(
+      body: FutureBuilder<List<Workout>>(
+        future: fetchWorkouts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                Workout workout = snapshot.data![index];
+
+                // Calculate the difficulty level representation
+                int maxDifficulty = 4; // Adjust the maximum difficulty level
+                double fractionalPart =
+                    workout.difficultyLevel - workout.difficultyLevel.floor();
+                List<Widget> difficultyCircles = List.generate(
+                  maxDifficulty,
+                  (index) {
+                    Color circleColor;
+                    if (index < workout.difficultyLevel.floor()) {
+                      circleColor = Colors.blue;
+                    } else if (index == workout.difficultyLevel.floor()) {
+                      circleColor = Color.lerp(
+                          Colors.blue, Colors.blue.shade200, fractionalPart)!;
+                    } else {
+                      circleColor = Colors.grey;
+                    }
+                    return Container(
+                      width: 14,
+                      height: 14,
+                      margin: EdgeInsets.only(left: 4),
                       decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(workout.coverPhotoUrl),
-                          fit: BoxFit.cover,
-                          opacity: 0.45,
-                        ),
+                        shape: BoxShape.circle,
+                        color: circleColor.withOpacity(1), // Adjust opacity
                       ),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.all(16),
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              workout.name,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    Colors.black, // Text color over the photo
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              workout.description,
-                              style: TextStyle(
-                                color:
-                                    Colors.black, // Text color over the photo
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Exercises: ${workout.exercises.length}',
-                              style: TextStyle(
-                                color:
-                                    Colors.black, // Text color over the photo
-                              ),
-                            ),
-                          ],
+                    );
+                  },
+                );
+
+                return Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(workout.coverPhotoUrl),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(
+                              0.65), // Adjust opacity of background image
+                          BlendMode.darken,
                         ),
-                        onTap: () {
-                          // Add navigation or other actions when ListTile is tapped
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ExercisePage(exercises: workout.exercises, workoutName: workout.name,),
-                            ),
-                          );
-                        },
                       ),
                     ),
-                  );
-                },
-              );
-            }
-          },
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(16),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            workout.name,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white, // Adjust text color
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            workout.description,
+                            style: TextStyle(
+                              color: Colors.white, // Adjust text color
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          SizedBox(height: 8),
+                          Text(
+                            'Exercises: ${workout.exercises.length}',
+                            style: TextStyle(
+                              color: Colors.white, // Adjust text color
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              // Difficulty Circles
+                              ...difficultyCircles,
+                              SizedBox(
+                                  width:
+                                      8), // Adjust spacing between circles and difficulty level
+                              // Difficulty Level
+                              Text(
+                                getDifficultyText(workout.difficultyLevel),
+                                style: TextStyle(
+                                  color: Colors.white, // Adjust text color
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExercisePage(
+                              exercises: workout.exercises,
+                              workoutName: workout.name,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
+      floatingActionButton: ElevatedButton(
+        onPressed: () {
+          // Add the functionality you want when the button is pressed to add a workout
+        },
+        style: ElevatedButton.styleFrom(
+          primary: Colors.blue,
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 5,
         ),
-        floatingActionButton: ElevatedButton(
-          onPressed: () {
-            // Add the functionality you want when the button is pressed to add a workout
-          },
-          style: ElevatedButton.styleFrom(
-            primary: Colors.blue, // Background color of the button
-            padding: EdgeInsets.symmetric(
-                horizontal: 8, vertical: 6), // Adjust padding
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10), // Adjust border radius
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.add,
+              color: Colors.white,
             ),
-            elevation: 5, // Add elevation for a subtle shadow effect
-          ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.add, // You can use a different icon if preferred
+            SizedBox(width: 2),
+            Text(
+              'Add Workout',
+              style: TextStyle(
                 color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
-              SizedBox(width: 2), // Add spacing between icon and text
-              Text(
-                'Add Workout',
-                style: TextStyle(
-                  color: Colors.white, // Text color of the button
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14, // Adjust font size
-                ),
-              ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String getDifficultyText(double difficultyLevel) {
+    if (difficultyLevel >= 0 && difficultyLevel < 1) {
+      return 'Easy';
+    } else if (difficultyLevel >= 1 && difficultyLevel < 2) {
+      return 'Medium';
+    } else if (difficultyLevel >= 2 && difficultyLevel < 3) {
+      return 'Hard';
+    } else if (difficultyLevel >= 3 && difficultyLevel <= 4) {
+      return 'Expert';
+    } else {
+      return 'Unknown';
+    }
   }
 }

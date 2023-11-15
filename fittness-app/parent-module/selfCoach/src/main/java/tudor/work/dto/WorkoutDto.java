@@ -7,9 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tudor.work.dto.deserializer.ExercisesDeserialiser;
-import tudor.work.dto.deserializer.UserDeserializer;
 import tudor.work.model.Exercise;
-import tudor.work.model.User;
 
 import java.util.Set;
 
@@ -22,6 +20,8 @@ public class WorkoutDto {
     private String name;
     private String description;
     private String coverPhotoUrl;
+    private Double difficultyLevel;
+
 
     @JsonDeserialize(using = ExercisesDeserialiser.class)
     private Set<Exercise> exercises;

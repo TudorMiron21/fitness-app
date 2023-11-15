@@ -18,4 +18,6 @@ public class Difficulty {
 
     @Column(nullable = false)
     private String dificultyLevel;
+
+    private Double difficultyLevelNumber;
 }

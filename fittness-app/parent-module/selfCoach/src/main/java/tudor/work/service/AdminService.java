@@ -66,6 +66,7 @@ public class AdminService {
                         .name(workoutDto.getName())
                         .description(workoutDto.getDescription())
                         .coverPhotoUrl(workoutDto.getCoverPhotoUrl())
+                        .difficultyLevel(this.calculateDifficultyLevel(workoutDto.getExercises()))
                         .exercises(workoutDto.getExercises())
                         .adder(authorityService.getUser())
                         .isDeleted(false)
@@ -82,6 +83,11 @@ public class AdminService {
         } else {
             throw new AuthorizationExceptionHandler("user not authorised");
         }
+    }
+
+    private Double calculateDifficultyLevel(Set<Exercise> exercises) {
+
+        return exercises.stream().mapToDouble( exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
     }
 
     @Transactional
