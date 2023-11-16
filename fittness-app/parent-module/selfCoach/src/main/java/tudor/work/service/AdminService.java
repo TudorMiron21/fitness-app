@@ -14,6 +14,7 @@ import tudor.work.model.Exercise;
 import tudor.work.model.Workout;
 
 import javax.transaction.Transactional;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -107,13 +108,13 @@ public class AdminService {
                         Double currDifficultyLevel = workoutActual.getDifficultyLevel();
                         workoutActual.setDifficultyLevel((currDifficultyLevel + exerciseActual.getDifficulty().getDifficultyLevelNumber()) / (long) workoutActual.getExercises().size());
                     } else {
-                        throw new NotFoundException("exercise "+ exerciseName+" not found in the database");
+                        throw new NotFoundException("exercise " + exerciseName + " not found in the database");
                     }
                 } else {
                     throw new AdminUpdateLocalWorkoutException("admin cannot update local workouts");
                 }
             } else {
-                throw new NotFoundException("workout "+workoutName+" not found in the database");
+                throw new NotFoundException("workout " + workoutName + " not found in the database");
             }
 
         } else {
@@ -137,18 +138,27 @@ public class AdminService {
 
     @Transactional
     public void deleteExerciseFromWorkout(String exerciseName, String workoutName) throws AuthorizationExceptionHandler, NotFoundException {
-        //TODO : does not really work
         if (authorityService.isAdmin()) {
             Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout not found in the database"));
             if (workout.isGlobal()) {
 
-                for (Exercise exercise : workout.getExercises()) {
+                Exercise foundExercise = null;
+                Iterator<Exercise> iterator = workout.getExercises().iterator();
+                while (iterator.hasNext()) {
+                    Exercise exercise = iterator.next();
                     if (exercise.getName().equals(exerciseName)) {
-                        workout.removeExercise(exercise);
-                    } else {
-                        throw new NotFoundException("exercise not present in workout exercise set");
+                        iterator.remove(); // Use iterator to remove the element
+                        foundExercise = exercise;
+                        break; // Exit the loop once the exercise is found and removed
                     }
                 }
+
+                if (foundExercise != null) {
+                    workout.removeExercise(foundExercise);
+                    workout.setDifficultyLevel(this.calculateDifficultyLevel(workout.getExercises()));
+                }
+                else
+                    throw new NotFoundException("exercise not present in workout exercise set");
             } else {
                 throw new AdminUpdateLocalWorkoutException("admin cannot delete local workouts");
             }

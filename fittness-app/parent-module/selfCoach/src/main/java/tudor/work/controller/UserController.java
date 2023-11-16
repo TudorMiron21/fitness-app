@@ -140,5 +140,22 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+
+    @GetMapping("/workouts/getFirstSixMostLikedWorkouts")
+    public ResponseEntity<?> getFirstSixMostLikedWorkouts()
+    {
+        List<WorkoutDto> workoutDtoList =  userService.getFirstSixMostLikedWorkouts();
+
+        return ResponseEntity.status(HttpStatus.OK).body(workoutDtoList);
+    }
+
+    @GetMapping("/workouts/getTopWorkoutsForDifficultyLevel/{lowerLimit}/{upperLimit}")
+    public ResponseEntity<?> getTopWorkoutsForDifficultyLevel(@PathVariable(name = "lowerLimit")Double lowerLimit, @PathVariable(name = "upperLimit")Double upperLimit)
+    {
+        List<WorkoutDto> workoutDtoList =  userService.getTopWorkoutsForDifficultyLevel(lowerLimit,upperLimit);
+        return ResponseEntity.status(HttpStatus.OK).body(workoutDtoList);
+
+    }
 }
 

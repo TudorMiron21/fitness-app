@@ -20,6 +20,7 @@ import tudor.work.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -98,7 +99,7 @@ public class UserService {
                                         description(workout.getDescription()).
                                         coverPhotoUrl(workout.getCoverPhotoUrl()).
                                         difficultyLevel(workout.getDifficultyLevel()).
-                                        isLikedByUser(workoutService.isWorkoutLikedByUser(workout,authorityService.getUser())).
+                                        isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
                                         noLikes(workoutService.getNoLikes(workout)).
                                         exercises(workout.getExercises())
                                         .build();
@@ -173,5 +174,61 @@ public class UserService {
 
         authorityService.getUser().unlikeWorkout(workout);
 
+    }
+
+    public List<WorkoutDto> getFirstSixMostLikedWorkouts() {
+
+        return workoutService.getAllWorkouts()
+                .stream()
+
+                .map(
+                        workout -> {
+                            try {
+                                return WorkoutDto.
+                                        builder().
+                                        name(workout.getName()).
+                                        description(workout.getDescription()).
+                                        coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                        difficultyLevel(workout.getDifficultyLevel()).
+                                        isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
+                                        noLikes(workoutService.getNoLikes(workout)).
+                                        exercises(workout.getExercises())
+                                        .build();
+                            } catch (NotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                )
+                .sorted(Comparator.comparing(WorkoutDto::getNoLikes))
+                .limit(6)
+                .toList();
+    }
+
+    public List<WorkoutDto> getTopWorkoutsForDifficultyLevel(Double lowerLimit, Double upperLimit) {
+
+        return workoutService.getAllWorkouts()
+                .stream()
+                .filter( workout -> workout.getDifficultyLevel() >= lowerLimit && workout.getDifficultyLevel()< upperLimit)
+                .map(
+                        workout -> {
+                            try {
+                                return WorkoutDto.
+                                        builder().
+                                        name(workout.getName()).
+                                        description(workout.getDescription()).
+                                        coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                        difficultyLevel(workout.getDifficultyLevel()).
+                                        isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
+                                        noLikes(workoutService.getNoLikes(workout)).
+                                        exercises(workout.getExercises())
+                                        .build();
+                            } catch (NotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                )
+                .sorted(Comparator.comparing(WorkoutDto::getNoLikes))
+                .limit(6)
+                .toList();
     }
 }

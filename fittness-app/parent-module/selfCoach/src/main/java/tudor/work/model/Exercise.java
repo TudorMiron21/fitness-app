@@ -44,7 +44,7 @@ public class Exercise {
     @JoinColumn(name = "category_id")
     private Category category;
 
-//    @ManyToMany(targetEntity = Workout.class,mappedBy = "exercises")
+//    @ManyToMany(mappedBy = "exercises")
 //    @JsonIgnore
 //    private Set<Workout> workouts;
 
