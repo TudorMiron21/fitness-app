@@ -4,21 +4,17 @@ import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.ExerciseDto;
+import tudor.work.dto.RequestHistoryDto;
 import tudor.work.dto.WorkoutDto;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
-import tudor.work.model.Workout;
 import tudor.work.service.AuthorityService;
 import tudor.work.service.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/selfCoach/user")
@@ -156,6 +152,18 @@ public class UserController {
         List<WorkoutDto> workoutDtoList =  userService.getTopWorkoutsForDifficultyLevel(lowerLimit,upperLimit);
         return ResponseEntity.status(HttpStatus.OK).body(workoutDtoList);
 
+    }
+
+
+    @PostMapping("/startWorkout/{workoutName}")
+    public ResponseEntity<?> startWorkout(@PathVariable(name = "workoutName") String workoutName){
+
+        try {
+            userService.startWorkout(workoutName);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        return null;
     }
 }
 

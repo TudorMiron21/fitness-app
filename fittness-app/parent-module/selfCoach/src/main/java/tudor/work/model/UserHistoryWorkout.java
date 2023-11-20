@@ -3,6 +3,8 @@ package tudor.work.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -10,8 +12,9 @@ import java.util.Set;
 @Entity
 @Table
 @Data
-@EqualsAndHashCode
 @Builder
+@ToString(exclude = "userHistoryModules")
+@EqualsAndHashCode(exclude = "userHistoryModules")
 public class UserHistoryWorkout {
 
     @Id
@@ -22,7 +25,8 @@ public class UserHistoryWorkout {
     @JoinColumn(name = "workout_id")
     private Workout workout;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "userHistoryWorkout")
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "userHistoryWorkout",cascade = CascadeType.ALL)
+    @JsonIgnore
     Set<UserHistoryModule> userHistoryModules;
 
     @ManyToOne

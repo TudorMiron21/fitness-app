@@ -1,10 +1,13 @@
 import 'package:fittnes_frontend/components/bottom_nav.dart';
+import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:fittnes_frontend/pages/discover_page.dart';
+import 'package:fittnes_frontend/pages/exercise_page.dart';
 import 'package:fittnes_frontend/pages/home_page.dart';
 import 'package:fittnes_frontend/pages/login_page.dart';
 import 'package:fittnes_frontend/pages/profile_page.dart';
 import 'package:fittnes_frontend/pages/register_page.dart';
 import 'package:fittnes_frontend/pages/search_page.dart';
+import 'package:fittnes_frontend/pages/start_exercise_page.dart';
 import 'package:get/get.dart';
 
 class AppPage {
@@ -21,6 +24,7 @@ class AppPage {
     ),
     GetPage(name: login, page: () => LoginPage()),
     GetPage(name: register, page: () => const Register()),
+  //you should add teh routes for start_exercise_page and exercise_page
   ];
 
   static getNavbar() => navbar;
@@ -31,6 +35,22 @@ class AppPage {
   static getLogin() => login;
   static getRegister() => register;
 
+  static GetPage getExercisePage(List<Exercise> exercises, String workoutName){
+    return GetPage(
+      name: exercisePage,
+      page: () => ExercisePage(exercises: exercises, workoutName: workoutName,),
+      transition: Transition.fadeIn, // Adjust as needed
+    );
+  }
+
+  static GetPage getStartExercisePage(List<Exercise> exercises, int exerciseIndex, String workoutName) {
+    return GetPage(
+      name: startExercisePage,
+      page: () => StartExercisePage(exercises: exercises, exerciseIndex: exerciseIndex, workoutName: workoutName),
+      transition: Transition.fadeIn, // Adjust as needed
+    );
+  }
+
   static String navbar = "/";
   static String home = "/home";
   static String discover = "/discover";
@@ -38,4 +58,6 @@ class AppPage {
   static String profile = "/profile";
   static String login = "/login";
   static String register = "/register";
+  static String exercisePage = "/exercise_page";
+  static String startExercisePage = "/start_exercise_page";
 }

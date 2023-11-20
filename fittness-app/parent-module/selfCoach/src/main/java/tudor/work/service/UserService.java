@@ -2,6 +2,7 @@ package tudor.work.service;
 
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,17 +13,12 @@ import tudor.work.dto.WorkoutDto;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
-import tudor.work.model.Exercise;
-import tudor.work.model.User;
-import tudor.work.model.Workout;
+import tudor.work.model.*;
 import tudor.work.repository.ExerciseRepository;
 import tudor.work.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +31,7 @@ public class UserService {
     private final ExerciseRepository exerciseRepository;
     private final AuthorityService authorityService;
     private final WorkoutService workoutService;
+    private final UserHistoryWorkoutService userHistoryWorkoutService;
 
     public List<ExerciseDto> getAllExercises() {
 
@@ -208,7 +205,7 @@ public class UserService {
 
         return workoutService.getAllWorkouts()
                 .stream()
-                .filter( workout -> workout.getDifficultyLevel() >= lowerLimit && workout.getDifficultyLevel()< upperLimit)
+                .filter(workout -> workout.getDifficultyLevel() >= lowerLimit && workout.getDifficultyLevel() < upperLimit)
                 .map(
                         workout -> {
                             try {
@@ -230,5 +227,63 @@ public class UserService {
                 .sorted(Comparator.comparing(WorkoutDto::getNoLikes))
                 .limit(6)
                 .toList();
+    }
+
+    @Transactional
+    public void startWorkout(String workoutName) throws NotFoundException {
+
+        Workout workout = workoutService
+                .findWorkoutByName(workoutName)
+                .orElseThrow(() -> new NotFoundException("Workout " + workoutName + " not found"));
+
+
+
+
+        UserHistoryWorkout userHistoryWorkout = UserHistoryWorkout
+                .builder()
+                .workout(workout)
+                .userHistoryModules(
+                        workout
+                                .getExercises()
+                                .stream()
+                                .map(exercise ->
+                                        UserHistoryModule
+                                                .builder()
+                                                .userHistoryExercises(Set.of(
+                                                        UserHistoryExercise
+                                                                .builder()
+                                                                .exercise(exercise)
+                                                                .currNoSeconds(0L)
+                                                                .isDone(false)
+                                                                .noReps(null)
+                                                                .weight(null)
+                                                                .build()
+                                                ))
+                                                .noSets(1)
+                                                .build()
+                                )
+                                .collect(Collectors.toSet()) // Collect the stream of modules into a Set
+                )
+                .user(authorityService.getUser())
+                .build();
+
+
+        userHistoryWorkout.getUserHistoryModules().forEach(
+                module -> {
+                    module.setUserHistoryWorkout(userHistoryWorkout);
+
+                    module.getUserHistoryExercises().forEach(
+                            exercise ->{
+                                exercise.setUserHistoryModule(module);
+                            }
+                    );
+                }
+        );
+
+
+
+        userHistoryWorkoutService.saveUserHistoryWorkout(userHistoryWorkout);
+
+
     }
 }

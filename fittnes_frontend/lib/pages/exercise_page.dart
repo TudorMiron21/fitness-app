@@ -1,3 +1,4 @@
+import 'package:fittnes_frontend/pages/start_exercise_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fittnes_frontend/models/exercise.dart';
 
@@ -13,6 +14,7 @@ class ExercisePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('${this.workoutName}'),
       ),
+      
       body: ListView.builder(
         itemCount: exercises.length,
         itemBuilder: (context, index) {
@@ -20,12 +22,14 @@ class ExercisePage extends StatelessWidget {
           return Card(
             // Customize the card as needed
             child: ListTile(
+              tileColor: Colors.grey.shade300,
               contentPadding: EdgeInsets.all(16.0),
               leading: Container(
                 width: 120.0, // Adjust the width as needed
                 height: 120.0, // Adjust the height as needed
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0), // Adjust the border radius as needed
+                  borderRadius: BorderRadius.circular(
+                      12.0), // Adjust the border radius as needed
                   image: DecorationImage(
                     image: NetworkImage(exercise.coverPhotoUrl),
                     fit: BoxFit.cover,
@@ -52,9 +56,12 @@ class ExercisePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add the functionality to start the workout
-          // This could include navigating to a timer page or
-          // performing any other actions you want when starting the workout
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StartExercisePage(exercises: exercises,exerciseIndex: 0,workoutName: workoutName,),
+            ),
+          );
         },
         child: Icon(Icons.play_arrow),
       ),
