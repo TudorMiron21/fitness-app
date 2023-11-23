@@ -36,10 +36,9 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) throws RegisterException {
 
-        if (userRepository.findByUsername(request.getUsername()).isEmpty() && userRepository.findByEmail(request.getEmail()).isEmpty()) {
+        if (userRepository.findByEmail(request.getEmail()).isEmpty()) {
             var user = new User(
                     null,
-                    request.getUsername(),
                     request.getFirstname(),
                     request.getLastname(),
                     request.getEmail(),
@@ -62,11 +61,11 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) throws AuthenticationException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getEmail(),
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByUsername(request.getUsername())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
@@ -77,9 +76,9 @@ public class AuthService {
 
     public Boolean isTokenValid(String token) {
 
-        final String username = jwtService.extractUsername(token);
+        final String email = jwtService.extractUsername(token);
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("user not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("user not found"));
         System.out.println("user is:" + user.getUsername());
         if (jwtService.isTokenValid(token, user))
             return true;
@@ -109,7 +108,7 @@ public class AuthService {
     }
 
     public User getUserByResetToken(String token) throws NotFoundException {
-        return userRepository.findByResetPasswordToken(token).orElseThrow(() -> new NotFoundException("user cannot be founf by reset password token"));
+        return userRepository.findByResetPasswordToken(token).orElseThrow(() -> new NotFoundException("user cannot be found by reset password token"));
     }
 
     @Transactional

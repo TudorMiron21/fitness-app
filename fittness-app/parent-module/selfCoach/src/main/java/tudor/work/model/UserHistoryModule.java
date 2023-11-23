@@ -1,28 +1,29 @@
 package tudor.work.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table
 @Data
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString(exclude = "userHistoryExercises")
 @EqualsAndHashCode(exclude = "userHistoryExercises")
+@Builder
 public class UserHistoryModule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "userHistoryModule",cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<UserHistoryExercise> userHistoryExercises;
+    private List<UserHistoryExercise> userHistoryExercises;
 
     @ManyToOne
     @JoinColumn(name = "id_userHistoryWorkout")
@@ -30,4 +31,13 @@ public class UserHistoryModule {
 
     private Integer noSets;
 
+    public void addExerciseToUserHistoryExercises(UserHistoryExercise userHistoryExercise)
+    {
+        this.userHistoryExercises.add(userHistoryExercise);
+    }
+
+    public void addExercisesToUserHistoryExercises(List<UserHistoryExercise >userHistoryExercises)
+    {
+        this.userHistoryExercises.addAll(userHistoryExercises);
+    }
 }

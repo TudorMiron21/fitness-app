@@ -34,9 +34,15 @@ spring:
             enable: true
 
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 414630485898-1tav66nkrrq0f2jqfnep4i6fi6cakkns.apps.googleusercontent.com
+            client-secret: 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
 
-
-
+            redirect-uri: http://localhost:8080
 
 
 eureka:
@@ -51,3 +57,7 @@ application:
       expiration: 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
+
+logging:
+  level:
+    org.springframework.security: DEBUG

@@ -34,7 +34,7 @@ public class AdminController {
         } catch (DuplicatesException de) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("exercise " + exercise.getName() + " already exists");
         } catch (AuthorizationExceptionHandler aeh) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " unauthorised");
         }
     }
 
@@ -47,9 +47,9 @@ public class AdminController {
         } catch (DuplicatesException de) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout " + workoutDto.getName() + " already exists");
         } catch (AuthorizationExceptionHandler aeh) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " unauthorised");
         } catch (NotFoundException nfe) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " not found");
         }
     }
 
@@ -59,7 +59,7 @@ public class AdminController {
             adminService.addExerciseToWorkout(exerciseName, workoutName);
             ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseName + " added to workout " + workoutName + " successfully");
         } catch (AuthorizationExceptionHandler aeh) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " unauthorised");
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(nfe.getMessage());
         } catch (AdminUpdateLocalWorkoutException auwe) {
@@ -76,7 +76,7 @@ public class AdminController {
         } catch (NotFoundException nfe) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout " + workoutName + " not found in the database");
         } catch (AuthorizationExceptionHandler aeh) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " unauthorised");
         } catch (AdminUpdateLocalWorkoutException auwe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("admin cannot delete local workouts");
         }
@@ -91,7 +91,7 @@ public class AdminController {
         } catch (NotFoundException nfe) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout/exercise not found");
         } catch (AuthorizationExceptionHandler aeh) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " unauthorised");
         } catch (AdminUpdateLocalWorkoutException auwe) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("admin cannot delete exercises from local workouts");
         }

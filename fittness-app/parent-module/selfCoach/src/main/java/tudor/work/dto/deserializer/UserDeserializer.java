@@ -29,19 +29,19 @@ public class UserDeserializer extends StdDeserializer<User> {
 
 
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        String username = node.asText();
+        String email = node.asText();
 
         User user = new User();
 
         try {
-            user = userService.getUserByName(username);
+            user = userService.getUserByEmail(email);
         }
         catch(NotFoundException nfe)
         {
             return null;
         }
         if (user == null) {
-            throw new JsonParseException(jsonParser, "Invalid User: " + username);
+            throw new JsonParseException(jsonParser, "Invalid User: " + email);
         }
         return user;
     }

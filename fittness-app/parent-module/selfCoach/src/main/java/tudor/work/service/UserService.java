@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tudor.work.dto.ExerciseDto;
+import tudor.work.dto.RequestSaveModuleDto;
 import tudor.work.dto.WorkoutDto;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
@@ -65,8 +66,8 @@ public class UserService {
         }
     }
 
-    public User getUserByName(String name) throws NotFoundException {
-        return userRepository.findByUsername(name).orElseThrow(() -> new NotFoundException("user " + name + " not found"));
+    public User getUserByEmail(String email) throws NotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user " + email + " not found"));
     }
 
     public List<WorkoutDto> getAllWorkouts() {
@@ -120,7 +121,7 @@ public class UserService {
                     exercises(workout.getExercises())
                     .build();
         } else {
-            throw new UserAccessException("user " + authorityService.getUserName() + " is not allowed to see other user's workouts");
+            throw new UserAccessException("user " + authorityService.getEmail() + " is not allowed to see other user's workouts");
         }
 
 
@@ -150,7 +151,7 @@ public class UserService {
         if (!workout.isGlobal()) {
             workout.addExercise(exercise);
         } else {
-            throw new AuthorizationExceptionHandler("user " + authorityService.getUserName() + " is not allowed to change global workouts");
+            throw new AuthorizationExceptionHandler("user " + authorityService.getEmail() + " is not allowed to change global workouts");
         }
 
 
@@ -236,54 +237,66 @@ public class UserService {
                 .findWorkoutByName(workoutName)
                 .orElseThrow(() -> new NotFoundException("Workout " + workoutName + " not found"));
 
-
-
-
         UserHistoryWorkout userHistoryWorkout = UserHistoryWorkout
                 .builder()
                 .workout(workout)
-                .userHistoryModules(
-                        workout
-                                .getExercises()
-                                .stream()
-                                .map(exercise ->
-                                        UserHistoryModule
-                                                .builder()
-                                                .userHistoryExercises(Set.of(
-                                                        UserHistoryExercise
-                                                                .builder()
-                                                                .exercise(exercise)
-                                                                .currNoSeconds(0L)
-                                                                .isDone(false)
-                                                                .noReps(null)
-                                                                .weight(null)
-                                                                .build()
-                                                ))
-                                                .noSets(1)
-                                                .build()
-                                )
-                                .collect(Collectors.toSet()) // Collect the stream of modules into a Set
-                )
+                .userHistoryModules(new ArrayList<>())
                 .user(authorityService.getUser())
                 .build();
 
 
-        userHistoryWorkout.getUserHistoryModules().forEach(
-                module -> {
-                    module.setUserHistoryWorkout(userHistoryWorkout);
-
-                    module.getUserHistoryExercises().forEach(
-                            exercise ->{
-                                exercise.setUserHistoryModule(module);
-                            }
-                    );
-                }
-        );
-
-
-
         userHistoryWorkoutService.saveUserHistoryWorkout(userHistoryWorkout);
 
+
+    }
+
+
+    @Transactional
+    public void saveModule(RequestSaveModuleDto requestSaveModuleDto) throws NotFoundException {
+        UserHistoryWorkout userHistoryWorkout =
+                userHistoryWorkoutService
+                        .getUserHistoryWorkout(requestSaveModuleDto
+                                .getParentUserHistoryWorkoutId())
+                        .orElseThrow(() -> new NotFoundException("UserHistoryWorkout entry with id " + requestSaveModuleDto.getParentUserHistoryWorkoutId() + " not found"));
+
+
+        Exercise exercise =
+                exerciseService
+                        .getExerciseByName(requestSaveModuleDto.getExerciseName())
+                        .orElseThrow(()->new NotFoundException("exercise " + requestSaveModuleDto.getExerciseName()+" not found"));
+
+
+        UserHistoryModule userHistoryModule = UserHistoryModule
+                .builder()
+                .userHistoryWorkout(userHistoryWorkout)
+                .userHistoryExercises(new ArrayList<>())
+                .noSets(requestSaveModuleDto.getNoSets())
+                .build();
+
+        List<UserHistoryExercise>  userHistoryExercises = new ArrayList<>();
+
+        for(int i = 0;i<requestSaveModuleDto.getNoSets();i++){
+
+
+            userHistoryExercises.add(UserHistoryExercise
+                    .builder()
+                            .exercise(exercise)
+                            .userHistoryModule(userHistoryModule)
+                            .currNoSeconds(0L)
+                            .isDone(false)
+                            .isPaused(false)
+                            .noReps(null)
+                            .weight(null)
+                    .build());
+        }
+        userHistoryModule.addExercisesToUserHistoryExercises(userHistoryExercises);
+
+        if(userHistoryWorkout.getUserHistoryModules() == null)
+        {
+            userHistoryWorkout.setUserHistoryModules(new ArrayList<>());
+        }
+
+        userHistoryWorkout.addUserHistoryModule(userHistoryModule);
 
     }
 }

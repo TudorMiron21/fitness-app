@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.AuthResponse;
@@ -16,6 +17,7 @@ import tudor.work.exception.RegisterException;
 import tudor.work.service.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
@@ -109,6 +111,17 @@ public class AuthController {
 //            throw new RuntimeException(e);
 //        }
 //    }
+
+
+    @GetMapping("/googleAuth")
+    public ResponseEntity<?> googleAuth(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+        if (oAuth2AuthenticationToken != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(oAuth2AuthenticationToken.getPrincipal().getAttributes());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("OAuth2 token is null");
+        }
+    }
+
 
 }
 

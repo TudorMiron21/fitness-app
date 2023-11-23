@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                 //username field
                 MyTextField(
                   controller: usernameController,
-                  hintText: 'Username',
+                  hintText: 'Email',
                   obscureText: false,
                 ),
                 const SizedBox(height: 25),

@@ -18,9 +18,6 @@ import java.util.Set;
 @ToString
 public class Exercise {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -35,6 +32,7 @@ public class Exercise {
 //    @ManyToOne
 //    @JoinColumn(name = "adder_id")
 //    private User adder;
+
 
     @ManyToOne
     @JoinColumn(name = "difficulty_id")
@@ -51,10 +49,10 @@ public class Exercise {
 
     private boolean isExerciseExclusive;
 
-//    public void addWorkout(Workout workout)
-//    {
-//        this.workouts.add(workout);
-//    }
+    private boolean hasWeight;
 
+    private boolean hasDistance;
+
+    private boolean hasNoReps;
 
 }

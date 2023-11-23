@@ -26,7 +26,9 @@ import static tudor.work.models.Roles.*;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+    private static final String[] WHITE_LIST_URL = {
+             "/api/v1/auth/**",
+            "/oauth2/authorization/google", "/login/oauth2/code/google",
             "/resetPassword?token=*",
             "/v2/api-docs",
             "/v3/api-docs",
@@ -69,9 +71,12 @@ public class SecurityConfiguration {
                                         .anyRequest()
                                         .authenticated()
 
+
                 )
+                .oauth2Login().and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
+
                 //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 ;
 

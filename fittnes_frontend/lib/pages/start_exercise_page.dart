@@ -1,7 +1,54 @@
 import 'dart:async';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
+class SetSelectionDialogContent extends StatefulWidget {
+  final int initialSelectedSets;
+  final ValueChanged<int> onSelectedSetsChanged;
+
+  const SetSelectionDialogContent({
+    Key? key,
+    required this.initialSelectedSets,
+    required this.onSelectedSetsChanged,
+  }) : super(key: key);
+
+  @override
+  _SetSelectionDialogContentState createState() =>
+      _SetSelectionDialogContentState();
+}
+
+class _SetSelectionDialogContentState extends State<SetSelectionDialogContent> {
+  late int selectedSets;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedSets = widget.initialSelectedSets;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('Choose the number of sets for this exercise:'),
+        Slider(
+          value: selectedSets.toDouble(),
+          min: 1,
+          max: 10,
+          divisions: 9,
+          onChanged: (double value) {
+            setState(() {
+              selectedSets = value.round();
+            });
+            widget.onSelectedSetsChanged(selectedSets);
+          },
+        ),
+        Text('$selectedSets sets'),
+      ],
+    );
+  }
+}
 
 class StartExercisePage extends StatefulWidget {
   final List<Exercise> exercises;
@@ -24,9 +71,42 @@ class _StartExercisePageState extends State<StartExercisePage> {
   Duration myDuration = Duration(days: 5);
   bool isTimerRunning = false;
   Color pageBackgroundColor = Colors.white; // Initial background color
+  int numberOfSets = 1; // Default value
 
+  Future<void> saveModule() async {
+//TODO: make this happen
+  }
+
+  @override
   void initState() {
     super.initState();
+  }
+
+  Future<void> _showSetSelectionDialog() async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Number of Sets'),
+          content: SetSelectionDialogContent(
+            initialSelectedSets: numberOfSets,
+            onSelectedSetsChanged: (int value) {
+              setState(() {
+                numberOfSets = value;
+              });
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void toggleTimer() {
@@ -34,13 +114,15 @@ class _StartExercisePageState extends State<StartExercisePage> {
       startTimer();
       setState(() {
         isTimerRunning = true;
-        pageBackgroundColor = Colors.green; // Change background color when started
+        pageBackgroundColor =
+            Colors.green; // Change background color when started
       });
     } else {
       stopTimer();
       setState(() {
         isTimerRunning = false;
-        pageBackgroundColor = Colors.white; // Change background color when stopped
+        pageBackgroundColor =
+            Colors.white; // Change background color when stopped
       });
     }
   }
@@ -92,6 +174,11 @@ class _StartExercisePageState extends State<StartExercisePage> {
       // Navigate to ExercisePage or perform any other action when the workout finishes.
       Navigator.pop(context);
     }
+  }
+
+  void _startExercise(int numberOfSets) {
+    // Add your logic to start the exercise with the selected number of sets
+    // You can use the 'numberOfSets' variable in your implementation
   }
 
   Widget buildTimer() {
@@ -178,7 +265,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: goToNextExercise,
+          onPressed: () {
+            goToNextExercise();
+          },
           child: Text(
             widget.exerciseIndex < widget.exercises.length - 1
                 ? 'Next Exercise'
@@ -208,6 +297,10 @@ class _StartExercisePageState extends State<StartExercisePage> {
           children: [
             buildTimer(),
             buildExerciseDetails(),
+            ElevatedButton(
+              onPressed: _showSetSelectionDialog,
+              child: Text('Set Number of Sets'),
+            ),
             Expanded(
               child: Container(),
             ),

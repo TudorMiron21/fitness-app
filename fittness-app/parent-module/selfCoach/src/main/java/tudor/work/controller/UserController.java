@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.RequestHistoryDto;
+import tudor.work.dto.RequestSaveModuleDto;
 import tudor.work.dto.WorkoutDto;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
@@ -59,7 +60,7 @@ public class UserController {
             String errorMessage = "Exercise with name " + name + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         } catch (RuntimeException re) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getUserName() + " unauthorised");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " unauthorised");
 
         }
 
@@ -89,7 +90,7 @@ public class UserController {
         try {
             userService.addWorkout(workout);
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("user " + authorityService.getUserName() + " not found");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("user " + authorityService.getEmail() + " not found");
 
         } catch (DuplicatesException de) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(de.getMessage());
@@ -118,7 +119,7 @@ public class UserController {
     {
         try {
             userService.likeWorkout(workoutName);
-            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " liked by user " + authorityService.getUserName());
+            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " liked by user " + authorityService.getEmail());
 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -130,7 +131,7 @@ public class UserController {
     {
         try {
             userService.unlikeWorkout(workoutName);
-            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " unliked by user " + authorityService.getUserName());
+            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " unliked by user " + authorityService.getEmail());
 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -165,5 +166,17 @@ public class UserController {
         }
         return null;
     }
+
+    @PostMapping("/saveModule")
+    public ResponseEntity<?> saveModule(@RequestBody RequestSaveModuleDto requestSaveModuleDto)
+    {
+        try {
+            userService.saveModule(requestSaveModuleDto);
+            return ResponseEntity.status(HttpStatus.OK).body("module saved successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }
 

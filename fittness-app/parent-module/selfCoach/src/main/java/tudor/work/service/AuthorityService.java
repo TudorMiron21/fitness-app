@@ -57,22 +57,22 @@ public class AuthorityService {
         return isPayingUser() || isCoach() || isAdmin();
     }
 
-    public String getUserName() {
-        String username = "";
+    public String getEmail() {
+        String email = "";
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // Check if the user is authenticated
         if (authentication != null && authentication.isAuthenticated()) {
-            username = authentication.getName();
+            email = authentication.getName();
         }
 
-        return username;
+        return email;
     }
 
     public User getUser() throws NotFoundException{
-        String username = getUserName();
+        String username = getEmail();
 
-        return userRepository.findByUsername(username).orElseThrow(()->new NotFoundException("User not found"));
+        return userRepository.findByEmail(username).orElseThrow(()->new NotFoundException("User not found"));
     }
 
 

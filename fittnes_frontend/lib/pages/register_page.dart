@@ -28,7 +28,7 @@ class _RegisterState extends State<Register> {
 
   bool passwordsMatch = true;
 
-  Future<void> register(String username, firstName, lastName, email, password,
+  Future<void> register(String  firstName, lastName, email, password,
       BuildContext context) async {
     // Email validation regex
     final emailRegex = RegExp(
@@ -48,7 +48,6 @@ class _RegisterState extends State<Register> {
         'Content-Type': 'application/json',
       };
       Map<String, String> registerData = {
-        'username': username,
         'firstname': firstName,
         'lastname': lastName,
         'email': email,
@@ -84,7 +83,7 @@ class _RegisterState extends State<Register> {
       {
         print('Failed');
         final snackBar = SnackBar(
-          content: Text('Username/email is already in use'),
+          content: Text('email is already in use'),
           backgroundColor: Colors.red,
         ); // You can customize the appearance
 
@@ -137,12 +136,6 @@ class _RegisterState extends State<Register> {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 25),
-                MyTextField(
-                  controller: usernameController,
-                  hintText: 'Username',
-                  obscureText: false,
-                ),
                 const SizedBox(height: 20),
                 MyTextField(
                   controller: firstNameController,
@@ -193,7 +186,6 @@ class _RegisterState extends State<Register> {
                     checkPasswordMatching();
                     if (passwordsMatch) {
                       register(
-                        usernameController.text.toString(),
                         firstNameController.text.toString(),
                         lastNameController.text.toString(),
                         emailController.text.toString(),

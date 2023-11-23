@@ -39,7 +39,7 @@ public class Workout {
     private User adder;
 
 
-    @ManyToMany(mappedBy = "likedWorkouts")
+    @ManyToMany(mappedBy = "likedWorkouts" )
     @JsonIgnore
     private Set<User> likers;
 

@@ -14,6 +14,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @ToString
 @Entity
+@Builder
 @Table(name = "_user")
 public class User implements UserDetails {
 
@@ -22,7 +23,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+//    private String username;
 
     private String firstname;
 
@@ -50,7 +51,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username;
+        return this.email;
     }
 
     @Override

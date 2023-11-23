@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import tudor.work.model.UserHistoryWorkout;
 import tudor.work.repository.UserHistoryWorkoutRepository;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserHistoryWorkoutService {
@@ -15,5 +17,13 @@ public class UserHistoryWorkoutService {
     {
         userHistoryWorkoutRepository.save(userHistoryWorkout);
     }
+
+    public Optional<UserHistoryWorkout> getUserHistoryWorkout(Long Id)
+    {
+        return userHistoryWorkoutRepository.findById(Id);
+    }
+
+
+
 
 }
