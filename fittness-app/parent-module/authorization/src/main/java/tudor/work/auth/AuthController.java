@@ -50,8 +50,8 @@ public class AuthController {
 
             AuthResponse authResponse = userService.login(request);
             return ResponseEntity.status(HttpStatus.OK).body(authResponse);
-        } catch (AuthenticationException ae) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("authentication exception");
+        } catch (NotFoundException ae) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ae.getMessage());
         }
     }
 
@@ -72,7 +72,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPasswordHandler(@RequestBody Map<String, String> requestBody, HttpServletRequest request) {
+    public ResponseEntity<?> forgotPasswordHandler(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
 
         try {
