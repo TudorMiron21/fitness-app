@@ -8,12 +8,11 @@ class ExercisePage extends StatelessWidget {
   final List<Exercise> exercises;
   final String workoutName;
 
-  Future<void> saveWorkoutToHistory(String workouName) async {
+  Future<void> saveWorkoutToHistory(String workoutName) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
     if (accessToken == null || accessToken.isEmpty) {
-      // Handle the case where the authToken is missing or empty
       throw Exception('Authentication token is missing or invalid.');
     }
 
@@ -24,11 +23,9 @@ class ExercisePage extends StatelessWidget {
       },
     );
 
-    if (response.statusCode == 200) //ok
-    {
+    if (response.statusCode == 200) {
       print("workout " + workoutName + " added to history");
     } else {
-
       print('http://192.168.215.182:8080/api/selfCoach/user/saveWorkout/$workoutName');
       throw Exception(
           'Failed to save workout to history. Status code: ${response.statusCode}');
@@ -42,33 +39,40 @@ class ExercisePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('${this.workoutName}'),
+        elevation: 10.0,
+        backgroundColor: Colors.blueAccent,
       ),
       body: ListView.builder(
         itemCount: exercises.length,
         itemBuilder: (context, index) {
           Exercise exercise = exercises[index];
           return Card(
-            // Customize the card as needed
+            margin: EdgeInsets.all(10.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
             child: ListTile(
               tileColor: Colors.grey.shade300,
               contentPadding: EdgeInsets.all(16.0),
               leading: Container(
-                width: 120.0, // Adjust the width as needed
-                height: 120.0, // Adjust the height as needed
+                width: 120.0, 
+                height: 120.0,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                      12.0), // Adjust the border radius as needed
+                  borderRadius: BorderRadius.circular(12.0),
                   image: DecorationImage(
                     image: NetworkImage(exercise.coverPhotoUrl),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              title: Text(
-                exercise.name,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
+              title: Padding(
+                padding: EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  exercise.name,
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               subtitle: Text(
@@ -77,7 +81,6 @@ class ExercisePage extends StatelessWidget {
                   color: Colors.grey[600],
                 ),
               ),
-              // Add more details if needed
             ),
           );
         },
@@ -97,6 +100,8 @@ class ExercisePage extends StatelessWidget {
           );
         },
         child: Icon(Icons.play_arrow),
+        backgroundColor: Colors.blueAccent,
+        elevation: 5.0,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

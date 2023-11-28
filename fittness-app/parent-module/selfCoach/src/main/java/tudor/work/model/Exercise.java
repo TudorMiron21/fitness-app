@@ -4,6 +4,7 @@ package tudor.work.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -18,6 +19,10 @@ import java.util.Set;
 @ToString
 public class Exercise {
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
     @Column(nullable = false)
     private String name;

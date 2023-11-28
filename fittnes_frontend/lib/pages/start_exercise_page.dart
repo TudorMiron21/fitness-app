@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class SetSelectionDialogContent extends StatefulWidget {
   final int initialSelectedSets;
@@ -196,6 +197,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
+            color: Colors.white.withOpacity(0.5),
           ),
         ),
         SizedBox(height: 10),
@@ -203,7 +205,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
           '$hours:$minutes:$seconds',
           style: TextStyle(
             fontWeight: FontWeight.normal,
-            color: Colors.black,
+            color: Colors.white.withOpacity(0.9),
             fontSize: 48,
           ),
         ),
@@ -227,7 +229,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
       margin: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Colors.grey.withOpacity(0.6),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -244,6 +246,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
           Text(
             'Name: ${widget.exercises[widget.exerciseIndex].name}',
             style: TextStyle(fontSize: 16),
+            
           ),
           Text(
             'Description: ${widget.exercises[widget.exerciseIndex].description}',
@@ -281,7 +284,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     );
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -291,22 +294,35 @@ class _StartExercisePageState extends State<StartExercisePage> {
           onPressed: goBack,
         ),
       ),
-      body: Container(
-        color: pageBackgroundColor, // Set the background color
-        child: Column(
-          children: [
-            buildTimer(),
-            buildExerciseDetails(),
-            ElevatedButton(
-              onPressed: _showSetSelectionDialog,
-              child: Text('Set Number of Sets'),
+      body: Stack(
+        children: [
+          Image.asset(
+            'lib/images/fitness_background.png',
+            fit: BoxFit.cover,
+            height: double.infinity,
+            width: double.infinity,
+            alignment: Alignment.center,
+          ),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
             ),
-            Expanded(
-              child: Container(),
+          ),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                buildTimer(),
+                buildExerciseDetails(),
+                ElevatedButton(
+                  onPressed: _showSetSelectionDialog,
+                  child: Text('Set Number of Sets'),
+                ),
+                buildNextExerciseButton(),
+              ],
             ),
-            buildNextExerciseButton(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

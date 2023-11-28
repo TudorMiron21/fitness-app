@@ -1,8 +1,7 @@
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:flutter/material.dart';
 
-class Workout{
-
+class Workout extends ChangeNotifier {
   final String name;
   final String description;
   final String coverPhotoUrl;
@@ -10,16 +9,23 @@ class Workout{
   final List<Exercise> exercises;
   bool likedByUser;
 
-
-    Workout({
+  Workout({
     required this.name,
     required this.description,
-    this.coverPhotoUrl ='',
+    this.coverPhotoUrl = '',
     required this.difficultyLevel,
     required this.exercises,
-    required this.likedByUser
+    required this.likedByUser,
   });
 
+  // Getter for likedByUser
+  bool get isLiked => likedByUser;
 
-
+  // Method to toggle likedByUser
+  void toggleLikedStatus() {
+    likedByUser = !likedByUser;
+    // Notify all the listeners about the update.
+    // This will trigger a rebuild of the widgets that depend on this model.
+    notifyListeners();
+  }
 }
