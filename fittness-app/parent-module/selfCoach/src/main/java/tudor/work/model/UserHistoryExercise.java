@@ -1,5 +1,6 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Data
 @EqualsAndHashCode
 @Builder
-public class UserHistoryExercise {
+public class UserHistoryExercise{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
@@ -29,10 +30,10 @@ public class UserHistoryExercise {
 
     private boolean isDone;
 
-    private boolean isPaused;
-
     private Integer noReps;
 
-    private Double weight;
+    private Double weight;//in kg
+
+    private Double distance;// in meters
 
 }

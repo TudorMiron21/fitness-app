@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.215.182:8080/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
+          'http://192.168.0.229:8080/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.215.182:8080/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
+          'http://192.168.0.229:8080/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
               lowerLimit.toString() +
               '/' +
               upperLimit.toString()),
@@ -142,7 +142,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.put(
-      Uri.parse('http://192.168.215.182:8080/api/selfCoach/user/likeWorkout/' +
+      Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/likeWorkout/' +
           workout.name),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -158,8 +158,7 @@ class _HomePageState extends State<HomePage> {
       throw Exception(
           'Failed to like workout. Status code: ${response.statusCode}');
     }
-    // TODO: Implement the API call to like the workout
-    // Use the workout.id to identify the workout to like
+
   }
 
   Future<void> unlikeWorkout(Workout workout) async {
@@ -175,7 +174,7 @@ class _HomePageState extends State<HomePage> {
     // Use the workout.id to identify the workout to unlike
 
     final response = await http.delete(
-      Uri.parse('http://192.168.215.182:8080/api/selfCoach/user/unlikeWorkout/' +
+      Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/unlikeWorkout/' +
           workout.name),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -219,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                         if (index == 0) {
                           return buildPageBackground(
                               'lib/images/background_top_workouts.jpg',
-                              'Top 6 Most Liked Workouts');
+                              'Top Most Liked Workouts');
                         }
 
                         Workout workout = mostLikedWorkouts[index - 1];
@@ -257,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                         if (index == 0) {
                           return buildPageBackground(
                               'lib/images/background_top_workouts.jpg',
-                              'Top 6 Easy Workouts');
+                              'Top Easy Workouts');
                         }
 
                         Workout workout = mostLikedWorkouts[index - 1];
@@ -294,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                         if (index == 0) {
                           return buildPageBackground(
                               'lib/images/background_top_workouts.jpg',
-                              'Top 6 Medium Workouts');
+                              'Top Medium Workouts');
                         }
 
                         Workout workout = mostLikedWorkouts[index - 1];
@@ -331,7 +330,7 @@ class _HomePageState extends State<HomePage> {
                         if (index == 0) {
                           return buildPageBackground(
                               'lib/images/background_top_workouts.jpg',
-                              'Top 6 Hard Workouts');
+                              'Top Hard Workouts');
                         }
                         Workout workout = mostLikedWorkouts[index - 1];
 
@@ -367,7 +366,7 @@ class _HomePageState extends State<HomePage> {
                         if (index == 0) {
                           return buildPageBackground(
                               'lib/images/background_top_workouts.jpg',
-                              'Top 6 Expert Workouts');
+                              'Top Expert Workouts');
                         }
 
                         Workout workout = mostLikedWorkouts[index - 1];

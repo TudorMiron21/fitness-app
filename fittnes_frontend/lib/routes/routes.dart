@@ -43,13 +43,13 @@ class AppPage {
     );
   }
 
-  static GetPage getStartExercisePage(List<Exercise> exercises, int exerciseIndex, String workoutName) {
-    return GetPage(
-      name: startExercisePage,
-      page: () => StartExercisePage(exercises: exercises, exerciseIndex: exerciseIndex, workoutName: workoutName),
-      transition: Transition.fadeIn, // Adjust as needed
-    );
-  }
+  // static GetPage getStartExercisePage(List<Exercise> exercises, int exerciseIndex, String workoutName) {
+  //   return GetPage(
+  //     name: startExercisePage,
+  //     page: () => StartExercisePage(exercises: exercises, exerciseIndex: exerciseIndex, workoutName: workoutName),
+  //     transition: Transition.fadeIn, // Adjust as needed
+  //   );
+  // }
 
   static String navbar = "/";
   static String home = "/home";

@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tudor.work.dto.ExerciseDto;
-import tudor.work.dto.RequestHistoryDto;
-import tudor.work.dto.RequestSaveModuleDto;
-import tudor.work.dto.WorkoutDto;
+import tudor.work.dto.*;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
@@ -160,23 +157,44 @@ public class UserController {
     public ResponseEntity<?> startWorkout(@PathVariable(name = "workoutName") String workoutName){
 
         try {
-            userService.startWorkout(workoutName);
+            Long userHistoryWorkoutId = userService.startWorkout(workoutName);
+            return ResponseEntity.status(HttpStatus.OK).body(userHistoryWorkoutId);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return null;
     }
 
     @PostMapping("/saveModule")
     public ResponseEntity<?> saveModule(@RequestBody RequestSaveModuleDto requestSaveModuleDto)
     {
         try {
-            userService.saveModule(requestSaveModuleDto);
-            return ResponseEntity.status(HttpStatus.OK).body("module saved successfully");
+           Long id = userService.saveModule(requestSaveModuleDto);
+            return ResponseEntity.status(HttpStatus.OK).body(id);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @PutMapping("/addExerciseToModule/{userHistoryModuleId}")
+    public ResponseEntity<?> addExerciseToModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId, @RequestBody RequestUserHistoryExercise requestUserHistoryExercise)
+    {
+        try {
+            userService.addExerciseToModule(userHistoryModuleId,requestUserHistoryExercise);
+            return ResponseEntity.status(HttpStatus.OK).body("exercise has been successfully added to the module");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+        }
+    }
+
+
+//    @GetMapping("/getExerciseDetails/{exerciseName}")
+//    public ResponseEntity<?> getExerciseDetails(@PathVariable("exerciseName") String exerciseName)
+//    {
+//
+//
+//
+//    }
 
 }
 

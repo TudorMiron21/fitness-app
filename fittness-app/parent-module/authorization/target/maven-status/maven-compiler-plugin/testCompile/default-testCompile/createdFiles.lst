@@ -1,0 +1,5 @@
+tudor\work\repository\UserRepositoryTest.class
+tudor\work\AppTest.class
+tudor\work\service\AuthServiceTest.class
+tudor\work\auth\AuthControllerIntegrationTest.class
+tudor\work\auth\AuthControllerTest.class

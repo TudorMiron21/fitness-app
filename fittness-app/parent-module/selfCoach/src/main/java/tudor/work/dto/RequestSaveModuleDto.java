@@ -9,7 +9,6 @@ import tudor.work.model.Workout;
 @Data
 public class RequestSaveModuleDto {
 
-    private String exerciseName;
     private Long parentUserHistoryWorkoutId;
-    private Integer noSets;
+    //private Integer noSets;
 }

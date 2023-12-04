@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:ffi';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SetSelectionDialogContent extends StatefulWidget {
   final int initialSelectedSets;
@@ -51,17 +55,80 @@ class _SetSelectionDialogContentState extends State<SetSelectionDialogContent> {
   }
 }
 
+class SelectionDialogContent extends StatefulWidget {
+  final double initialValue;
+  final ValueChanged<double> onValueChanged;
+  final String labelText;
+  final double min;
+  final double max;
+  final int divisions;
+  final String unit;
+
+  const SelectionDialogContent({
+    Key? key,
+    required this.initialValue,
+    required this.onValueChanged,
+    required this.labelText,
+    required this.min,
+    required this.max,
+    required this.divisions,
+    required this.unit,
+  }) : super(key: key);
+
+  @override
+  _SelectionDialogContentState createState() => _SelectionDialogContentState();
+}
+
+class _SelectionDialogContentState extends State<SelectionDialogContent> {
+  late double currentValue;
+
+  @override
+  void initState() {
+    super.initState();
+    currentValue = widget.initialValue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(widget.labelText),
+        Slider(
+          value: currentValue,
+          min: widget.min,
+          max: widget.max,
+          divisions: widget.divisions,
+          onChanged: (double value) {
+            setState(() {
+              currentValue = value;
+            });
+            widget.onValueChanged(currentValue);
+          },
+        ),
+        Text('$currentValue ${widget.unit}'),
+      ],
+    );
+  }
+}
+
 class StartExercisePage extends StatefulWidget {
   final List<Exercise> exercises;
   final int exerciseIndex;
-  final String workoutName;
+  final int workoutId;
+  final int noSets;
+  final bool isFirstExercise;
+  late int userHistoryModuleId;
 
-  const StartExercisePage({
-    Key? key,
-    required this.exercises,
-    required this.exerciseIndex,
-    required this.workoutName,
-  }) : super(key: key);
+  StartExercisePage(
+      {Key? key,
+      required this.exercises,
+      required this.exerciseIndex,
+      required this.workoutId,
+      required this.noSets,
+      required this.isFirstExercise,
+      required this.userHistoryModuleId})
+      : super(key: key);
 
   @override
   State<StartExercisePage> createState() => _StartExercisePageState();
@@ -72,15 +139,85 @@ class _StartExercisePageState extends State<StartExercisePage> {
   Duration myDuration = Duration(days: 5);
   bool isTimerRunning = false;
   Color pageBackgroundColor = Colors.white; // Initial background color
-  int numberOfSets = 1; // Default value
+  late int numberOfSets; // Default value
+
+  int userHistoryModuleIdStore = 1;
+  late double weight;
+  late double distance;
+  late int numberOfReps;
 
   Future<void> saveModule() async {
-//TODO: make this happen
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.post(
+      Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/saveModule'),
+      body: jsonEncode({
+        "parentUserHistoryWorkoutId": widget.workoutId.toString(),
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) //OK
+    {
+      print(
+          'module has been added to history workout with id ${widget.workoutId}');
+
+      widget.userHistoryModuleId = int.parse(response.body);
+      print("this is the module id $widget.userHistoryModuleId");
+    } else {
+      throw Exception(
+          'Failed to save module to history workout with id ${widget.workoutId}. Status code: ${response.statusCode}');
+    }
   }
+
+  Future<void> saveExerciseToModule(int userHistoryModuleId, int currNoSeconds,
+      bool isDone, int noReps, int weight, int distance) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.put(
+      Uri.parse(
+          'http://192.168.0.229:8080/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
+      body: jsonEncode({
+        "exercise": widget.exercises[widget.exerciseIndex].name,
+        "userHistoryModule": userHistoryModuleId.toString(),
+        "currNoSeconds": currNoSeconds.toString(),
+        "isDone": isDone.toString(),
+        "noReps": noReps.toString(),
+        "weight": weight.toString(),
+        "distance": distance.toString()
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to save exercise to history. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<void> getExercisedDetails(String exerciseName) async {}
 
   @override
   void initState() {
     super.initState();
+    numberOfSets = widget.noSets;
   }
 
   Future<void> _showSetSelectionDialog() async {
@@ -103,6 +240,44 @@ class _StartExercisePageState extends State<StartExercisePage> {
                 Navigator.of(context).pop();
               },
               child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showRepSelectionDialog() {
+    showDialog<double>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Number of Reps'),
+          content: SelectionDialogContent(
+            initialValue: 10.0,
+            onValueChanged: (value) {
+              // Do something with the new value
+              // You might want to save it as a state variable
+            },
+            labelText: 'Choose the number of reps for this exercise:',
+            min: 1.0,
+            max: 20.0,
+            divisions: 19,
+            unit: 'reps',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                // Do something when OK is pressed
+                Navigator.of(context).pop();
+              },
             ),
           ],
         );
@@ -158,7 +333,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     Navigator.pop(context);
   }
 
-  void goToNextExercise() {
+  void goToNextModule(bool isFirstExercise) {
     int nextIndex = widget.exerciseIndex + 1;
     if (nextIndex < widget.exercises.length) {
       Navigator.pushReplacement(
@@ -167,7 +342,10 @@ class _StartExercisePageState extends State<StartExercisePage> {
           builder: (context) => StartExercisePage(
             exercises: widget.exercises,
             exerciseIndex: nextIndex,
-            workoutName: widget.workoutName,
+            workoutId: widget.workoutId,
+            noSets: 1,
+            isFirstExercise: isFirstExercise,
+            userHistoryModuleId: widget.userHistoryModuleId,
           ),
         ),
       );
@@ -175,6 +353,26 @@ class _StartExercisePageState extends State<StartExercisePage> {
       // Navigate to ExercisePage or perform any other action when the workout finishes.
       Navigator.pop(context);
     }
+  }
+
+  void goToNextExercise(bool isFirstExercise) {
+    setState(() {
+      numberOfSets = numberOfSets - 1;
+    });
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StartExercisePage(
+          exercises: widget.exercises,
+          exerciseIndex: widget.exerciseIndex,
+          workoutId: widget.workoutId,
+          noSets: numberOfSets,
+          isFirstExercise: isFirstExercise,
+          userHistoryModuleId: widget.userHistoryModuleId,
+        ),
+      ),
+    );
   }
 
   void _startExercise(int numberOfSets) {
@@ -246,7 +444,6 @@ class _StartExercisePageState extends State<StartExercisePage> {
           Text(
             'Name: ${widget.exercises[widget.exerciseIndex].name}',
             style: TextStyle(fontSize: 16),
-            
           ),
           Text(
             'Description: ${widget.exercises[widget.exerciseIndex].description}',
@@ -256,25 +453,47 @@ class _StartExercisePageState extends State<StartExercisePage> {
             'Difficulty: ${widget.exercises[widget.exerciseIndex].difficulty}',
             style: TextStyle(fontSize: 16),
           ),
+
+          Text(
+            'Number of sets left: ${this.numberOfSets}',
+            style: TextStyle(fontSize: 16),
+          )
           // Add more details as needed
         ],
       ),
     );
   }
 
-  Widget buildNextExerciseButton() {
+  Widget buildNextExerciseButton(int noSets) {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: () {
-            goToNextExercise();
+          onPressed: () async {
+            if (noSets == 1) {
+              if (widget.isFirstExercise == true) {
+                await saveModule();
+              }
+              await saveExerciseToModule(
+                  widget.userHistoryModuleId, 0, false, 0, 0, 0);
+              goToNextModule(true);
+            } else {
+              if (widget.isFirstExercise) {
+                await saveModule();
+              }
+              await saveExerciseToModule(
+                  widget.userHistoryModuleId, 0, false, 0, 0, 0);
+
+              goToNextExercise(false);
+            }
           },
           child: Text(
-            widget.exerciseIndex < widget.exercises.length - 1
-                ? 'Next Exercise'
-                : 'Finish Workout',
+            noSets > 1
+                ? 'Next Set'
+                : (widget.exerciseIndex < widget.exercises.length - 1
+                    ? 'Next Exercise'
+                    : 'Finish Workout'),
             style: TextStyle(
               fontSize: 18,
             ),
@@ -284,7 +503,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     );
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -314,11 +533,20 @@ class _StartExercisePageState extends State<StartExercisePage> {
               children: [
                 buildTimer(),
                 buildExerciseDetails(),
-                ElevatedButton(
-                  onPressed: _showSetSelectionDialog,
-                  child: Text('Set Number of Sets'),
+                Container(
+                    margin: EdgeInsets.all(10.0),
+                    child: ElevatedButton(
+                      onPressed: _showSetSelectionDialog,
+                      child: Text('Set Number of Sets'),
+                    )),
+                Container(
+                  margin: EdgeInsets.all(10.0), // Add the desired margin
+                  child: ElevatedButton(
+                    onPressed: _showRepSelectionDialog,
+                    child: Text('Set Number of Reps'),
+                  ),
                 ),
-                buildNextExerciseButton(),
+                buildNextExerciseButton(numberOfSets),
               ],
             ),
           ),

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.RequestSaveModuleDto;
+import tudor.work.dto.RequestUserHistoryExercise;
 import tudor.work.dto.WorkoutDto;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
@@ -33,6 +34,7 @@ public class UserService {
     private final AuthorityService authorityService;
     private final WorkoutService workoutService;
     private final UserHistoryWorkoutService userHistoryWorkoutService;
+    private final UserHistoryModuleService userHistoryModuleService;
 
     public List<ExerciseDto> getAllExercises() {
 
@@ -231,7 +233,7 @@ public class UserService {
     }
 
     @Transactional
-    public void startWorkout(String workoutName) throws NotFoundException {
+    public Long startWorkout(String workoutName) throws NotFoundException {
 
         Workout workout = workoutService
                 .findWorkoutByName(workoutName)
@@ -245,14 +247,14 @@ public class UserService {
                 .build();
 
 
-        userHistoryWorkoutService.saveUserHistoryWorkout(userHistoryWorkout);
+        UserHistoryWorkout userHistoryWorkoutRetrieve = userHistoryWorkoutService.save(userHistoryWorkout);
 
-
+        return userHistoryWorkoutRetrieve.getId();
     }
 
 
     @Transactional
-    public void saveModule(RequestSaveModuleDto requestSaveModuleDto) throws NotFoundException {
+    public Long saveModule(RequestSaveModuleDto requestSaveModuleDto) throws NotFoundException {
         UserHistoryWorkout userHistoryWorkout =
                 userHistoryWorkoutService
                         .getUserHistoryWorkout(requestSaveModuleDto
@@ -260,43 +262,61 @@ public class UserService {
                         .orElseThrow(() -> new NotFoundException("UserHistoryWorkout entry with id " + requestSaveModuleDto.getParentUserHistoryWorkoutId() + " not found"));
 
 
-        Exercise exercise =
-                exerciseService
-                        .getExerciseByName(requestSaveModuleDto.getExerciseName())
-                        .orElseThrow(()->new NotFoundException("exercise " + requestSaveModuleDto.getExerciseName()+" not found"));
-
-
         UserHistoryModule userHistoryModule = UserHistoryModule
                 .builder()
                 .userHistoryWorkout(userHistoryWorkout)
                 .userHistoryExercises(new ArrayList<>())
-                .noSets(requestSaveModuleDto.getNoSets())
+                .noSets(1)//change this. a module should deduce the number of exercises based on the size of the list
                 .build();
 
-        List<UserHistoryExercise>  userHistoryExercises = new ArrayList<>();
-
-        for(int i = 0;i<requestSaveModuleDto.getNoSets();i++){
-
-
-            userHistoryExercises.add(UserHistoryExercise
-                    .builder()
-                            .exercise(exercise)
-                            .userHistoryModule(userHistoryModule)
-                            .currNoSeconds(0L)
-                            .isDone(false)
-                            .isPaused(false)
-                            .noReps(null)
-                            .weight(null)
-                    .build());
-        }
-        userHistoryModule.addExercisesToUserHistoryExercises(userHistoryExercises);
-
-        if(userHistoryWorkout.getUserHistoryModules() == null)
-        {
+        if (userHistoryWorkout.getUserHistoryModules() == null) {
             userHistoryWorkout.setUserHistoryModules(new ArrayList<>());
         }
 
         userHistoryWorkout.addUserHistoryModule(userHistoryModule);
 
+        // Save userHistoryWorkout to the database
+         userHistoryWorkoutService.saveAndFlush(userHistoryWorkout);
+
+
+         UserHistoryWorkout userHistoryWorkoutRetrieve = userHistoryWorkoutService.getUserHistoryWorkout(userHistoryWorkout.getId()).orElseThrow();
+
+        return userHistoryWorkoutRetrieve.getUserHistoryModules().get(userHistoryWorkoutRetrieve.getUserHistoryModules().size() -1).getId();
     }
+
+
+    @Transactional
+    public void addExerciseToModule(Long userHistoryModuleId, RequestUserHistoryExercise requestUserHistoryExercise) throws NotFoundException {
+
+        UserHistoryModule userHistoryModule = userHistoryModuleService.getModuleById(userHistoryModuleId);
+
+        UserHistoryExercise userHistoryExercise = UserHistoryExercise
+                .builder()
+                .exercise(requestUserHistoryExercise.getExercise())
+                .userHistoryModule(requestUserHistoryExercise.getUserHistoryModule())
+                .currNoSeconds(requestUserHistoryExercise.getCurrNoSeconds())
+                .isDone(requestUserHistoryExercise.isDone())
+                .build();
+
+        if (requestUserHistoryExercise.getExercise().isHasNoReps()) {
+            userHistoryExercise.setNoReps(requestUserHistoryExercise.getNoReps());
+        }
+
+        if (requestUserHistoryExercise.getExercise().isHasDistance()) {
+
+            userHistoryExercise.setDistance(requestUserHistoryExercise.getDistance());
+        }
+
+        if (requestUserHistoryExercise.getExercise().isHasWeight()) {
+            userHistoryExercise.setWeight(requestUserHistoryExercise.getWeight());
+        }
+
+        userHistoryModule.addExerciseToUserHistoryExercises(
+                userHistoryExercise
+        );
+
+    }
+
+    //TODO: implement service for get exercise details
+
 }

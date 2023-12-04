@@ -13,10 +13,6 @@ public class UserHistoryWorkoutService {
 
     private final UserHistoryWorkoutRepository userHistoryWorkoutRepository;
 
-    public void saveUserHistoryWorkout(UserHistoryWorkout userHistoryWorkout)
-    {
-        userHistoryWorkoutRepository.save(userHistoryWorkout);
-    }
 
     public Optional<UserHistoryWorkout> getUserHistoryWorkout(Long Id)
     {
@@ -24,6 +20,15 @@ public class UserHistoryWorkoutService {
     }
 
 
+    public UserHistoryWorkout save(UserHistoryWorkout userHistoryWorkout) {
 
+        return userHistoryWorkoutRepository.save(userHistoryWorkout);
+
+    }
+    public UserHistoryWorkout saveAndFlush(UserHistoryWorkout userHistoryWorkout) {
+
+        return userHistoryWorkoutRepository.saveAndFlush(userHistoryWorkout);
+
+    }
 
 }
