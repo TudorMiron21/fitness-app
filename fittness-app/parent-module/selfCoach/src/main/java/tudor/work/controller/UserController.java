@@ -196,5 +196,16 @@ public class UserController {
 //
 //    }
 
+
+    @PostMapping("/addWorkout")
+    public ResponseEntity<?> addWorkout(@RequestBody PostWorkoutRequestDto postWorkoutRequestDto)
+    {
+        try {
+            userService.addWorkout(postWorkoutRequestDto);
+            return ResponseEntity.status(HttpStatus.OK).body("workout added successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }
 

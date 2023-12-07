@@ -25,7 +25,6 @@ public class WorkoutDto {
 
     private Long noLikes;
 
-
     @JsonDeserialize(using = ExercisesDeserialiser.class)
     private Set<Exercise> exercises;
 

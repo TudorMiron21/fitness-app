@@ -8,10 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
-import tudor.work.dto.ExerciseDto;
-import tudor.work.dto.RequestSaveModuleDto;
-import tudor.work.dto.RequestUserHistoryExercise;
-import tudor.work.dto.WorkoutDto;
+import tudor.work.dto.*;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
@@ -318,5 +315,25 @@ public class UserService {
     }
 
     //TODO: implement service for get exercise details
+
+    private Double calculateDifficultyLevel(Set<Exercise> exercises) {
+
+        return exercises.stream().mapToDouble(exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
+    }
+    public void addWorkout(PostWorkoutRequestDto postWorkoutRequestDto) throws NotFoundException {
+
+        Workout workout = Workout
+                .builder()
+                .name(postWorkoutRequestDto.getName())
+                .description(postWorkoutRequestDto.getDescription())
+                .exercises(postWorkoutRequestDto.getExercises())
+                .adder(authorityService.getUser())
+                .isGlobal(false)
+                .isDeleted(false)
+                .difficultyLevel(this.calculateDifficultyLevel(postWorkoutRequestDto.getExercises()))
+                .build();
+        workoutService.saveWorkout(workout);
+    }
+
 
 }
