@@ -1,1 +1,36 @@
 # hello this is the first commit of the authentication pipeline
+
+name: Authentication Service Pipeline
+
+
+on:
+  push:
+    branches: [ master ]
+
+stages:
+  - build
+  - test
+  - deploy
+
+test_job:
+
+  cache:
+    paths:
+      - .m2/repository/
+
+  stage: test
+  
+  image: maven:3.8.2-openjdk-17
+
+  services: 
+    - postgres:13
+  
+  script: 
+    -cd ./fittnes-app/parent-module/authorization
+    -mvn clean install
+
+
+
+
+
+
