@@ -52,7 +52,7 @@ jobs:
 
     - name: Test with Maven
       run: |
-        cd ./fittnes-app/parent-module/authorization
+        cd ./fittness-app/parent-module/authorization
         mvn test
 
   deploy:
