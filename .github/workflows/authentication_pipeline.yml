@@ -1,36 +1,75 @@
-# hello this is the first commit of the authentication pipeline
-
 name: Authentication Service Pipeline
-
 
 on:
   push:
     branches: [ master ]
 
-stages:
-  - build
-  - test
-  - deploy
+jobs:
+  # build:
+  #   runs-on: ubuntu-latest
 
-test_job:
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v2
 
-  cache:
-    paths:
-      - .m2/repository/
+  #   - name: Set up JDK 17
+  #     uses: actions/setup-java@v2
+  #     with:
+  #       java-version: '17'
+  #       distribution: 'adopt'
+  #       cache: 'maven'
 
-  stage: test
-  
-  image: maven:3.8.2-openjdk-17
+  #   - name: Build with Maven
+  #     run: |
+  #       cd ./fittnes-app/parent-module/authorization
+  #       mvn clean install
 
-  services: 
-    - postgres:13
-  
-  script: 
-    -cd ./fittnes-app/parent-module/authorization
-    -mvn clean install
+  test:
+    # needs: build
+    runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
 
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: 'maven'
 
+    - name: Test with Maven
+      run: |
+        cd ./fittnes-app/parent-module/authorization
+        mvn test
 
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
 
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: 'maven'
+
+    - name: Deploy
+      run: |
+        echo "Add your deployment commands here"
