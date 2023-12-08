@@ -5,11 +5,11 @@ FROM maven:3.8.2-openjdk-17-slim AS build
 WORKDIR /app
 
 # Copy the pom.xml file and download the dependencies. This will be cached if the pom.xml file doesn't change.
-COPY ./fittness-app/parent-module/authorization/pom.xml ./pom.xml
+COPY ./pom.xml ./pom.xml
 RUN mvn dependency:go-offline -B
 
 # Copy the rest of the code and build the application.
-COPY ./fittness-app/parent-module/authorization/ ./
+COPY ./ ./
 RUN mvn package
 
 FROM openjdk:17-slim
