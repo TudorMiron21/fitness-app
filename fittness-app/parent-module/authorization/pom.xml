@@ -133,4 +133,8 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>fitness-app-authorization</finalName>
+    </build>
 </project>
