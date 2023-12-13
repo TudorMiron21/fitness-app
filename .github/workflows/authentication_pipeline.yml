@@ -75,8 +75,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
-        context: ./fittness-app/parent-module/authorization
-        file: ./fittness-app/parent-module/authorization/Dockerfile
+        context: ./fittness-app
+        file: ./fittness-app/Dockerfile
         push: true
         tags: tudormiron/fitness-app-authorization:tag
         
