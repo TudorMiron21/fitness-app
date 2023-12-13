@@ -22,7 +22,7 @@ jobs:
   
     - name: Build with Maven
       run: |
-        cd ./fitness-app
+        cd ./fittness-app
         mvn clean install
           
   test:
