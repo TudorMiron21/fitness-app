@@ -16,7 +16,7 @@
     <module>selfCoach</module>
     <module>eureka-server</module>
     <module>api-gateway</module>
-      <module>authorization</module>
+    <module>authorization</module>
   </modules>
 
   <properties>
