@@ -5,6 +5,7 @@
         <groupId>tudor.work</groupId>
         <artifactId>parent-module</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>authorization</artifactId>
