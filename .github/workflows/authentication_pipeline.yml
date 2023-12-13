@@ -76,7 +76,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: ./fittness-app
-        file: ./fittness-app/Dockerfile
+        file: ./fittness-app/Dockerfile.authorization
         push: true
         tags: tudormiron/fitness-app-authorization:tag
         
