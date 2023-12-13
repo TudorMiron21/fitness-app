@@ -21,7 +21,7 @@ jobs:
 
     - name: Install Parent POM
       run: |
-        cd ./fitness-app/parent-module
+        cd ./fittness-app/parent-module
         mvn install -N 
 
     - name: Build with Maven
