@@ -1,6 +1,5 @@
 package tudor.work.dto.deserializer;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -31,19 +30,12 @@ public class CategoryDeserializer extends StdDeserializer<Category> {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         String categoryName = node.asText();
 
-        // Here, you would typically query your database to retrieve the Difficulty entity
-        // based on the name or identifier. Replace this with your actual logic.
-
         Category category= new Category();
         try {
             category = categoryService.getCategoryByName(categoryName);
         }
         catch(NotFoundException nfe){
-            return null;
-        }
-
-        if (category == null) {
-            throw new JsonParseException(jsonParser, "Invalid Category " + categoryName);
+            throw new RuntimeException(nfe);
         }
 
         return category;

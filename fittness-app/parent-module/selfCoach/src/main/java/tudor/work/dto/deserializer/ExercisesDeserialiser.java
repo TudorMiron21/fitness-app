@@ -1,4 +1,5 @@
 package tudor.work.dto.deserializer;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -16,13 +17,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
-public class ExercisesDeserialiser extends StdDeserializer<Set<Exercise>>
-{
+public class ExercisesDeserialiser extends StdDeserializer<Set<Exercise>> {
     private final ExerciseService exerciseService;
 
 
-    public ExercisesDeserialiser(ExerciseService exerciseService)
-    {
+    public ExercisesDeserialiser(ExerciseService exerciseService) {
         super(ExercisesDeserialiser.class);
         this.exerciseService = exerciseService;
     }
@@ -33,25 +32,23 @@ public class ExercisesDeserialiser extends StdDeserializer<Set<Exercise>>
 
         Set<Exercise> exercises = new HashSet<>();
 
-        if(node.isArray())
-        {
-            for(JsonNode exerciseNode:node){
-                String exerciseName = exerciseNode.asText();
+        if (node.isArray()) {
+            for (JsonNode exerciseNode : node) {
+                Long exerciseId = exerciseNode.asLong();
 
-                Optional<Exercise> exercise = exerciseService.getExerciseByName(exerciseName);
-                if(exercise.isPresent())
-                {
-                    exercises.add(exercise.get());
-                }
-                else{
-                    //this is the case in which an exercise is not found in the database
-                    throw new IOException("exercise not found in the database");
-                }
+                Exercise exercise = exerciseService.getExerciseById(exerciseId);
+//                if(exercise.isPresent())
+//                {
+                exercises.add(exercise);
+//                }
+//                else{
+//                    //this is the case in which an exercise is not found in the database
+//                    throw new IOException("exercise not found in the database");
+//                }
             }
         }
         return exercises;
     }
-
 
 
 }

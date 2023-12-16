@@ -41,12 +41,13 @@ public class AdminService {
                     .builder()
                     .name(exercise.getName())
                     .description(exercise.getDescription())
-                    .mediaUrl(exercise.getMediaUrl())
-                    .coverPhotoUrl(exercise.getCoverPhotoUrl())
+                    .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+                    .exerciseImageEndUrl(exercise.getExerciseImageEndUrl())
                     .isExerciseExclusive(exercise.isExerciseExclusive())
                     .category(exercise.getCategory())
                     .difficulty(exercise.getDifficulty())
-//                    .workouts(exercise.getWorkouts())
+                    .muscleGroup(exercise.getMuscleGroup())
+                    .equipment(exercise.getEquipment())
                     .build();
 
             exerciseService.saveExercise(newExercise);
@@ -92,29 +93,27 @@ public class AdminService {
     }
 
     @Transactional
-    public void addExerciseToWorkout(String exerciseName, String workoutName) throws AuthorizationExceptionHandler, NotFoundException, RuntimeException {
+    public void addExerciseToWorkout(Long exerciseId, Long workoutId) throws AuthorizationExceptionHandler, NotFoundException, RuntimeException {
 
         if (authorityService.isAdmin()) {
 
-            Optional<Workout> workout = workoutService.findWorkoutByName(workoutName);
+            Optional<Workout> workout = workoutService.findWorkoutById(workoutId);
             if (workout.isPresent()) {
                 Workout workoutActual = workout.get();
                 if (workoutActual.isGlobal()) {
 
-                    Optional<Exercise> exercise = exerciseService.getExerciseByName(exerciseName);
-                    if (exercise.isPresent()) {
-                        Exercise exerciseActual = exercise.get();
-                        workoutActual.getExercises().add(exerciseActual);
-                        Double currDifficultyLevel = workoutActual.getDifficultyLevel();
-                        workoutActual.setDifficultyLevel((currDifficultyLevel + exerciseActual.getDifficulty().getDifficultyLevelNumber()) / (long) workoutActual.getExercises().size());
-                    } else {
-                        throw new NotFoundException("exercise " + exerciseName + " not found in the database");
-                    }
+                    Exercise exercise = exerciseService.getExerciseById(exerciseId);
+
+                    Exercise exerciseActual = exercise;
+                    workoutActual.getExercises().add(exerciseActual);
+                    Double currDifficultyLevel = workoutActual.getDifficultyLevel();
+                    workoutActual.setDifficultyLevel((currDifficultyLevel + exerciseActual.getDifficulty().getDifficultyLevelNumber()) / (long) workoutActual.getExercises().size());
+
                 } else {
                     throw new AdminUpdateLocalWorkoutException("admin cannot update local workouts");
                 }
             } else {
-                throw new NotFoundException("workout " + workoutName + " not found in the database");
+                throw new NotFoundException("workout " + workoutId + " not found in the database");
             }
 
         } else {
@@ -156,8 +155,7 @@ public class AdminService {
                 if (foundExercise != null) {
                     workout.removeExercise(foundExercise);
                     workout.setDifficultyLevel(this.calculateDifficultyLevel(workout.getExercises()));
-                }
-                else
+                } else
                     throw new NotFoundException("exercise not present in workout exercise set");
             } else {
                 throw new AdminUpdateLocalWorkoutException("admin cannot delete local workouts");

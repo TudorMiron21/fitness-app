@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SetSelectionDialogContent extends StatefulWidget {
   final int initialSelectedSets;
@@ -140,11 +140,11 @@ class _StartExercisePageState extends State<StartExercisePage> {
   bool isTimerRunning = false;
   Color pageBackgroundColor = Colors.white; // Initial background color
   late int numberOfSets; // Default value
+  late double numberOfReps;
+  late double weight;
+
 
   int userHistoryModuleIdStore = 1;
-  late double weight;
-  late double distance;
-  late int numberOfReps;
 
   Future<void> saveModule() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
@@ -179,7 +179,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
   }
 
   Future<void> saveExerciseToModule(int userHistoryModuleId, int currNoSeconds,
-      bool isDone, int noReps, int weight, int distance) async {
+      bool isDone, int noReps, int weight) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
@@ -192,13 +192,12 @@ class _StartExercisePageState extends State<StartExercisePage> {
       Uri.parse(
           'http://192.168.0.229:8080/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
       body: jsonEncode({
-        "exercise": widget.exercises[widget.exerciseIndex].name,
+        "exercise": widget.exercises[widget.exerciseIndex].id,
         "userHistoryModule": userHistoryModuleId.toString(),
         "currNoSeconds": currNoSeconds.toString(),
         "isDone": isDone.toString(),
         "noReps": noReps.toString(),
         "weight": weight.toString(),
-        "distance": distance.toString()
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -256,8 +255,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
           content: SelectionDialogContent(
             initialValue: 10.0,
             onValueChanged: (value) {
-              // Do something with the new value
-              // You might want to save it as a state variable
+              setState(() {
+                numberOfReps = value;
+              });
             },
             labelText: 'Choose the number of reps for this exercise:',
             min: 1.0,
@@ -284,6 +284,8 @@ class _StartExercisePageState extends State<StartExercisePage> {
       },
     );
   }
+
+ 
 
   void toggleTimer() {
     if (countdownTimer == null || !countdownTimer!.isActive) {
@@ -423,6 +425,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
   }
 
   Widget buildExerciseDetails() {
+    final exercise = widget.exercises[widget
+        .exerciseIndex]; // Accessing the current exercise for convenience.
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       padding: EdgeInsets.all(16),
@@ -442,23 +447,104 @@ class _StartExercisePageState extends State<StartExercisePage> {
           ),
           SizedBox(height: 10),
           Text(
-            'Name: ${widget.exercises[widget.exerciseIndex].name}',
+            'Name: ${exercise.name}',
             style: TextStyle(fontSize: 16),
           ),
+          SizedBox(height: 10),
           Text(
-            'Description: ${widget.exercises[widget.exerciseIndex].description}',
+            'Description: ${exercise.description}',
             style: TextStyle(fontSize: 16),
           ),
+          SizedBox(height: 10),
           Text(
-            'Difficulty: ${widget.exercises[widget.exerciseIndex].difficulty}',
+            'Difficulty: ${exercise.difficulty}',
             style: TextStyle(fontSize: 16),
           ),
 
           Text(
+            'Targeted Muscle Group: ${exercise.muscleGroup}',
+            style: TextStyle(fontSize: 16),
+          ),
+
+          Text(
+            'Equipment Necesary: ${exercise.equipment}',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 10),
+          Text(
             'Number of sets left: ${this.numberOfSets}',
             style: TextStyle(fontSize: 16),
-          )
-          // Add more details as needed
+          ),
+          SizedBox(height: 20),
+          // Check if the start image URL is not null or empty before displaying the image
+          if (exercise.exerciseImageStartUrl != null &&
+              exercise.exerciseImageStartUrl!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Start Position:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Center(
+                  // Center the image
+                  child: Image.network(
+                    exercise.exerciseImageEndUrl!,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
+          SizedBox(height: 20),
+          // Check if the end image URL is not null or empty before displaying the image
+          if (exercise.exerciseImageEndUrl != null &&
+              exercise.exerciseImageEndUrl!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'End Position:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Center(
+                  // Center the image
+                  child: Image.network(
+                    exercise.exerciseImageEndUrl!,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
+
+          if (exercise.descriptionUrl.isNotEmpty)
+                   Text(
+            'For more details access this link:',
+            style: TextStyle(fontSize: 16),
+          ),
+            InkWell(
+              onTap: () async {
+                final Uri url = Uri.parse(exercise.descriptionUrl);
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  // Handle the error or show a message when the URL cannot be launched.
+                  print('Could not launch $url');
+                }
+              },
+              
+              child: Text(
+                '${exercise.descriptionUrl}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors
+                      .blue, // Typically links are styled with the color blue
+                  decoration: TextDecoration
+                      .underline, // Underline to indicate it's a link
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -476,14 +562,14 @@ class _StartExercisePageState extends State<StartExercisePage> {
                 await saveModule();
               }
               await saveExerciseToModule(
-                  widget.userHistoryModuleId, 0, false, 0, 0, 0);
+                  widget.userHistoryModuleId, 0, false, numberOfReps.toInt(), 0);
               goToNextModule(true);
             } else {
               if (widget.isFirstExercise) {
                 await saveModule();
               }
               await saveExerciseToModule(
-                  widget.userHistoryModuleId, 0, false, 0, 0, 0);
+                  widget.userHistoryModuleId, 0, false, numberOfReps.toInt(), 0);
 
               goToNextExercise(false);
             }
@@ -528,27 +614,54 @@ class _StartExercisePageState extends State<StartExercisePage> {
               color: Colors.black.withOpacity(0.5),
             ),
           ),
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                buildTimer(),
-                buildExerciseDetails(),
-                Container(
-                    margin: EdgeInsets.all(10.0),
-                    child: ElevatedButton(
-                      onPressed: _showSetSelectionDialog,
-                      child: Text('Set Number of Sets'),
-                    )),
-                Container(
-                  margin: EdgeInsets.all(10.0), // Add the desired margin
-                  child: ElevatedButton(
-                    onPressed: _showRepSelectionDialog,
-                    child: Text('Set Number of Reps'),
+          Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      buildTimer(),
+                      buildExerciseDetails(),
+
+                      Container(
+                        margin: EdgeInsets.all(10.0),
+                        child: ElevatedButton(
+                          onPressed: _showSetSelectionDialog,
+                          child: Text('Set Number of Sets'),
+                        ),
+                      ),
+
+                      if (widget.exercises[widget.exerciseIndex].hasNoReps)
+                        Container(
+                          margin:
+                              EdgeInsets.all(10.0), // Add the desired margin
+                          child: ElevatedButton(
+                            onPressed: _showRepSelectionDialog,
+                            child: Text('Set Number of Reps'),
+                          ),
+                        ),
+
+                      if (widget.exercises[widget.exerciseIndex].hasWeight)
+                        Container(
+                          margin:
+                              EdgeInsets.all(10.0), // Add the desired margin
+                          child: ElevatedButton(
+                            onPressed: _showRepSelectionDialog,
+                            child: Text('Set Weight'),
+                          ),
+                        ),
+
+                      // Additional spacing to ensure content scrolls above the button
+                      SizedBox(height: 80),
+                    ],
                   ),
                 ),
-                buildNextExerciseButton(numberOfSets),
-              ],
-            ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: buildNextExerciseButton(numberOfSets),
+              ),
+            ],
           ),
         ],
       ),

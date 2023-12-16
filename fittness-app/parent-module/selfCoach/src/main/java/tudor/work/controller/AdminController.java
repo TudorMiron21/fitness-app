@@ -54,10 +54,10 @@ public class AdminController {
     }
 
     @PutMapping("/addExerciseToWorkout")
-    public ResponseEntity<String> addExerciseToWorkout(@RequestParam(name = "exerciseName") String exerciseName, @RequestParam(name = "workoutName") String workoutName) {
+    public ResponseEntity<String> addExerciseToWorkout(@RequestParam(name = "exerciseId") Long exerciseId, @RequestParam(name = "workoutId") Long workoutId) {
         try {
-            adminService.addExerciseToWorkout(exerciseName, workoutName);
-            ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseName + " added to workout " + workoutName + " successfully");
+            adminService.addExerciseToWorkout(exerciseId, workoutId);
+            ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseId + " added to workout " + workoutId + " successfully");
         } catch (AuthorizationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " unauthorised");
         } catch (NotFoundException nfe) {

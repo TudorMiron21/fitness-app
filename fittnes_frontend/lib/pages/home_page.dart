@@ -42,12 +42,21 @@ class _HomePageState extends State<HomePage> {
             .map((exerciseJson) => Exercise(
                   id: exerciseJson['id'],
                   name: exerciseJson['name'],
-                  description: exerciseJson['description'],
-                  mediaUrl: exerciseJson['mediaUrl'],
-                  coverPhotoUrl: exerciseJson['coverPhotoUrl'] ?? "",
+                  description: exerciseJson['description'] ?? "",
+                  descriptionUrl: exerciseJson['descriptionUrl'] ?? "",
+                  exerciseImageStartUrl:
+                      exerciseJson['exerciseImageStartUrl'] ?? "",
+                  exerciseImageEndUrl:
+                      exerciseJson['exerciseImageEndUrl'] ?? "",
+                  exerciseVideoUrl: exerciseJson['exerciseVideoUrl'] ?? "",
                   difficulty: exerciseJson['difficulty']['dificultyLevel'],
                   category: exerciseJson['category']['name'],
                   exerciseExclusive: exerciseJson['exerciseExclusive'],
+                  equipment: exerciseJson['equipment']['name'],
+                  muscleGroup: exerciseJson['muscleGroup']['name'],
+                  rating: exerciseJson['rating'],
+                  hasNoReps: exerciseJson['hasNoReps'],
+                  hasWeight: exerciseJson['hasWeight'],
                 ))
             .toList() as List<Exercise>;
 
@@ -95,12 +104,21 @@ class _HomePageState extends State<HomePage> {
             .map((exerciseJson) => Exercise(
                   id: exerciseJson['id'],
                   name: exerciseJson['name'],
-                  description: exerciseJson['description'],
-                  mediaUrl: exerciseJson['mediaUrl'],
-                  coverPhotoUrl: exerciseJson['coverPhotoUrl'] ?? "",
+                  description: exerciseJson['description'] ?? "",
+                  descriptionUrl: exerciseJson['descriptionUrl'] ?? "",
+                  exerciseImageStartUrl:
+                      exerciseJson['exerciseImageStartUrl'] ?? "",
+                  exerciseImageEndUrl:
+                      exerciseJson['exerciseImageEndUrl'] ?? "",
+                  exerciseVideoUrl: exerciseJson['exerciseVideoUrl'] ?? "",
                   difficulty: exerciseJson['difficulty']['dificultyLevel'],
                   category: exerciseJson['category']['name'],
                   exerciseExclusive: exerciseJson['exerciseExclusive'],
+                  equipment: exerciseJson['equipment']['name'],
+                  muscleGroup: exerciseJson['muscleGroup']['name'],
+                  rating: exerciseJson['rating'],
+                  hasNoReps: exerciseJson['hasNoReps'],
+                  hasWeight: exerciseJson['hasWeight'],
                 ))
             .toList() as List<Exercise>;
 
@@ -124,7 +142,7 @@ class _HomePageState extends State<HomePage> {
     List<Future<List<Workout>>> futures = [];
 
     // Fetch top 6 workouts for each difficulty level
-    for (double difficulty = 0; difficulty < 4; difficulty++) {
+    for (double difficulty = 0; difficulty < 3; difficulty++) {
       futures.add(fetchirstSixMostLikedWorkoutsFromDifficultyLevel(
           difficulty, difficulty + 1));
     }
@@ -158,7 +176,6 @@ class _HomePageState extends State<HomePage> {
       throw Exception(
           'Failed to like workout. Status code: ${response.statusCode}');
     }
-
   }
 
   Future<void> unlikeWorkout(Workout workout) async {
@@ -198,7 +215,6 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             SizedBox(
               height: 300,
               child: FutureBuilder<void>(
@@ -256,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                         if (index == 0) {
                           return buildPageBackground(
                               'lib/images/background_top_workouts.jpg',
-                              'Top Easy Workouts');
+                              'Top Beginner Workouts');
                         }
 
                         Workout workout = mostLikedWorkouts[index - 1];
@@ -293,7 +309,7 @@ class _HomePageState extends State<HomePage> {
                         if (index == 0) {
                           return buildPageBackground(
                               'lib/images/background_top_workouts.jpg',
-                              'Top Medium Workouts');
+                              'Top Intermediate Workouts');
                         }
 
                         Workout workout = mostLikedWorkouts[index - 1];
@@ -330,48 +346,11 @@ class _HomePageState extends State<HomePage> {
                         if (index == 0) {
                           return buildPageBackground(
                               'lib/images/background_top_workouts.jpg',
-                              'Top Hard Workouts');
+                              'Top Expert Workouts');
                         }
                         Workout workout = mostLikedWorkouts[index - 1];
 
                         buildWorkoutCard(workout);
-
-                        // Remaining code remains the same...
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-            SizedBox(
-              height: 200,
-              child: FutureBuilder<List<Workout>>(
-                future:
-                    fetchirstSixMostLikedWorkoutsFromDifficultyLevel(3.0, 4.0),
-                builder: (context, mostLikedWorkoutsSnapshot) {
-                  if (mostLikedWorkoutsSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (mostLikedWorkoutsSnapshot.hasError) {
-                    return Center(
-                        child:
-                            Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
-                  } else {
-                    List<Workout> mostLikedWorkouts =
-                        mostLikedWorkoutsSnapshot.data!;
-
-                    return PageView.builder(
-                      itemCount: mostLikedWorkouts.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return buildPageBackground(
-                              'lib/images/background_top_workouts.jpg',
-                              'Top Expert Workouts');
-                        }
-
-                        Workout workout = mostLikedWorkouts[index - 1];
-
-                        return buildWorkoutCard(workout);
 
                         // Remaining code remains the same...
                       },
@@ -426,7 +405,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget buildWorkoutCard(Workout workout) {
     // Calculate the difficulty level representation
-    int maxDifficulty = 4; // Adjust the maximum difficulty level
+    int maxDifficulty = 3; // Adjust the maximum difficulty level
     double fractionalPart =
         workout.difficultyLevel - workout.difficultyLevel.floor();
     List<Widget> difficultyCircles = List.generate(
@@ -545,12 +524,10 @@ class _HomePageState extends State<HomePage> {
 
   String getDifficultyText(double difficultyLevel) {
     if (difficultyLevel >= 0 && difficultyLevel < 1) {
-      return 'Easy';
+      return 'Beginner';
     } else if (difficultyLevel >= 1 && difficultyLevel < 2) {
-      return 'Medium';
+      return 'Intermediate';
     } else if (difficultyLevel >= 2 && difficultyLevel < 3) {
-      return 'Hard';
-    } else if (difficultyLevel >= 3 && difficultyLevel <= 4) {
       return 'Expert';
     } else {
       return 'Unknown';

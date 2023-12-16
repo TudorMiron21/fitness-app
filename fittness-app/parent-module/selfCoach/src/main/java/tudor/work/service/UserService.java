@@ -57,10 +57,13 @@ public class UserService {
                     .builder()
                     .name(exercise.getName())
                     .description(exercise.getDescription())
-                    .mediaUrl(exercise.getMediaUrl())
+                    .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+                    .exerciseImageEndUrl(exercise.getExerciseImageEndUrl())
                     .isExerciseExclusive(exercise.isExerciseExclusive())
                     .category(exercise.getCategory())
                     .difficulty(exercise.getDifficulty())
+                    .muscleGroup(exercise.getMuscleGroup())
+                    .equipment(exercise.getEquipment())
                     .build();
         }
     }
@@ -297,11 +300,6 @@ public class UserService {
 
         if (requestUserHistoryExercise.getExercise().isHasNoReps()) {
             userHistoryExercise.setNoReps(requestUserHistoryExercise.getNoReps());
-        }
-
-        if (requestUserHistoryExercise.getExercise().isHasDistance()) {
-
-            userHistoryExercise.setDistance(requestUserHistoryExercise.getDistance());
         }
 
         if (requestUserHistoryExercise.getExercise().isHasWeight()) {

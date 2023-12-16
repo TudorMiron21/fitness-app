@@ -24,15 +24,11 @@ public class ExerciseDeserialiser extends StdDeserializer<Exercise> {
         super(Exercise.class);
         this.exerciseService = exerciseService;
     }
-
-    @SneakyThrows(NotFoundException.class)
     @Override
     public Exercise deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
-
-        return exerciseService.getExerciseByName(node.asText()).orElseThrow(() -> new NotFoundException("exercise " + node.asText() + " not found"));
-
+        return exerciseService.getExerciseById(node.asLong());
 
     }
 }

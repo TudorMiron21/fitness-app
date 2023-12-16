@@ -39,6 +39,10 @@ public class WorkoutService {
         return workoutRepository.findByName(workoutName);
     }
 
+    public Optional<Workout> findWorkoutById(Long id)
+    {
+        return workoutRepository.findById(id);
+    }
     public Workout getReference(Long id) {
         return workoutRepository.getOne(id);
     }

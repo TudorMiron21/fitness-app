@@ -24,11 +24,13 @@ public class ExerciseService {
                         .builder()
                         .name(exercise.getName())
                         .description(exercise.getDescription())
-                        .mediaUrl(exercise.getMediaUrl())
+                        .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+                        .exerciseImageEndUrl(exercise.getExerciseImageEndUrl())
                         .isExerciseExclusive(exercise.isExerciseExclusive())
                         .category(exercise.getCategory())
                         .difficulty(exercise.getDifficulty())
-//                        .workouts(exercise.getWorkouts())
+                        .muscleGroup(exercise.getMuscleGroup())
+                        .equipment(exercise.getEquipment())
                         .build()
         ).collect(Collectors.toList());
     }
@@ -40,11 +42,13 @@ public class ExerciseService {
                         .builder()
                         .name(exercise.getName())
                         .description(exercise.getDescription())
-                        .mediaUrl(exercise.getMediaUrl())
+                        .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+                        .exerciseImageEndUrl(exercise.getExerciseImageEndUrl())
                         .isExerciseExclusive(exercise.isExerciseExclusive())
                         .category(exercise.getCategory())
                         .difficulty(exercise.getDifficulty())
-//                        .workouts(exercise.getWorkouts())
+                        .muscleGroup(exercise.getMuscleGroup())
+                        .equipment(exercise.getEquipment())
                         .build()
         ).collect(Collectors.toList());
     }
@@ -58,9 +62,13 @@ public class ExerciseService {
         exerciseRepository.save(exercise);
     }
 
-    public Exercise getExerciseReference(Long exerciseId)
-    {
+    public Exercise getExerciseReference(Long exerciseId) {
         return exerciseRepository.getOne(exerciseId);
+    }
+
+    public Exercise getExerciseById(Long id)
+    {
+        return exerciseRepository.getById(id);
     }
 
 

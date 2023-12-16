@@ -67,7 +67,7 @@ class ExercisePage extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12.0),
                   image: DecorationImage(
-                    image: NetworkImage(exercise.coverPhotoUrl),
+                    image: NetworkImage(exercise.exerciseImageStartUrl),
                     fit: BoxFit.cover,
                   ),
                 ),

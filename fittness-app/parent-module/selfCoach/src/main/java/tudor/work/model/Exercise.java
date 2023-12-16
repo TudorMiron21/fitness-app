@@ -27,12 +27,22 @@ public class Exercise {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(length = 1024)
     private String description;
 
-    private String mediaUrl;
+    private String descriptionUrl;
 
-    private String coverPhotoUrl;
+    private String exerciseImageStartUrl;
+
+    private String exerciseImageEndUrl;
+
+    private String exerciseVideoUrl;
+
+    //private String coverPhotoUrl;
+
+    @ManyToOne
+    @JoinColumn(name ="muscle_group_id")
+    private MuscleGroup muscleGroup;
 
 //    @ManyToOne
 //    @JoinColumn(name = "adder_id")
@@ -40,8 +50,17 @@ public class Exercise {
 
 
     @ManyToOne
+    @JoinColumn(name ="equipment_id")
+    private Equipment equipment;
+
+
+    private Double rating;
+
+
+    @ManyToOne
     @JoinColumn(name = "difficulty_id")
     private Difficulty difficulty;
+
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -55,8 +74,6 @@ public class Exercise {
     private boolean isExerciseExclusive;
 
     private boolean hasWeight;
-
-    private boolean hasDistance;
 
     private boolean hasNoReps;
 
