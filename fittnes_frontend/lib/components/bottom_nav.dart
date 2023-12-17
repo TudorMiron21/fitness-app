@@ -39,7 +39,7 @@ class _NavBarState extends State<NavBar> {
               const BottomNavigationBarItem(
                   icon: Icon(Icons.home), label: 'Home'),
               const BottomNavigationBarItem(
-                  icon: Icon(Icons.favorite), label: 'Discover'),
+                  icon: Icon(Icons.favorite), label: 'Your Library'),
               const BottomNavigationBarItem(
                   icon: Icon(Icons.search), label: 'Search'),
               const BottomNavigationBarItem(

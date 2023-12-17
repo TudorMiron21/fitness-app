@@ -1,6 +1,4 @@
-import 'dart:convert';
-import 'dart:ffi';
-
+import 'package:fittnes_frontend/pages/exercise_details_page.dart';
 import 'package:fittnes_frontend/pages/start_exercise_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fittnes_frontend/models/exercise.dart';
@@ -10,9 +8,10 @@ import 'package:http/http.dart' as http;
 class ExercisePage extends StatelessWidget {
   final List<Exercise> exercises;
   final String workoutName;
-  late int workoutId;
+  final int workoutId;
+  late int userHistoryWorkoutId;
 
-  Future<void> saveWorkoutToHistory(String workoutName) async {
+  Future<void> saveWorkoutToHistory(int workoutId) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
@@ -22,7 +21,7 @@ class ExercisePage extends StatelessWidget {
 
     final response = await http.post(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/startWorkout/$workoutName'),
+          'http://192.168.0.229:8080/api/selfCoach/user/startWorkout/$workoutId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -30,74 +29,96 @@ class ExercisePage extends StatelessWidget {
 
     if (response.statusCode == 200) {
       print("workout " + workoutName + " added to history");
-      this.workoutId = int.parse(response.body);
+      userHistoryWorkoutId =int.parse( response.body);
+
     } else {
       print(
-          'http://192.168.0.229:8080/api/selfCoach/user/saveWorkout/$workoutName');
+          'http://192.168.0.229:8080/api/selfCoach/user/startWorkout/$workoutId');
       throw Exception(
           'Failed to save workout to history. Status code: ${response.statusCode}');
     }
   }
 
-  ExercisePage({required this.exercises, required this.workoutName});
+  ExercisePage({required this.exercises, required this.workoutName,required this.workoutId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.blue.withOpacity(0.6), // Use any color from the Colors class
       appBar: AppBar(
-        title: Text('${this.workoutName}'),
-        elevation: 10.0,
-        backgroundColor: Colors.blueAccent,
+        title: Text(this.workoutName),
+        elevation: 0, // Set elevation to 0 for a flatter look, if preferred
+        backgroundColor: Colors.blue, // A more modern color
       ),
       body: ListView.builder(
         itemCount: exercises.length,
         itemBuilder: (context, index) {
           Exercise exercise = exercises[index];
           return Card(
-            margin: EdgeInsets.all(10.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
+            margin: EdgeInsets.all(12.0),
+            elevation: 4,
+
             child: ListTile(
-              tileColor: Colors.grey.shade300,
-              contentPadding: EdgeInsets.all(16.0),
-              leading: Container(
-                width: 120.0,
-                height: 120.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  image: DecorationImage(
-                    image: NetworkImage(exercise.exerciseImageStartUrl),
-                    fit: BoxFit.cover,
+              tileColor: Colors.grey.withOpacity(0.3),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              leading: InkWell(
+                child: SizedBox(
+                  width: 56.0,
+                  height: 56.0,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(
+                      exercise.exerciseImageStartUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.error),
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
-              title: Padding(
-                padding: EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  exercise.name,
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+              title: Text(
+                exercise.name,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
                 exercise.description,
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: Colors.grey.shade600,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
+              onTap: () {
+                // You can still have the ListTile itself be tappable as well
+                // and navigate to the ExerciseDetailPage if needed.
+              },
             ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: ()async {
-          await saveWorkoutToHistory(workoutName);
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          await saveWorkoutToHistory(workoutId);
           Navigator.push(
             context,
-             MaterialPageRoute(
+            MaterialPageRoute(
               builder: (context) => StartExercisePage(
                 exercises: exercises,
                 exerciseIndex: 0,
@@ -105,12 +126,14 @@ class ExercisePage extends StatelessWidget {
                 noSets: 1,
                 isFirstExercise: true,
                 userHistoryModuleId: 0,
+                userHistoryWorkoutId: userHistoryWorkoutId,
               ),
             ),
           );
         },
-        child: Icon(Icons.play_arrow),
-        backgroundColor: Colors.blueAccent,
+        icon: Icon(Icons.play_arrow),
+        label: Text('Start Workout'), // Label for clarity
+        backgroundColor: Colors.blue,
         elevation: 5.0,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

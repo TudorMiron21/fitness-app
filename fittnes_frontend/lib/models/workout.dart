@@ -2,6 +2,7 @@ import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:flutter/material.dart';
 
 class Workout extends ChangeNotifier {
+  final int id;
   final String name;
   final String description;
   final String coverPhotoUrl;
@@ -10,6 +11,7 @@ class Workout extends ChangeNotifier {
   bool likedByUser;
 
   Workout({
+    required this.id,
     required this.name,
     required this.description,
     this.coverPhotoUrl = '',

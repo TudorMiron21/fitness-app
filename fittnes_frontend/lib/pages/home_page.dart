@@ -61,6 +61,7 @@ class _HomePageState extends State<HomePage> {
             .toList() as List<Exercise>;
 
         return Workout(
+            id: json['id'],
             name: json['name'],
             description: json['description'],
             difficultyLevel: json['difficultyLevel'],
@@ -123,6 +124,7 @@ class _HomePageState extends State<HomePage> {
             .toList() as List<Exercise>;
 
         return Workout(
+            id: json['id'],
             name: json['name'],
             description: json['description'],
             difficultyLevel: json['difficultyLevel'],
@@ -161,7 +163,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.put(
       Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/likeWorkout/' +
-          workout.name),
+          workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -192,7 +194,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.delete(
       Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/unlikeWorkout/' +
-          workout.name),
+          workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -513,6 +515,7 @@ class _HomePageState extends State<HomePage> {
                 builder: (context) => ExercisePage(
                   exercises: workout.exercises,
                   workoutName: workout.name,
+                  workoutId: workout.id,
                 ),
               ),
             );

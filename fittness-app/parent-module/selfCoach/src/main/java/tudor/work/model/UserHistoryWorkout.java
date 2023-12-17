@@ -2,6 +2,7 @@ package tudor.work.model;
 
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.query.criteria.internal.predicate.BooleanExpressionPredicate;
 
 import javax.persistence.*;
 import java.util.List;
@@ -31,6 +32,9 @@ public class UserHistoryWorkout {
     @ManyToOne
     @JoinColumn(name ="user_id")
     private User user;
+
+
+    private Boolean isWorkoutDone;
 
     public void addUserHistoryModule(UserHistoryModule userHistoryModule)
     {

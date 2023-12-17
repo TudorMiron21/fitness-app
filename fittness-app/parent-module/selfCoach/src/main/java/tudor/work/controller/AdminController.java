@@ -68,13 +68,13 @@ public class AdminController {
         return null;
     }
 
-    @DeleteMapping("/deleteWorkout/{workoutName}")
-    public ResponseEntity<String> deleteWorkout(@PathVariable(name = "workoutName") String workoutName) {
+    @DeleteMapping("/deleteWorkout/{workoutId}")
+    public ResponseEntity<String> deleteWorkout(@PathVariable(name = "workoutId") Long workoutId) {
         try {
-            adminService.deleteWorkout(workoutName);
-            ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " deleted successfully");
+            adminService.deleteWorkout(workoutId);
+            ResponseEntity.status(HttpStatus.OK).body("workout " + workoutId + " deleted successfully");
         } catch (NotFoundException nfe) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout " + workoutName + " not found in the database");
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout " + workoutId + " not found in the database");
         } catch (AuthorizationExceptionHandler aeh) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user " + authorityService.getEmail() + " unauthorised");
         } catch (AdminUpdateLocalWorkoutException auwe) {
@@ -83,11 +83,11 @@ public class AdminController {
         return null;
     }
 
-    @DeleteMapping("deleteExerciseFromWorkout/{exerciseName}/{workoutName}")
-    public ResponseEntity<String> deleteExerciseFromWorkout(@PathVariable(name = "exerciseName") String exerciseName, @PathVariable(name = "workoutName") String workoutName) {
+    @DeleteMapping("deleteExerciseFromWorkout/{exerciseId}/{workoutId}")
+    public ResponseEntity<String> deleteExerciseFromWorkout(@PathVariable(name = "exerciseId") Long exerciseId, @PathVariable(name = "workoutId") Long workoutId) {
         try {
-            adminService.deleteExerciseFromWorkout(exerciseName, workoutName);
-            ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseName + " from workout " + workoutName + " deleted successfully");
+            adminService.deleteExerciseFromWorkout(exerciseId, workoutId);
+            ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseId + " from workout " + workoutId + " deleted successfully");
         } catch (NotFoundException nfe) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("workout/exercise not found");
         } catch (AuthorizationExceptionHandler aeh) {

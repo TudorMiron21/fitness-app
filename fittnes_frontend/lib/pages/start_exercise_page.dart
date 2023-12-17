@@ -7,6 +7,79 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+class ExerciseImageToggle extends StatefulWidget {
+  final String startImageUrl;
+  final String endImageUrl;
+
+  ExerciseImageToggle({
+    Key? key,
+    required this.startImageUrl,
+    required this.endImageUrl,
+  }) : super(key: key);
+
+  @override
+  _ExerciseImageToggleState createState() => _ExerciseImageToggleState();
+}
+
+class _ExerciseImageToggleState extends State<ExerciseImageToggle> {
+  bool showStartImage = true; // Initial state: show start image
+
+  void _toggleImage() {
+    setState(() {
+      showStartImage = !showStartImage;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment:
+          MainAxisAlignment.center, // Centers the column in the available space
+      crossAxisAlignment: CrossAxisAlignment
+          .stretch, // Stretches children across the screen width
+      children: [
+        GestureDetector(
+          onTap:
+              _toggleImage, // Make sure this method is defined in your state class
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: showStartImage
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.network(
+                      widget.startImageUrl,
+                      key: ValueKey('startImage'),
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.network(
+                      widget.endImageUrl,
+                      key: ValueKey('endImage'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+          ),
+        ),
+        Padding(
+          padding:
+              const EdgeInsets.all(16.0), // Add some padding around the text
+          child: Text(
+            'Tap on the picture to see start and end positions',
+            textAlign: TextAlign.center, // Center the text horizontally
+            style: TextStyle(
+              fontSize: 16.0, // Adjust the font size as needed
+              fontWeight: FontWeight.normal, // Choose the font weight
+              // Add other styles if necessary
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class SetSelectionDialogContent extends StatefulWidget {
   final int initialSelectedSets;
   final ValueChanged<int> onSelectedSetsChanged;
@@ -119,6 +192,7 @@ class StartExercisePage extends StatefulWidget {
   final int noSets;
   final bool isFirstExercise;
   late int userHistoryModuleId;
+  final int userHistoryWorkoutId;
 
   StartExercisePage(
       {Key? key,
@@ -127,7 +201,8 @@ class StartExercisePage extends StatefulWidget {
       required this.workoutId,
       required this.noSets,
       required this.isFirstExercise,
-      required this.userHistoryModuleId})
+      required this.userHistoryModuleId,
+      required this.userHistoryWorkoutId})
       : super(key: key);
 
   @override
@@ -136,13 +211,12 @@ class StartExercisePage extends StatefulWidget {
 
 class _StartExercisePageState extends State<StartExercisePage> {
   Timer? countdownTimer;
-  Duration myDuration = Duration(days: 5);
+  Duration myDuration = const Duration(seconds: 0);
   bool isTimerRunning = false;
   Color pageBackgroundColor = Colors.white; // Initial background color
   late int numberOfSets; // Default value
-  late double numberOfReps;
-  late double weight;
-
+  double numberOfReps = 0;
+  double weight = 0;
 
   int userHistoryModuleIdStore = 1;
 
@@ -159,6 +233,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
       Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/saveModule'),
       body: jsonEncode({
         "parentUserHistoryWorkoutId": widget.workoutId.toString(),
+        "noSets": numberOfSets
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -179,7 +254,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
   }
 
   Future<void> saveExerciseToModule(int userHistoryModuleId, int currNoSeconds,
-      bool isDone, int noReps, int weight) async {
+      bool isDone, int noReps, double weight) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
@@ -211,7 +286,32 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
   }
 
-  Future<void> getExercisedDetails(String exerciseName) async {}
+  Future<void> finishWorkout(int userHistoryWorkoutId) async {
+
+        final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+      final response = await http.put(
+      Uri.parse(
+          'http://192.168.0.229:8080/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to finish workout. Status code: ${response.statusCode}');
+    }
+
+  }
 
   @override
   void initState() {
@@ -253,16 +353,16 @@ class _StartExercisePageState extends State<StartExercisePage> {
         return AlertDialog(
           title: Text('Select Number of Reps'),
           content: SelectionDialogContent(
-            initialValue: 10.0,
+            initialValue: numberOfReps,
             onValueChanged: (value) {
               setState(() {
                 numberOfReps = value;
               });
             },
             labelText: 'Choose the number of reps for this exercise:',
-            min: 1.0,
+            min: 0.0,
             max: 20.0,
-            divisions: 19,
+            divisions: 20,
             unit: 'reps',
           ),
           actions: <Widget>[
@@ -285,7 +385,50 @@ class _StartExercisePageState extends State<StartExercisePage> {
     );
   }
 
- 
+  void _showWeightSelectionDialog() {
+    final TextEditingController _weightController = TextEditingController();
+
+    showDialog<double>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Set Weight'),
+          content: TextField(
+            controller: _weightController,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              labelText: 'Enter the weight for this exercise:',
+              // If you want to add a suffix text like 'kg' or 'lbs', you can uncomment the next line
+              suffixText: 'kg',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                // Do something with the weight value
+                double? enteredWeight = double.tryParse(_weightController.text);
+                if (enteredWeight != null) {
+                  setState(() {
+                    weight = enteredWeight;
+                  });
+                  // Use the entered weight value as needed
+                  print('Entered weight: $enteredWeight');
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void toggleTimer() {
     if (countdownTimer == null || !countdownTimer!.isActive) {
@@ -331,7 +474,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
     });
   }
 
-  void goBack() {
+  Future<void> goBack() async {
+    await saveExerciseToModule(widget.userHistoryModuleId, myDuration.inSeconds,
+        false, numberOfReps.toInt(), weight);
     Navigator.pop(context);
   }
 
@@ -348,6 +493,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
             noSets: 1,
             isFirstExercise: isFirstExercise,
             userHistoryModuleId: widget.userHistoryModuleId,
+            userHistoryWorkoutId: widget.userHistoryWorkoutId,
           ),
         ),
       );
@@ -372,6 +518,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
           noSets: numberOfSets,
           isFirstExercise: isFirstExercise,
           userHistoryModuleId: widget.userHistoryModuleId,
+          userHistoryWorkoutId: widget.userHistoryWorkoutId,
         ),
       ),
     );
@@ -425,127 +572,89 @@ class _StartExercisePageState extends State<StartExercisePage> {
   }
 
   Widget buildExerciseDetails() {
-    final exercise = widget.exercises[widget
-        .exerciseIndex]; // Accessing the current exercise for convenience.
+    final exercise = widget.exercises[widget.exerciseIndex];
 
-    return Container(
+    return Card(
       margin: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(10),
+      elevation: 10,
+      color: Colors.grey.withOpacity(0.6), // Grey color with opacity
+
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Exercise Details',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            _buildDetail(Icons.fitness_center, 'Name', exercise.name),
+            _buildDetail(
+                Icons.description, 'Description', exercise.description),
+            _buildDetail(Icons.bar_chart, 'Difficulty', exercise.difficulty),
+            _buildDetail(Icons.group_work, 'Targeted Muscle Group',
+                exercise.muscleGroup),
+            _buildDetail(
+                Icons.build, 'Equipment Necessary', exercise.equipment),
+            Divider(height: 30, thickness: 1),
+            _buildDetail(Icons.loop, 'Number of sets left', '$numberOfSets'),
+            // _buildImageSection('Start Position:', exercise.exerciseImageStartUrl),
+            // _buildImageSection('End Position:', exercise.exerciseImageEndUrl),
+            _buildImageSection(
+                exercise.exerciseImageStartUrl, exercise.exerciseImageEndUrl),
+            if (exercise.descriptionUrl.isNotEmpty) ...[
+              _buildDetail(Icons.link, 'More Details', ''),
+              _buildLink(exercise.descriptionUrl),
+            ],
+          ],
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Exercise Details',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 10),
-          Text(
-            'Name: ${exercise.name}',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 10),
-          Text(
-            'Description: ${exercise.description}',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 10),
-          Text(
-            'Difficulty: ${exercise.difficulty}',
-            style: TextStyle(fontSize: 16),
-          ),
+    );
+  }
 
-          Text(
-            'Targeted Muscle Group: ${exercise.muscleGroup}',
-            style: TextStyle(fontSize: 16),
-          ),
+  Widget _buildImageSection(
+      String exerciseImageStartUrl, String exerciseImageEndUrl) {
+    return ExerciseImageToggle(
+      startImageUrl: exerciseImageStartUrl,
+      endImageUrl: exerciseImageEndUrl,
+    );
+  }
 
-          Text(
-            'Equipment Necesary: ${exercise.equipment}',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 10),
-          Text(
-            'Number of sets left: ${this.numberOfSets}',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 20),
-          // Check if the start image URL is not null or empty before displaying the image
-          if (exercise.exerciseImageStartUrl != null &&
-              exercise.exerciseImageStartUrl!.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Start Position:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Center(
-                  // Center the image
-                  child: Image.network(
-                    exercise.exerciseImageEndUrl!,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            ),
-          SizedBox(height: 20),
-          // Check if the end image URL is not null or empty before displaying the image
-          if (exercise.exerciseImageEndUrl != null &&
-              exercise.exerciseImageEndUrl!.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'End Position:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Center(
-                  // Center the image
-                  child: Image.network(
-                    exercise.exerciseImageEndUrl!,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            ),
+  Widget _buildDetail(IconData icon, String label, String value) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(
+        label,
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
+        value,
+        style: TextStyle(fontSize: 16),
+      ),
+      contentPadding: EdgeInsets.all(0),
+    );
+  }
 
-          if (exercise.descriptionUrl.isNotEmpty)
-                   Text(
-            'For more details access this link:',
-            style: TextStyle(fontSize: 16),
-          ),
-            InkWell(
-              onTap: () async {
-                final Uri url = Uri.parse(exercise.descriptionUrl);
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
-                } else {
-                  // Handle the error or show a message when the URL cannot be launched.
-                  print('Could not launch $url');
-                }
-              },
-              
-              child: Text(
-                '${exercise.descriptionUrl}',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors
-                      .blue, // Typically links are styled with the color blue
-                  decoration: TextDecoration
-                      .underline, // Underline to indicate it's a link
-                ),
-              ),
-            ),
-        ],
+  Widget _buildLink(String url) {
+    return InkWell(
+      onTap: () async {
+        final Uri parsedUrl = Uri.parse(url);
+        if (await canLaunchUrl(parsedUrl)) {
+          await launchUrl(parsedUrl);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not launch $url')),
+          );
+        }
+      },
+      child: Text(
+        url,
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.blue,
+          decoration: TextDecoration.underline,
+        ),
       ),
     );
   }
@@ -561,17 +670,22 @@ class _StartExercisePageState extends State<StartExercisePage> {
               if (widget.isFirstExercise == true) {
                 await saveModule();
               }
-              await saveExerciseToModule(
-                  widget.userHistoryModuleId, 0, false, numberOfReps.toInt(), 0);
+              await saveExerciseToModule(widget.userHistoryModuleId,
+                  myDuration.inSeconds, true, numberOfReps.toInt(), weight);
               goToNextModule(true);
             } else {
               if (widget.isFirstExercise) {
                 await saveModule();
               }
-              await saveExerciseToModule(
-                  widget.userHistoryModuleId, 0, false, numberOfReps.toInt(), 0);
+              await saveExerciseToModule(widget.userHistoryModuleId,
+                  myDuration.inSeconds, true, numberOfReps.toInt(), weight);
 
               goToNextExercise(false);
+            }
+
+            if(widget.exerciseIndex == widget.exercises.length - 1)
+            {
+              await finishWorkout(widget.userHistoryWorkoutId);
             }
           },
           child: Text(
@@ -646,7 +760,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
                           margin:
                               EdgeInsets.all(10.0), // Add the desired margin
                           child: ElevatedButton(
-                            onPressed: _showRepSelectionDialog,
+                            onPressed: _showWeightSelectionDialog,
                             child: Text('Set Weight'),
                           ),
                         ),

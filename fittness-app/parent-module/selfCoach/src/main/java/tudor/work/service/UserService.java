@@ -95,6 +95,7 @@ public class UserService {
                             try {
                                 return WorkoutDto.
                                         builder().
+                                        id(workout.getId()).
                                         name(workout.getName()).
                                         description(workout.getDescription()).
                                         coverPhotoUrl(workout.getCoverPhotoUrl()).
@@ -125,8 +126,6 @@ public class UserService {
         } else {
             throw new UserAccessException("user " + authorityService.getEmail() + " is not allowed to see other user's workouts");
         }
-
-
     }
 
     public void addWorkout(WorkoutDto workoutDto) throws NotFoundException, DuplicatesException {
@@ -160,18 +159,16 @@ public class UserService {
     }
 
     @Transactional
-    public void likeWorkout(String workoutName) throws NotFoundException {
-        Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout " + workoutName + " not found"));
-
+    public void likeWorkout(Long workoutId) throws NotFoundException {
+        Workout workout = workoutService.findWorkoutById(workoutId).orElseThrow(() -> new NotFoundException("workout " + workoutId + " not found"));
         authorityService.getUser().likeWorkout(workout);
 
     }
 
     @Transactional
 
-    public void unlikeWorkout(String workoutName) throws NotFoundException {
-        Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout " + workoutName + " not found"));
-
+    public void unlikeWorkout(Long workoutId) throws NotFoundException {
+        Workout workout = workoutService.findWorkoutById(workoutId).orElseThrow(() -> new NotFoundException("workout " + workoutId + " not found"));
         authorityService.getUser().unlikeWorkout(workout);
 
     }
@@ -186,6 +183,7 @@ public class UserService {
                             try {
                                 return WorkoutDto.
                                         builder().
+                                        id(workout.getId()).
                                         name(workout.getName()).
                                         description(workout.getDescription()).
                                         coverPhotoUrl(workout.getCoverPhotoUrl()).
@@ -214,6 +212,7 @@ public class UserService {
                             try {
                                 return WorkoutDto.
                                         builder().
+                                        id(workout.getId()).
                                         name(workout.getName()).
                                         description(workout.getDescription()).
                                         coverPhotoUrl(workout.getCoverPhotoUrl()).
@@ -233,19 +232,19 @@ public class UserService {
     }
 
     @Transactional
-    public Long startWorkout(String workoutName) throws NotFoundException {
+    public Long startWorkout(Long workoutId) throws NotFoundException {
 
         Workout workout = workoutService
-                .findWorkoutByName(workoutName)
-                .orElseThrow(() -> new NotFoundException("Workout " + workoutName + " not found"));
+                .findWorkoutById(workoutId)
+                .orElseThrow(() -> new NotFoundException("Workout " + workoutId + " not found"));
 
         UserHistoryWorkout userHistoryWorkout = UserHistoryWorkout
                 .builder()
                 .workout(workout)
                 .userHistoryModules(new ArrayList<>())
                 .user(authorityService.getUser())
+                .isWorkoutDone(false)
                 .build();
-
 
         UserHistoryWorkout userHistoryWorkoutRetrieve = userHistoryWorkoutService.save(userHistoryWorkout);
 
@@ -266,7 +265,7 @@ public class UserService {
                 .builder()
                 .userHistoryWorkout(userHistoryWorkout)
                 .userHistoryExercises(new ArrayList<>())
-                .noSets(1)//change this. a module should deduce the number of exercises based on the size of the list
+                .noSets(requestSaveModuleDto.getNoSets())
                 .build();
 
         if (userHistoryWorkout.getUserHistoryModules() == null) {
@@ -276,12 +275,12 @@ public class UserService {
         userHistoryWorkout.addUserHistoryModule(userHistoryModule);
 
         // Save userHistoryWorkout to the database
-         userHistoryWorkoutService.saveAndFlush(userHistoryWorkout);
+        userHistoryWorkoutService.saveAndFlush(userHistoryWorkout);
 
 
-         UserHistoryWorkout userHistoryWorkoutRetrieve = userHistoryWorkoutService.getUserHistoryWorkout(userHistoryWorkout.getId()).orElseThrow();
+        UserHistoryWorkout userHistoryWorkoutRetrieve = userHistoryWorkoutService.getUserHistoryWorkout(userHistoryWorkout.getId()).orElseThrow();
 
-        return userHistoryWorkoutRetrieve.getUserHistoryModules().get(userHistoryWorkoutRetrieve.getUserHistoryModules().size() -1).getId();
+        return userHistoryWorkoutRetrieve.getUserHistoryModules().get(userHistoryWorkoutRetrieve.getUserHistoryModules().size() - 1).getId();
     }
 
 
@@ -312,12 +311,12 @@ public class UserService {
 
     }
 
-    //TODO: implement service for get exercise details
 
     private Double calculateDifficultyLevel(Set<Exercise> exercises) {
 
         return exercises.stream().mapToDouble(exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
     }
+
     public void addWorkout(PostWorkoutRequestDto postWorkoutRequestDto) throws NotFoundException {
 
         Workout workout = Workout
@@ -334,4 +333,20 @@ public class UserService {
     }
 
 
+    @Transactional
+    public void finishWorkout(Long userHistoryWotkoutId) throws NotFoundException {
+
+        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService
+                .getUserHistoryWorkout(userHistoryWotkoutId)
+                .orElseThrow(() -> new NotFoundException("user histtory workout" + userHistoryWotkoutId + " not found"));
+
+        userHistoryWorkout.setIsWorkoutDone(true);
+
+    }
+
+
+    public List<Workout> getStartedWorkouts(Long idUser) {
+
+
+    }
 }

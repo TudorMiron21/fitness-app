@@ -35,10 +35,10 @@ class AppPage {
   static getLogin() => login;
   static getRegister() => register;
 
-  static GetPage getExercisePage(List<Exercise> exercises, String workoutName){
+  static GetPage getExercisePage(List<Exercise> exercises, String workoutName, int workoutId){
     return GetPage(
       name: exercisePage,
-      page: () => ExercisePage(exercises: exercises, workoutName: workoutName,),
+      page: () => ExercisePage(exercises: exercises, workoutName: workoutName,workoutId: workoutId,),
       transition: Transition.fadeIn, // Adjust as needed
     );
   }

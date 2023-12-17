@@ -121,9 +121,9 @@ public class AdminService {
         }
     }
 
-    public void deleteWorkout(String workoutName) throws NotFoundException, AuthorizationExceptionHandler {
+    public void deleteWorkout(Long workoutId) throws NotFoundException, AuthorizationExceptionHandler {
         if (authorityService.isAdmin()) {
-            Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout not found in the database"));
+            Workout workout = workoutService.findWorkoutById(workoutId).orElseThrow(() -> new NotFoundException("workout not found in the database"));
             if (workout.isGlobal()) {
                 workoutService.deleteWorkout(workout);
             } else {
@@ -136,16 +136,16 @@ public class AdminService {
     }
 
     @Transactional
-    public void deleteExerciseFromWorkout(String exerciseName, String workoutName) throws AuthorizationExceptionHandler, NotFoundException {
+    public void deleteExerciseFromWorkout(Long exerciseId, Long workoutId) throws AuthorizationExceptionHandler, NotFoundException {
         if (authorityService.isAdmin()) {
-            Workout workout = workoutService.findWorkoutByName(workoutName).orElseThrow(() -> new NotFoundException("workout not found in the database"));
+            Workout workout = workoutService.findWorkoutById(workoutId).orElseThrow(() -> new NotFoundException("workout not found in the database"));
             if (workout.isGlobal()) {
 
                 Exercise foundExercise = null;
                 Iterator<Exercise> iterator = workout.getExercises().iterator();
                 while (iterator.hasNext()) {
                     Exercise exercise = iterator.next();
-                    if (exercise.getName().equals(exerciseName)) {
+                    if (exercise.getId().equals(exerciseId)) {
                         iterator.remove(); // Use iterator to remove the element
                         foundExercise = exercise;
                         break; // Exit the loop once the exercise is found and removed

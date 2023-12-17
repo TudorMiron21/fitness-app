@@ -17,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class WorkoutDto {
 
+    private Long id;
     private String name;
     private String description;
     private String coverPhotoUrl;

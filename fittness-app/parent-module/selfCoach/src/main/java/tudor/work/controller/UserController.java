@@ -12,6 +12,7 @@ import tudor.work.exceptions.UserAccessException;
 import tudor.work.service.AuthorityService;
 import tudor.work.service.UserService;
 
+import javax.ws.rs.Path;
 import java.util.List;
 
 @RestController
@@ -21,26 +22,6 @@ public class UserController {
 
     private final UserService userService;
     private final AuthorityService authorityService;
-
-    //    @GetMapping
-//    public String get() {
-//        return "GET:: user controller";
-//    }
-    @PostMapping
-    public String post() {
-        return "POST:: user controller";
-    }
-
-    @PutMapping
-    public String put() {
-        return "PUT:: user controller";
-    }
-
-    @DeleteMapping
-    public String delete() {
-        return "DELETE:: user controller";
-    }
-
 
     //this controller gets all the exercises available from the database depending on the authorities of the user
     @GetMapping("/exercises")
@@ -111,24 +92,24 @@ public class UserController {
     }
 
 
-    @PutMapping("/likeWorkout/{workoutName}")
-    public ResponseEntity<?> likeWorkout(@PathVariable(name = "workoutName") String workoutName)
+    @PutMapping("/likeWorkout/{workoutId}")
+    public ResponseEntity<?> likeWorkout(@PathVariable(name = "workoutId") Long workoutId)
     {
         try {
-            userService.likeWorkout(workoutName);
-            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " liked by user " + authorityService.getEmail());
+            userService.likeWorkout(workoutId);
+            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutId + " liked by user " + authorityService.getEmail());
 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    @DeleteMapping("/unlikeWorkout/{workoutName}")
-    public ResponseEntity<?> unlikeWorkout(@PathVariable(name = "workoutName") String workoutName)
+    @DeleteMapping("/unlikeWorkout/{workoutId}")
+    public ResponseEntity<?> unlikeWorkout(@PathVariable(name = "workoutId") Long workoutId)
     {
         try {
-            userService.unlikeWorkout(workoutName);
-            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutName + " unliked by user " + authorityService.getEmail());
+            userService.unlikeWorkout(workoutId);
+            return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutId + " unliked by user " + authorityService.getEmail());
 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -153,11 +134,11 @@ public class UserController {
     }
 
 
-    @PostMapping("/startWorkout/{workoutName}")
-    public ResponseEntity<?> startWorkout(@PathVariable(name = "workoutName") String workoutName){
+    @PostMapping("/startWorkout/{workoutId}")
+    public ResponseEntity<?> startWorkout(@PathVariable(name = "workoutId") Long workoutId){
 
         try {
-            Long userHistoryWorkoutId = userService.startWorkout(workoutName);
+            Long userHistoryWorkoutId = userService.startWorkout(workoutId);
             return ResponseEntity.status(HttpStatus.OK).body(userHistoryWorkoutId);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -207,5 +188,28 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+
+
+    @PutMapping("/finishWorkout/{userHistoryWorkoutId}")
+    public ResponseEntity<?> finishWorkout(@PathVariable(name = "userHistoryWorkoutId")Long userHistoryWorkoutId)
+    {
+        try {
+            userService.finishWorkout(userHistoryWorkoutId);
+            return ResponseEntity.status(HttpStatus.OK).body("workout finished");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+    }
+
+
+    @GetMapping("/getStartedWorkouts/{idUser}")
+    public ResponseEntity<?> getStartedWorkouts(@PathVariable("idUser") Long idUser)
+    {
+        userService.getStartedWorkouts(idUser);
+    }
+
+
 }
 
