@@ -1,9 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/parent-module/pom.xml" />
+        <option value="$PROJECT_DIR$/parent-module/eureka-server/pom.xml" />
+        <option value="$PROJECT_DIR$/parent-module/api-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/parent-module/authorization/pom.xml" />
+        <option value="$PROJECT_DIR$/parent-module/selfCoach/pom.xml" />
       </list>
     </option>
   </component>

@@ -12,12 +12,12 @@
   <name>parent-module</name>
   <!-- FIXME change it to the project's website -->
   <url>https://www.example.com</url>
-  <modules>
-    <module>selfCoach</module>
-    <module>eureka-server</module>
-    <module>api-gateway</module>
-    <module>authorization</module>
-  </modules>
+<!--  <modules>-->
+<!--    <module>selfCoach</module>-->
+<!--    <module>eureka-server</module>-->
+<!--    <module>api-gateway</module>-->
+<!--    <module>authorization</module>-->
+<!--  </modules>-->
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

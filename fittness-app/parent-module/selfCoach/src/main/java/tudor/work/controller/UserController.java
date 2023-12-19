@@ -204,11 +204,11 @@ public class UserController {
     }
 
 
-    @GetMapping("/getStartedWorkouts/{idUser}")
-    public ResponseEntity<?> getStartedWorkouts(@PathVariable("idUser") Long idUser)
-    {
-        userService.getStartedWorkouts(idUser);
-    }
+//    @GetMapping("/getStartedWorkouts/{idUser}")
+//    public ResponseEntity<?> getStartedWorkouts(@PathVariable("idUser") Long idUser)
+//    {
+//        userService.getStartedWorkouts(idUser);
+//    }
 
 
 }

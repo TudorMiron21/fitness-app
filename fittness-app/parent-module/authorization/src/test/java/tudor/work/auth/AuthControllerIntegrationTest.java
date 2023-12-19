@@ -73,7 +73,7 @@ public class AuthControllerIntegrationTest {
         RegisterRequest registerRequest = RegisterRequest.builder()
                 .firstname("test")
                 .lastname("test")
-                .email("test.email@test.com")
+                .email("test.email1@test.com")
                 .password("testPass")
                 .role(Roles.USER)
                 .build();
@@ -87,7 +87,7 @@ public class AuthControllerIntegrationTest {
 
 
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("test.email@test.com")
+                .email("test.email1@test.com")
                 .password("testPass")
                 .build();
         this.mockMvc.perform(MockMvcRequestBuilders
