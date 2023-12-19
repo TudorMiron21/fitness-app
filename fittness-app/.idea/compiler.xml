@@ -12,8 +12,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="authorization" />
-        <module name="selfCoach" />
         <module name="eureka-server" />
       </profile>
     </annotationProcessing>

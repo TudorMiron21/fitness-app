@@ -1,0 +1,26 @@
+# Use an official Maven image to build the project
+FROM maven:3.8.2-openjdk-17-slim AS build
+WORKDIR /build
+
+# Copy the parent pom.xml
+COPY parent-module/pom.xml .
+
+# Copy the authorization module including its pom.xml
+COPY parent-module/selfCoach/pom.xml ./selfCoach/
+COPY parent-module/selfCoach/src ./selfCoach/src
+
+# Resolve the dependencies of the parent pom
+RUN mvn -f pom.xml dependency:go-offline -B
+
+# Build the authorization module
+RUN mvn -f ./selfCoach/pom.xml clean package
+
+# Use an official OpenJDK image to run the application
+FROM openjdk:17-slim
+WORKDIR /app
+
+# Copy the built artifact from the build stage into the final image
+COPY --from=build /build/selfCoach/target/fitness-app-self-coach.jar .
+
+# Define the command to run the application
+ENTRYPOINT ["java","-jar","fitness-app-self-coach.jar"]
