@@ -11,18 +11,20 @@ import java.util.Set;
 
 @Entity
 @Table
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "userHistoryExercises")
-@EqualsAndHashCode(exclude = "userHistoryExercises")
+@Getter
+@Setter
+//@Data
+//@ToString(exclude = "userHistoryExercises")
+//@EqualsAndHashCode(exclude = "userHistoryExercises")
 @Builder
 public class UserHistoryModule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "userHistoryModule",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "userHistoryModule",cascade = CascadeType.ALL)
     private List<UserHistoryExercise> userHistoryExercises;
 
     @ManyToOne

@@ -1,4 +1,12 @@
+import 'dart:convert';
+
+import 'package:fittnes_frontend/models/exercise.dart';
+import 'package:fittnes_frontend/models/workout.dart';
+import 'package:fittnes_frontend/pages/exercise_page.dart';
+import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({super.key});
@@ -10,39 +18,164 @@ class DiscoverPage extends StatefulWidget {
 class _DiscoverPageState extends State<DiscoverPage> {
   int currentPageIndex = 1;
 
-  // Example list of workouts for the first list
-  final List<String> workoutsList1 = [
-    'Workout 1',
-    'Workout 2',
-    'Workout 3',
-    // Add more workouts
-  ];
+  List<String> workoutsList1 = List.empty();
+  List<String> workoutsList2 = List.empty();
 
-  // Example list of workouts for the second list
-  final List<String> workoutsList2 = [
-    'Workout A',
-    'Workout B',
-    'Workout C',
-    // Add more workouts
-  ];
+  Future<List<Workout>> fetchStartedWorkouts() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+    String email = JwtUtils.extractSubject(accessToken);
+
+    final response = await http.get(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/user/getStartedWorkouts/' +
+              email),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    List<Workout> workouts = List.empty();
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+
+      // Map the API response to a list of Workout objects
+      workouts = data.map((json) {
+        List<Exercise> exerciseList = (json['exercises'] as List)
+            .map((exerciseJson) => Exercise(
+                  id: exerciseJson['id'],
+                  name: exerciseJson['name'],
+                  description: exerciseJson['description'] ?? "",
+                  descriptionUrl: exerciseJson['descriptionUrl'] ?? "",
+                  exerciseImageStartUrl:
+                      exerciseJson['exerciseImageStartUrl'] ?? "",
+                  exerciseImageEndUrl:
+                      exerciseJson['exerciseImageEndUrl'] ?? "",
+                  exerciseVideoUrl: exerciseJson['exerciseVideoUrl'] ?? "",
+                  difficulty: exerciseJson['difficulty']['dificultyLevel'],
+                  category: exerciseJson['category']['name'],
+                  exerciseExclusive: exerciseJson['exerciseExclusive'],
+                  equipment: exerciseJson['equipment']['name'],
+                  muscleGroup: exerciseJson['muscleGroup']['name'],
+                  rating: exerciseJson['rating'],
+                  hasNoReps: exerciseJson['hasNoReps'],
+                  hasWeight: exerciseJson['hasWeight'],
+                ))
+            .toList() as List<Exercise>;
+
+        return Workout(
+            id: json['id'],
+            name: json['name'],
+            description: json['description'],
+            difficultyLevel: json['difficultyLevel'],
+            coverPhotoUrl: json['coverPhotoUrl'] ?? "",
+            exercises: exerciseList,
+            likedByUser: json['likedByUser']);
+      }).toList();
+    } else {
+      throw Exception(
+          'Failed to load workouts. Status code: ${response.statusCode}');
+    }
+    return workouts;
+  }
+
+  Future<void> likeWorkout(Workout workout) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.put(
+      Uri.parse('http://localhost:8080/api/selfCoach/user/likeWorkout/' +
+          workout.id.toString()),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) //OK
+    {
+      setState(() {
+        workout.likedByUser = true;
+      });
+    } else {
+      throw Exception(
+          'Failed to like workout. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<void> unlikeWorkout(Workout workout) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    // TODO: Implement the API call to unlike the workout
+    // Use the workout.id to identify the workout to unlike
+
+    final response = await http.delete(
+      Uri.parse('http://localhost:8080/api/selfCoach/user/unlikeWorkout/' +
+          workout.id.toString()),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) //OK
+    {
+      setState(() {
+        workout.likedByUser = false;
+      });
+    } else {
+      throw Exception(
+          'Failed to like workout. Status code: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Discover Workouts'),
+        title: Text('Your Workouts'),
       ),
       body: Column(
         children: [
-          Expanded(
-            flex: 1, // Adjust the flex factor as needed for balance
-            child: ListView.builder(
-              itemCount: workoutsList1.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(workoutsList1[index]),
-                  // Add other properties like leading, subtitle, onTap, etc.
-                );
+          SizedBox(
+            height: 200,
+            child: FutureBuilder<List<Workout>>(
+              future: fetchStartedWorkouts(),
+              builder: (context, mostLikedWorkoutsSnapshot) {
+                if (mostLikedWorkoutsSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (mostLikedWorkoutsSnapshot.hasError) {
+                  return Center(
+                      child: Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
+                } else {
+                  List<Workout> mostLikedWorkouts =
+                      mostLikedWorkoutsSnapshot.data!;
+
+                  return PageView.builder(
+                    itemCount: mostLikedWorkouts.length,
+                    itemBuilder: (context, index) {
+                      Workout workout = mostLikedWorkouts[index];
+
+                      return buildWorkoutCard(workout);
+
+                      // Remaining code remains the same...
+                    },
+                  );
+                }
               },
             ),
           ),
@@ -92,5 +225,137 @@ class _DiscoverPageState extends State<DiscoverPage> {
         ),
       ),
     );
+  }
+
+  Widget buildWorkoutCard(Workout workout) {
+    // Calculate the difficulty level representation
+    int maxDifficulty = 3; // Adjust the maximum difficulty level
+    double fractionalPart =
+        workout.difficultyLevel - workout.difficultyLevel.floor();
+    List<Widget> difficultyCircles = List.generate(
+      maxDifficulty,
+      (index) {
+        Color circleColor;
+        if (index < workout.difficultyLevel.floor()) {
+          circleColor = Colors.blue;
+        } else if (index == workout.difficultyLevel.floor()) {
+          circleColor =
+              Color.lerp(Colors.blue, Colors.blue.shade200, fractionalPart)!;
+        } else {
+          circleColor = Colors.grey;
+        }
+        return Container(
+          width: 14,
+          height: 14,
+          margin: EdgeInsets.only(left: 4),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: circleColor.withOpacity(1), // Adjust opacity
+          ),
+        );
+      },
+    );
+    return Card(
+      elevation: 5,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(workout.coverPhotoUrl),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black
+                  .withOpacity(0.65), // Adjust opacity of the background image
+              BlendMode.darken,
+            ),
+          ),
+        ),
+        child: ListTile(
+          contentPadding: EdgeInsets.all(16),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                workout.name,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white, // Adjust text color
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                workout.description,
+                style: TextStyle(
+                  color: Colors.white, // Adjust text color
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Exercises: ${workout.exercises.length}',
+                style: TextStyle(
+                  color: Colors.white, // Adjust text color
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // Difficulty Circles
+                  ...difficultyCircles,
+                  SizedBox(
+                      width:
+                          8), // Adjust spacing between circles and difficulty level
+                  // Difficulty Level
+                  Text(
+                    getDifficultyText(workout.difficultyLevel),
+                    style: TextStyle(
+                      color: Colors.white, // Adjust text color
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          trailing: GestureDetector(
+            onTap: () {
+              if (workout.likedByUser) {
+                unlikeWorkout(workout);
+              } else {
+                likeWorkout(workout);
+              }
+            },
+            child: Icon(
+              workout.likedByUser ? Icons.favorite : Icons.favorite_border,
+              color: workout.likedByUser ? Colors.red : Colors.white,
+            ),
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ExercisePage(
+                  exercises: workout.exercises,
+                  workoutName: workout.name,
+                  workoutId: workout.id,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  String getDifficultyText(double difficultyLevel) {
+    if (difficultyLevel >= 0 && difficultyLevel < 1) {
+      return 'Beginner';
+    } else if (difficultyLevel >= 1 && difficultyLevel < 2) {
+      return 'Intermediate';
+    } else if (difficultyLevel >= 2 && difficultyLevel < 3) {
+      return 'Expert';
+    } else {
+      return 'Unknown';
+    }
   }
 }

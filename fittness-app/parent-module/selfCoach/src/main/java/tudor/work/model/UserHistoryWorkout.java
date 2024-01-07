@@ -10,12 +10,14 @@ import java.util.Set;
 
 @Entity
 @Table
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString(exclude = "userHistoryModules")
-@EqualsAndHashCode(exclude = "userHistoryModules")
+//@Data
+//@ToString(exclude = "userHistoryModules")
+//@EqualsAndHashCode(exclude = "userHistoryModules")
 public class UserHistoryWorkout {
 
     @Id

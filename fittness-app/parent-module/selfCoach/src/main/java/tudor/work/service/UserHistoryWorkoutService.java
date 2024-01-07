@@ -1,10 +1,13 @@
 package tudor.work.service;
 
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tudor.work.model.UserHistoryWorkout;
 import tudor.work.repository.UserHistoryWorkoutRepository;
+import tudor.work.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,5 +33,20 @@ public class UserHistoryWorkoutService {
         return userHistoryWorkoutRepository.saveAndFlush(userHistoryWorkout);
 
     }
+
+    public List<UserHistoryWorkout> getStartedUserHistoryWorkoutsByUserEmail(String emailUser) {
+
+        return userHistoryWorkoutRepository.findStartedWorkoutsByUserEmail(emailUser);
+    }
+
+    public UserHistoryWorkout isWorkoutPresentInUserHistory(Long workoutId, String emailUser) throws NotFoundException {
+
+        return userHistoryWorkoutRepository.findSpecificStartedWorkoutByUserEmail(workoutId,emailUser).orElseThrow(() ->new NotFoundException("workout with id " + workoutId+ " not found in user workout history of user with email "+ emailUser));
+    }
+
+    public UserHistoryWorkout findById(Long userHistoryWorkoutId) throws NotFoundException {
+        return userHistoryWorkoutRepository.findById(userHistoryWorkoutId).orElseThrow(()-> new NotFoundException( "user history workout entry with id"+ userHistoryWorkoutId + " not found"));
+    }
+
 
 }

@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
+          'http://localhost:8080/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
+          'http://localhost:8080/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
               lowerLimit.toString() +
               '/' +
               upperLimit.toString()),
@@ -162,7 +162,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.put(
-      Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/likeWorkout/' +
+      Uri.parse('http://localhost:8080/api/selfCoach/user/likeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -193,7 +193,7 @@ class _HomePageState extends State<HomePage> {
     // Use the workout.id to identify the workout to unlike
 
     final response = await http.delete(
-      Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/unlikeWorkout/' +
+      Uri.parse('http://localhost:8080/api/selfCoach/user/unlikeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',

@@ -1,16 +1,16 @@
 package tudor.work.model;
 
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table
-@Data
-@EqualsAndHashCode
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class UserHistoryExercise{
     @Id

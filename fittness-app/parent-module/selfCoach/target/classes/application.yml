@@ -9,8 +9,8 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    #      ddl-auto: update
+      #      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -28,3 +28,9 @@ eureka:
 security:
   basic:
     enabled: false
+
+paypal:
+  mode: sandbox
+  client:
+    id: Ach-mwpZQauApIvPKUPDPV_fls6TuT5emEmkB3fDtKu62CHZ1etTaEXOcuwuZ93YrFFZyER6YsWvd_8G
+    secret: EDzjRV8hAl9dO-hrEFEOGyyHPK7pQfi-A9IwqKMEiMC3atxIBtDZdvJj6w_yUU_yZoYE9IEZ_NzMfhX7

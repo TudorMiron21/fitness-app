@@ -1,7 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:fittnes_frontend/models/LastEntryUserHistoryExercise.dart';
+import 'package:fittnes_frontend/models/UpdateExerciseToModule.dart';
+
 import 'package:fittnes_frontend/models/exercise.dart';
+import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/interceptors/get_modifiers.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -230,9 +235,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
 
     final response = await http.post(
-      Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/saveModule'),
+      Uri.parse('http://localhost:8080/api/selfCoach/user/saveModule'),
       body: jsonEncode({
-        "parentUserHistoryWorkoutId": widget.workoutId.toString(),
+        "parentUserHistoryWorkoutId": widget.userHistoryWorkoutId.toString(),
         "noSets": numberOfSets
       }),
       headers: {
@@ -265,7 +270,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
     final response = await http.put(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
+          'http://localhost:8080/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
       body: jsonEncode({
         "exercise": widget.exercises[widget.exerciseIndex].id,
         "userHistoryModule": userHistoryModuleId.toString(),
@@ -287,8 +292,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
   }
 
   Future<void> finishWorkout(int userHistoryWorkoutId) async {
-
-        final FlutterSecureStorage storage = FlutterSecureStorage();
+    final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
     if (accessToken == null || accessToken.isEmpty) {
@@ -296,21 +300,69 @@ class _StartExercisePageState extends State<StartExercisePage> {
       throw Exception('Authentication token is missing or invalid.');
     }
 
-      final response = await http.put(
+    final response = await http.put(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
+          'http://localhost:8080/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
       },
     );
 
-
     if (response.statusCode != 200) {
       throw Exception(
           'Failed to finish workout. Status code: ${response.statusCode}');
     }
+  }
 
+  Future<LastEntryUserHistoryExerciseDto> getLastUserHistoryExercise(
+      int workoutId) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    String email = JwtUtils.extractSubject(accessToken);
+    final response = await http.put(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/user/finishWorkout/$workoutId/$email'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var decodedJson = json.decode(response.body);
+
+      bool isExerciseDone = decodedJson['isExerciseDone'];
+      bool isExerciseFirst = decodedJson['isFirstExercise'];
+      int userHistoryExerciseId = decodedJson['userHistoryExerciseId'];
+      LastEntryUserHistoryExerciseDto lastEntryUserHistoryExerciseDto =
+          new LastEntryUserHistoryExerciseDto(
+              isExerciseDone: isExerciseDone,
+              isExerciseFirst: isExerciseFirst,
+              userHistoryExerciseId: userHistoryExerciseId);
+      return lastEntryUserHistoryExerciseDto;
+    } else {
+      print('http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId');
+      throw Exception("workous is finished");
+    }
+  }
+
+  Future<void> updateExerciseToModule(
+      UpdateExerciseToModule updateExerciseToModule) async {
+        
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
   }
 
   @override
@@ -475,8 +527,27 @@ class _StartExercisePageState extends State<StartExercisePage> {
   }
 
   Future<void> goBack() async {
-    await saveExerciseToModule(widget.userHistoryModuleId, myDuration.inSeconds,
-        false, numberOfReps.toInt(), weight);
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    LastEntryUserHistoryExerciseDto lastEntryUserHistoryExerciseDto =
+        await getLastUserHistoryExercise(widget.workoutId);
+
+    if (lastEntryUserHistoryExerciseDto.isExerciseFirst) await saveModule();
+    if (lastEntryUserHistoryExerciseDto.isExerciseDone) {
+      await saveExerciseToModule(widget.userHistoryModuleId,
+          myDuration.inSeconds, false, numberOfReps.toInt(), weight);
+    } else {
+      await updateExerciseToModule(
+          lastEntryUserHistoryExerciseDto.userHistoryExerciseId,
+          widget.userHistoryWorkoutId);
+    }
+
     Navigator.pop(context);
   }
 
@@ -522,11 +593,6 @@ class _StartExercisePageState extends State<StartExercisePage> {
         ),
       ),
     );
-  }
-
-  void _startExercise(int numberOfSets) {
-    // Add your logic to start the exercise with the selected number of sets
-    // You can use the 'numberOfSets' variable in your implementation
   }
 
   Widget buildTimer() {
@@ -683,8 +749,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
               goToNextExercise(false);
             }
 
-            if(widget.exerciseIndex == widget.exercises.length - 1)
-            {
+            if (widget.exerciseIndex == widget.exercises.length - 1) {
               await finishWorkout(widget.userHistoryWorkoutId);
             }
           },

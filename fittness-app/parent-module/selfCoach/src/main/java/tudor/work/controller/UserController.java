@@ -9,6 +9,7 @@ import tudor.work.dto.*;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
+import tudor.work.model.UserHistoryWorkout;
 import tudor.work.service.AuthorityService;
 import tudor.work.service.UserService;
 
@@ -82,8 +83,8 @@ public class UserController {
     public ResponseEntity<?> addExerciseToWorkout(@PathVariable(name = "exerciseName") String exerciseName, @PathVariable(name = "workoutName") String workoutName) {
 
         try {
-            userService.addExerciseToWorkout(exerciseName,workoutName);
-            return ResponseEntity.status(HttpStatus.OK).body("exercise "+exerciseName+ " added successfully to the workout " + workoutName);
+            userService.addExerciseToWorkout(exerciseName, workoutName);
+            return ResponseEntity.status(HttpStatus.OK).body("exercise " + exerciseName + " added successfully to the workout " + workoutName);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (AuthorizationExceptionHandler e) {
@@ -93,8 +94,7 @@ public class UserController {
 
 
     @PutMapping("/likeWorkout/{workoutId}")
-    public ResponseEntity<?> likeWorkout(@PathVariable(name = "workoutId") Long workoutId)
-    {
+    public ResponseEntity<?> likeWorkout(@PathVariable(name = "workoutId") Long workoutId) {
         try {
             userService.likeWorkout(workoutId);
             return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutId + " liked by user " + authorityService.getEmail());
@@ -105,8 +105,7 @@ public class UserController {
     }
 
     @DeleteMapping("/unlikeWorkout/{workoutId}")
-    public ResponseEntity<?> unlikeWorkout(@PathVariable(name = "workoutId") Long workoutId)
-    {
+    public ResponseEntity<?> unlikeWorkout(@PathVariable(name = "workoutId") Long workoutId) {
         try {
             userService.unlikeWorkout(workoutId);
             return ResponseEntity.status(HttpStatus.OK).body("workout " + workoutId + " unliked by user " + authorityService.getEmail());
@@ -118,24 +117,22 @@ public class UserController {
 
 
     @GetMapping("/workouts/getFirstSixMostLikedWorkouts")
-    public ResponseEntity<?> getFirstSixMostLikedWorkouts()
-    {
-        List<WorkoutDto> workoutDtoList =  userService.getFirstSixMostLikedWorkouts();
+    public ResponseEntity<?> getFirstSixMostLikedWorkouts() {
+        List<WorkoutDto> workoutDtoList = userService.getFirstSixMostLikedWorkouts();
 
         return ResponseEntity.status(HttpStatus.OK).body(workoutDtoList);
     }
 
     @GetMapping("/workouts/getTopWorkoutsForDifficultyLevel/{lowerLimit}/{upperLimit}")
-    public ResponseEntity<?> getTopWorkoutsForDifficultyLevel(@PathVariable(name = "lowerLimit")Double lowerLimit, @PathVariable(name = "upperLimit")Double upperLimit)
-    {
-        List<WorkoutDto> workoutDtoList =  userService.getTopWorkoutsForDifficultyLevel(lowerLimit,upperLimit);
+    public ResponseEntity<?> getTopWorkoutsForDifficultyLevel(@PathVariable(name = "lowerLimit") Double lowerLimit, @PathVariable(name = "upperLimit") Double upperLimit) {
+        List<WorkoutDto> workoutDtoList = userService.getTopWorkoutsForDifficultyLevel(lowerLimit, upperLimit);
         return ResponseEntity.status(HttpStatus.OK).body(workoutDtoList);
 
     }
 
 
     @PostMapping("/startWorkout/{workoutId}")
-    public ResponseEntity<?> startWorkout(@PathVariable(name = "workoutId") Long workoutId){
+    public ResponseEntity<?> startWorkout(@PathVariable(name = "workoutId") Long workoutId) {
 
         try {
             Long userHistoryWorkoutId = userService.startWorkout(workoutId);
@@ -146,10 +143,9 @@ public class UserController {
     }
 
     @PostMapping("/saveModule")
-    public ResponseEntity<?> saveModule(@RequestBody RequestSaveModuleDto requestSaveModuleDto)
-    {
+    public ResponseEntity<?> saveModule(@RequestBody RequestSaveModuleDto requestSaveModuleDto) {
         try {
-           Long id = userService.saveModule(requestSaveModuleDto);
+            Long id = userService.saveModule(requestSaveModuleDto);
             return ResponseEntity.status(HttpStatus.OK).body(id);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -157,10 +153,9 @@ public class UserController {
     }
 
     @PutMapping("/addExerciseToModule/{userHistoryModuleId}")
-    public ResponseEntity<?> addExerciseToModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId, @RequestBody RequestUserHistoryExercise requestUserHistoryExercise)
-    {
+    public ResponseEntity<?> addExerciseToModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId, @RequestBody RequestUserHistoryExercise requestUserHistoryExercise) {
         try {
-            userService.addExerciseToModule(userHistoryModuleId,requestUserHistoryExercise);
+            userService.addExerciseToModule(userHistoryModuleId, requestUserHistoryExercise);
             return ResponseEntity.status(HttpStatus.OK).body("exercise has been successfully added to the module");
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -168,19 +163,22 @@ public class UserController {
         }
     }
 
-
-//    @GetMapping("/getExerciseDetails/{exerciseName}")
-//    public ResponseEntity<?> getExerciseDetails(@PathVariable("exerciseName") String exerciseName)
-//    {
-//
-//
-//
-//    }
+    @PutMapping("/updateUserHistoryExercise/{userHistoryExerciseId}")
+    public ResponseEntity<?> updateUserHistoryExercise(
+            @PathVariable("userHistoryExerciseId") Long userHistoryExerciseId,
+            @RequestBody RequestUpdateUserHistoryExerciseDto requestUpdateUserHistoryExerciseDto
+    ) {
+        try {
+            userService.updateExerciseToWorkout(userHistoryExerciseId, requestUpdateUserHistoryExerciseDto);
+            return ResponseEntity.status(HttpStatus.OK).body("user history exercise with id " + userHistoryExerciseId + " updated successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 
     @PostMapping("/addWorkout")
-    public ResponseEntity<?> addWorkout(@RequestBody PostWorkoutRequestDto postWorkoutRequestDto)
-    {
+    public ResponseEntity<?> addWorkout(@RequestBody PostWorkoutRequestDto postWorkoutRequestDto) {
         try {
             userService.addWorkout(postWorkoutRequestDto);
             return ResponseEntity.status(HttpStatus.OK).body("workout added successfully");
@@ -190,10 +188,8 @@ public class UserController {
     }
 
 
-
     @PutMapping("/finishWorkout/{userHistoryWorkoutId}")
-    public ResponseEntity<?> finishWorkout(@PathVariable(name = "userHistoryWorkoutId")Long userHistoryWorkoutId)
-    {
+    public ResponseEntity<?> finishWorkout(@PathVariable(name = "userHistoryWorkoutId") Long userHistoryWorkoutId) {
         try {
             userService.finishWorkout(userHistoryWorkoutId);
             return ResponseEntity.status(HttpStatus.OK).body("workout finished");
@@ -204,12 +200,36 @@ public class UserController {
     }
 
 
-//    @GetMapping("/getStartedWorkouts/{idUser}")
-//    public ResponseEntity<?> getStartedWorkouts(@PathVariable("idUser") Long idUser)
-//    {
-//        userService.getStartedWorkouts(idUser);
-//    }
+    @GetMapping("/getStartedWorkouts/{emailUser}")
+    public ResponseEntity<?> getStartedWorkouts(@PathVariable("emailUser") String emailUser) {
+        try {
+            List<WorkoutDto> workouts = userService.getStartedWorkouts(emailUser);
+            return ResponseEntity.status(HttpStatus.OK).body(workouts);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
+    @GetMapping("/isWorkoutPresentInUserHistory/{workoutId}/{emailUser}")
+    public ResponseEntity<?> isWorkoutPresentInUserHistory(@PathVariable("workoutId") Long workoutId, @PathVariable("emailUser") String emailUser) {
+
+        try {
+            ResponseWorkoutPresentInUserHistoryDto responseWorkoutPresentInUserHistoryDto = userService.isWorkoutPresentInUserHistory(workoutId, emailUser);
+            return ResponseEntity.status(HttpStatus.OK).body(responseWorkoutPresentInUserHistoryDto);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getLastEntryUserExerciseHistory/{workoutId}/{userEmail}")
+    public ResponseEntity<?> getLastEntryUserExerciseHistory(@PathVariable("workoutId") Long workoutId, @PathVariable("userEmail") String userEmail) {
+        try {
+            ResponseLastEntryUserHistoryExerciseDto responseLastEntryUserHistoryExerciseDto = userService.getLastEntryUserExerciseHistory(workoutId, userEmail);
+            return ResponseEntity.status(HttpStatus.OK).body(responseLastEntryUserHistoryExerciseDto);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 }
 

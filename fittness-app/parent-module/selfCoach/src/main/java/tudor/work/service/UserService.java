@@ -2,12 +2,9 @@ package tudor.work.service;
 
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.bouncycastle.pqc.crypto.rainbow.Layer;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 import tudor.work.dto.*;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
@@ -18,7 +15,6 @@ import tudor.work.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -32,6 +28,7 @@ public class UserService {
     private final WorkoutService workoutService;
     private final UserHistoryWorkoutService userHistoryWorkoutService;
     private final UserHistoryModuleService userHistoryModuleService;
+    private final UserHistoryExerciseService userHistoryExerciseService;
 
     public List<ExerciseDto> getAllExercises() {
 
@@ -142,6 +139,7 @@ public class UserService {
         workoutService.saveWorkout(workout);
     }
 
+    //TODO: change the parameters from name(String) to Id(Long)
     @Transactional
     public void addExerciseToWorkout(String exerciseName, String workoutName) throws NotFoundException, AuthorizationExceptionHandler {
         //checks is the exercise is present in the database
@@ -157,6 +155,22 @@ public class UserService {
 
 
     }
+
+    //TODO: Finish this method
+    @Transactional
+    public void updateExerciseToWorkout(
+            Long userHistoryExerciseId,
+            RequestUpdateUserHistoryExerciseDto requestUpdateUserHistoryExerciseDto
+    ) throws NotFoundException {
+
+        UserHistoryExercise userHistoryExercise = userHistoryExerciseService.findById(userHistoryExerciseId);
+
+        userHistoryExercise.setCurrNoSeconds(requestUpdateUserHistoryExerciseDto.getCurrentNoSeconds());
+        userHistoryExercise.setNoReps(requestUpdateUserHistoryExerciseDto.getNoReps());
+        userHistoryExercise.setWeight(requestUpdateUserHistoryExerciseDto.getWeight());
+
+    }
+
 
     @Transactional
     public void likeWorkout(Long workoutId) throws NotFoundException {
@@ -345,8 +359,85 @@ public class UserService {
     }
 
 
-//    public List<Workout> getStartedWorkouts(Long idUser) {
-//
-//
-//    }
+    public Boolean userExists(String emailUser) {
+        return userRepository.findByEmail(emailUser).isPresent();
+    }
+
+    public List<WorkoutDto> getStartedWorkouts(String emailUser) throws NotFoundException {
+
+        List<UserHistoryWorkout> startedUserHistoryWorkouts;
+        if (userExists(emailUser)) {
+            startedUserHistoryWorkouts = userHistoryWorkoutService.getStartedUserHistoryWorkoutsByUserEmail(emailUser);
+            List<Workout> startedWorkoutsList = startedUserHistoryWorkouts
+                    .stream()
+                    .map(userHistoryWorkout -> workoutService
+                            .findWorkoutById(userHistoryWorkout
+                                    .getWorkout()
+                                    .getId())
+                            .get())
+                    .toList();
+
+            return startedWorkoutsList.stream().map(workout ->
+
+                    WorkoutDto.
+                            builder().
+                            id(workout.getId()).
+                            name(workout.getName()).
+                            description(workout.getDescription()).
+                            coverPhotoUrl(workout.getCoverPhotoUrl()).
+                            difficultyLevel(workout.getDifficultyLevel()).
+                            exercises(workout.getExercises())
+                            .build()
+                    ).toList();
+        } else {
+            throw new NotFoundException("user with email " + emailUser + " not found");
+        }
+
+    }
+
+    @Transactional
+    public ResponseWorkoutPresentInUserHistoryDto isWorkoutPresentInUserHistory(Long workoutId, String emailUser) throws NotFoundException {
+
+        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.isWorkoutPresentInUserHistory(workoutId,emailUser);
+
+        Long userHistoryWorkoutId = userHistoryWorkout.getId();
+
+        Integer moduleIndex =  userHistoryWorkout.getUserHistoryModules().size();
+
+        Integer exerciseIndex = userHistoryWorkout.getUserHistoryModules().get(moduleIndex-1).getUserHistoryExercises().size();
+
+        Integer noSetsLastModule = userHistoryWorkout.getUserHistoryModules().get(moduleIndex -1 ).getNoSets();
+
+
+        return ResponseWorkoutPresentInUserHistoryDto
+                .builder()
+                .userHistoryWorkoutId(userHistoryWorkoutId)
+                .exerciseIndex(exerciseIndex)
+                .moduleIndex(moduleIndex)
+                .noSetsLastModule(noSetsLastModule)
+                .build();
+    }
+
+    public ResponseLastEntryUserHistoryExerciseDto getLastEntryUserExerciseHistory(Long workoutId, String userEmail) throws NotFoundException {
+
+        //if the exception is triggered it means that there is no started workout in the history for the specified email
+        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.isWorkoutPresentInUserHistory(workoutId,userEmail);
+
+        Integer noModules = userHistoryWorkout.getUserHistoryModules().size();
+
+        UserHistoryModule lastUserHistoryModule = userHistoryWorkout.getUserHistoryModules().get(noModules -1);
+
+        Integer noDoneExercises = lastUserHistoryModule.getUserHistoryExercises().size();
+        UserHistoryExercise lastUserHistoryExercise = lastUserHistoryModule.getUserHistoryExercises().get(noDoneExercises - 1);
+
+
+        return ResponseLastEntryUserHistoryExerciseDto
+                .builder()
+                .isExerciseDone(lastUserHistoryExercise.isDone())
+                .isFirstExercise(noDoneExercises.equals(lastUserHistoryModule.getNoSets()) )
+                .userHistoryExerciseId(lastUserHistoryExercise.getId())
+                .build();
+
+
+    }
 }

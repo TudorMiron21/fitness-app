@@ -1,16 +1,45 @@
 import 'package:fittnes_frontend/pages/exercise_details_page.dart';
 import 'package:fittnes_frontend/pages/start_exercise_page.dart';
+import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ExercisePage extends StatelessWidget {
+class ExercisePage extends StatefulWidget {
   final List<Exercise> exercises;
   final String workoutName;
   final int workoutId;
-  late int userHistoryWorkoutId;
+  ExercisePage(
+      {required this.exercises,
+      required this.workoutName,
+      required this.workoutId});
 
+  @override
+  State<ExercisePage> createState() => _ExercisePageState();
+}
+
+class _ExercisePageState extends State<ExercisePage> {
+  late bool isWorkoutDone;
+  late int userHistoryWorkoutId;
+  bool isWorkoutStarted = false; // Initial flag for workout status
+  late int exerciseIndex;
+  late int noSets;
+
+    @override
+  void initState() {
+    super.initState();
+    _checkWorkoutStatus(); // Check workout status on initialization
+  }
+
+  Future<void> _checkWorkoutStatus() async {
+    bool workoutStarted = await isWorkoutPresentInUserHistory(widget.workoutId);
+    setState(() {
+      isWorkoutStarted = workoutStarted;
+    });
+  }
   Future<void> saveWorkoutToHistory(int workoutId) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
@@ -19,45 +48,89 @@ class ExercisePage extends StatelessWidget {
       throw Exception('Authentication token is missing or invalid.');
     }
 
-    final response = await http.post(
+    final workoutExistsInUserHistoryResponse = await http.get(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/startWorkout/$workoutId'),
+          'http://localhost:8080/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
+              workoutId.toString() +
+              '/' +
+              JwtUtils.extractSubject(accessToken)),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
     );
 
-    if (response.statusCode == 200) {
-      print("workout " + workoutName + " added to history");
-      userHistoryWorkoutId =int.parse( response.body);
-
+    if (workoutExistsInUserHistoryResponse.statusCode == 200) {
+      var decodedJson = json.decode(workoutExistsInUserHistoryResponse.body);
+      userHistoryWorkoutId = decodedJson['userHistoryWorkoutId'];
+      exerciseIndex = decodedJson['exerciseIndex'];
+      noSets = decodedJson['noSetsLastModule'];
     } else {
-      print(
-          'http://192.168.0.229:8080/api/selfCoach/user/startWorkout/$workoutId');
-      throw Exception(
-          'Failed to save workout to history. Status code: ${response.statusCode}');
+
+      exerciseIndex = 0;
+      noSets = 1;
+      final response = await http.post(
+        Uri.parse(
+            'http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId'),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print("workout " + widget.workoutName + " added to history");
+        userHistoryWorkoutId = int.parse(response.body);
+      } else {
+        print(
+            'http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId');
+        throw Exception(
+            'Failed to save workout to history. Status code: ${response.statusCode}');
+      }
     }
   }
 
-  ExercisePage({required this.exercises, required this.workoutName,required this.workoutId});
+  Future<bool> isWorkoutPresentInUserHistory(int workoutId) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final workoutExistsInUserHistoryResponse = await http.get(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
+              workoutId.toString() +
+              '/' +
+              JwtUtils.extractSubject(accessToken)),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (workoutExistsInUserHistoryResponse.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.blue.withOpacity(0.6), // Use any color from the Colors class
+      backgroundColor:
+          Colors.blue.withOpacity(0.6), // Use any color from the Colors class
       appBar: AppBar(
-        title: Text(this.workoutName),
+        title: Text(this.widget.workoutName),
         elevation: 0, // Set elevation to 0 for a flatter look, if preferred
         backgroundColor: Colors.blue, // A more modern color
       ),
       body: ListView.builder(
-        itemCount: exercises.length,
+        itemCount: widget.exercises.length,
         itemBuilder: (context, index) {
-          Exercise exercise = exercises[index];
+          Exercise exercise = widget.exercises[index];
           return Card(
             margin: EdgeInsets.all(12.0),
             elevation: 4,
-
             child: ListTile(
               tileColor: Colors.grey.withOpacity(0.3),
               contentPadding:
@@ -115,15 +188,15 @@ class ExercisePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          await saveWorkoutToHistory(workoutId);
+          await saveWorkoutToHistory(widget.workoutId);
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => StartExercisePage(
-                exercises: exercises,
-                exerciseIndex: 0,
-                workoutId: workoutId,
-                noSets: 1,
+                exercises: widget.exercises,
+                exerciseIndex: exerciseIndex,
+                workoutId: widget.workoutId,
+                noSets: noSets,
                 isFirstExercise: true,
                 userHistoryModuleId: 0,
                 userHistoryWorkoutId: userHistoryWorkoutId,
@@ -132,7 +205,9 @@ class ExercisePage extends StatelessWidget {
           );
         },
         icon: Icon(Icons.play_arrow),
-        label: Text('Start Workout'), // Label for clarity
+        label: isWorkoutStarted 
+            ? Text('Continue Workout')
+            : Text('Start Workout'), // Label for clarity
         backgroundColor: Colors.blue,
         elevation: 5.0,
       ),
