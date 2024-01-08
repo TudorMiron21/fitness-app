@@ -27,6 +27,13 @@ class _ExercisePageState extends State<ExercisePage> {
   bool isWorkoutStarted = false; // Initial flag for workout status
   late int exerciseIndex;
   late int noSets;
+  late bool isFirstExercise;
+
+  late int initialNoSets;
+  late int initialNoReps;
+  late double initialWeight;
+  late int initialNoSeconds;
+
 
     @override
   void initState() {
@@ -62,12 +69,15 @@ class _ExercisePageState extends State<ExercisePage> {
     if (workoutExistsInUserHistoryResponse.statusCode == 200) {
       var decodedJson = json.decode(workoutExistsInUserHistoryResponse.body);
       userHistoryWorkoutId = decodedJson['userHistoryWorkoutId'];
-      exerciseIndex = decodedJson['exerciseIndex'];
+      exerciseIndex = decodedJson['moduleIndex'];
+      isFirstExercise = false;
+      
       noSets = decodedJson['noSetsLastModule'];
     } else {
 
       exerciseIndex = 0;
       noSets = 1;
+      isFirstExercise = true;
       final response = await http.post(
         Uri.parse(
             'http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId'),

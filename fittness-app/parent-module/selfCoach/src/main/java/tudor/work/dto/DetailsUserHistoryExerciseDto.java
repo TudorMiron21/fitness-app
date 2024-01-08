@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RequestUpdateUserHistoryExerciseDto {
+public class DetailsUserHistoryExerciseDto {
 
     private Long currentNoSeconds;
 

@@ -2,7 +2,6 @@ package tudor.work.service;
 
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.bouncycastle.pqc.crypto.rainbow.Layer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.*;
@@ -160,7 +159,7 @@ public class UserService {
     @Transactional
     public void updateExerciseToWorkout(
             Long userHistoryExerciseId,
-            RequestUpdateUserHistoryExerciseDto requestUpdateUserHistoryExerciseDto
+            DetailsUserHistoryExerciseDto requestUpdateUserHistoryExerciseDto
     ) throws NotFoundException {
 
         UserHistoryExercise userHistoryExercise = userHistoryExerciseService.findById(userHistoryExerciseId);
@@ -388,7 +387,7 @@ public class UserService {
                             difficultyLevel(workout.getDifficultyLevel()).
                             exercises(workout.getExercises())
                             .build()
-                    ).toList();
+            ).toList();
         } else {
             throw new NotFoundException("user with email " + emailUser + " not found");
         }
@@ -398,22 +397,22 @@ public class UserService {
     @Transactional
     public ResponseWorkoutPresentInUserHistoryDto isWorkoutPresentInUserHistory(Long workoutId, String emailUser) throws NotFoundException {
 
-        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.isWorkoutPresentInUserHistory(workoutId,emailUser);
+        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.isWorkoutPresentInUserHistory(workoutId, emailUser);
 
         Long userHistoryWorkoutId = userHistoryWorkout.getId();
 
-        Integer moduleIndex =  userHistoryWorkout.getUserHistoryModules().size();
+        Integer moduleIndex = userHistoryWorkout.getUserHistoryModules().size();
 
-        Integer exerciseIndex = userHistoryWorkout.getUserHistoryModules().get(moduleIndex-1).getUserHistoryExercises().size();
+        Integer exerciseIndex = userHistoryWorkout.getUserHistoryModules().get(moduleIndex - 1).getUserHistoryExercises().size();
 
-        Integer noSetsLastModule = userHistoryWorkout.getUserHistoryModules().get(moduleIndex -1 ).getNoSets();
+        Integer noSetsLastModule = userHistoryWorkout.getUserHistoryModules().get(moduleIndex - 1).getNoSets();
 
 
         return ResponseWorkoutPresentInUserHistoryDto
                 .builder()
                 .userHistoryWorkoutId(userHistoryWorkoutId)
-                .exerciseIndex(exerciseIndex)
-                .moduleIndex(moduleIndex)
+                .exerciseIndex(exerciseIndex - 1)
+                .moduleIndex(moduleIndex - 1)
                 .noSetsLastModule(noSetsLastModule)
                 .build();
     }
@@ -421,23 +420,45 @@ public class UserService {
     public ResponseLastEntryUserHistoryExerciseDto getLastEntryUserExerciseHistory(Long workoutId, String userEmail) throws NotFoundException {
 
         //if the exception is triggered it means that there is no started workout in the history for the specified email
-        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.isWorkoutPresentInUserHistory(workoutId,userEmail);
+        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.isWorkoutPresentInUserHistory(workoutId, userEmail);
 
+        Boolean isFirstValue = false;
+        Boolean isDone = false;
+        Long userHistoryExerciseId = 0L;
         Integer noModules = userHistoryWorkout.getUserHistoryModules().size();
+        UserHistoryModule lastUserHistoryModule;
 
-        UserHistoryModule lastUserHistoryModule = userHistoryWorkout.getUserHistoryModules().get(noModules -1);
+        if (!userHistoryWorkout.getUserHistoryModules().isEmpty()) {
 
-        Integer noDoneExercises = lastUserHistoryModule.getUserHistoryExercises().size();
-        UserHistoryExercise lastUserHistoryExercise = lastUserHistoryModule.getUserHistoryExercises().get(noDoneExercises - 1);
+            lastUserHistoryModule = userHistoryWorkout.getUserHistoryModules().get(noModules - 1);
+            Integer noDoneExercises = lastUserHistoryModule.getUserHistoryExercises().stream().filter(userHistoryExercise -> userHistoryExercise.isDone()).toList().size();
+            Integer noExercises = lastUserHistoryModule.getUserHistoryExercises().size();
+            UserHistoryExercise lastUserHistoryExercise = lastUserHistoryModule.getUserHistoryExercises().get(noExercises - 1);
 
+            userHistoryExerciseId = lastUserHistoryExercise.getId();
 
+            if (noDoneExercises.equals(lastUserHistoryModule.getNoSets()))
+                isFirstValue = true;
+            if (lastUserHistoryExercise.isDone())
+                isDone = true;
+        } else {
+            isDone = true;
+            isFirstValue = true;
+        }
         return ResponseLastEntryUserHistoryExerciseDto
                 .builder()
-                .isExerciseDone(lastUserHistoryExercise.isDone())
-                .isFirstExercise(noDoneExercises.equals(lastUserHistoryModule.getNoSets()) )
-                .userHistoryExerciseId(lastUserHistoryExercise.getId())
+                .isExerciseDone(isDone)
+                .isFirstExercise(isFirstValue)
+                .userHistoryExerciseId(userHistoryExerciseId)
                 .build();
+    }
 
+    @Transactional
+    public void updateUserHistoryModule(Long userHistoryModuleId, DetailsUserHistoryModuleDto requestUpdateUserHistoryModuleDto) throws NotFoundException {
+
+        UserHistoryModule userHistoryModule = userHistoryModuleService.getModuleById(userHistoryModuleId);
+
+        userHistoryModule.setNoSets(requestUpdateUserHistoryModuleDto.getNoSets());
 
     }
 }

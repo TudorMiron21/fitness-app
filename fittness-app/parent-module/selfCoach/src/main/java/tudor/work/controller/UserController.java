@@ -9,11 +9,9 @@ import tudor.work.dto.*;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
-import tudor.work.model.UserHistoryWorkout;
 import tudor.work.service.AuthorityService;
 import tudor.work.service.UserService;
 
-import javax.ws.rs.Path;
 import java.util.List;
 
 @RestController
@@ -152,6 +150,18 @@ public class UserController {
         }
     }
 
+    @PutMapping("/updateUserHistoryModule/{userHistoryModuleId}")
+    public ResponseEntity<?> updateUserHistoryModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId, DetailsUserHistoryModuleDto updateUserHistoryModuleDto) {
+
+        try {
+            userService.updateUserHistoryModule(userHistoryModuleId, updateUserHistoryModuleDto);
+            return ResponseEntity.status(HttpStatus.OK).body("user history module with id " + userHistoryModuleId + " updated successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
     @PutMapping("/addExerciseToModule/{userHistoryModuleId}")
     public ResponseEntity<?> addExerciseToModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId, @RequestBody RequestUserHistoryExercise requestUserHistoryExercise) {
         try {
@@ -166,7 +176,7 @@ public class UserController {
     @PutMapping("/updateUserHistoryExercise/{userHistoryExerciseId}")
     public ResponseEntity<?> updateUserHistoryExercise(
             @PathVariable("userHistoryExerciseId") Long userHistoryExerciseId,
-            @RequestBody RequestUpdateUserHistoryExerciseDto requestUpdateUserHistoryExerciseDto
+            @RequestBody DetailsUserHistoryExerciseDto requestUpdateUserHistoryExerciseDto
     ) {
         try {
             userService.updateExerciseToWorkout(userHistoryExerciseId, requestUpdateUserHistoryExerciseDto);
@@ -230,6 +240,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @GetMapping("/getUserHistoryExerciseDetails/{userHistoryExerciseId")
+    public ResponseEntity<?> getUserHistoryExerciseDetails(@PathVariable("userHistoryExerciseId") Long userHistoryExerciseId)
 
 }
 

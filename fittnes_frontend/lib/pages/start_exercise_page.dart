@@ -198,17 +198,25 @@ class StartExercisePage extends StatefulWidget {
   final bool isFirstExercise;
   late int userHistoryModuleId;
   final int userHistoryWorkoutId;
+  final int initialNoSets;
+  final int initialNoReps;
+  final double initialWeight;
+  final int initialNoSeconds;
 
-  StartExercisePage(
-      {Key? key,
-      required this.exercises,
-      required this.exerciseIndex,
-      required this.workoutId,
-      required this.noSets,
-      required this.isFirstExercise,
-      required this.userHistoryModuleId,
-      required this.userHistoryWorkoutId})
-      : super(key: key);
+  StartExercisePage({
+    Key? key,
+    required this.exercises,
+    required this.exerciseIndex,
+    required this.workoutId,
+    required this.noSets,
+    required this.isFirstExercise,
+    required this.userHistoryModuleId,
+    required this.userHistoryWorkoutId,
+    required this.initialNoSets,
+    required this.initialNoReps,
+    required this.initialWeight,
+    required this.initialNoSeconds
+  }) : super(key: key);
 
   @override
   State<StartExercisePage> createState() => _StartExercisePageState();
@@ -220,8 +228,8 @@ class _StartExercisePageState extends State<StartExercisePage> {
   bool isTimerRunning = false;
   Color pageBackgroundColor = Colors.white; // Initial background color
   late int numberOfSets; // Default value
-  double numberOfReps = 0;
-  double weight = 0;
+  late double numberOfReps = 0;
+  late double weight = 0;
 
   int userHistoryModuleIdStore = 1;
 
@@ -326,9 +334,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
 
     String email = JwtUtils.extractSubject(accessToken);
-    final response = await http.put(
+    final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/finishWorkout/$workoutId/$email'),
+          'http://localhost:8080/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -348,20 +356,67 @@ class _StartExercisePageState extends State<StartExercisePage> {
               userHistoryExerciseId: userHistoryExerciseId);
       return lastEntryUserHistoryExerciseDto;
     } else {
-      print('http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId');
-      throw Exception("workous is finished");
+      print(
+          'http://localhost:8080/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email');
+      throw Exception("workout with id $workoutId is finished");
     }
   }
 
   Future<void> updateExerciseToModule(
-      UpdateExerciseToModule updateExerciseToModule) async {
-        
+      UpdateExerciseToModule updateExerciseToModule,
+      int userHistoryExerciseId) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
     if (accessToken == null || accessToken.isEmpty) {
       // Handle the case where the authToken is missing or empty
       throw Exception('Authentication token is missing or invalid.');
+    }
+    final response = await http.put(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'currentNoSeconds': updateExerciseToModule.currentNoSeconds,
+        'noReps': updateExerciseToModule.noReps,
+        'weight': updateExerciseToModule.weight,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      print(
+          'http://localhost:8080/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId');
+      throw Exception(
+          'Failed to update user history exercise. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<void> updateModule(int noSets, int userHistoryModuleId) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+    final response = await http.put(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/user/updateUserHistoryModule/$userHistoryModuleId'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'noSets': noSets,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to update module with id ${widget.workoutId}. Status code: ${response.statusCode}');
     }
   }
 
@@ -543,9 +598,13 @@ class _StartExercisePageState extends State<StartExercisePage> {
       await saveExerciseToModule(widget.userHistoryModuleId,
           myDuration.inSeconds, false, numberOfReps.toInt(), weight);
     } else {
-      await updateExerciseToModule(
-          lastEntryUserHistoryExerciseDto.userHistoryExerciseId,
-          widget.userHistoryWorkoutId);
+      UpdateExerciseToModule updateExerciseToModuleDto =
+          new UpdateExerciseToModule(
+              currentNoSeconds: myDuration.inSeconds,
+              noReps: numberOfReps.toInt(),
+              weight: weight);
+      await updateExerciseToModule(updateExerciseToModuleDto,
+          lastEntryUserHistoryExerciseDto.userHistoryExerciseId);
     }
 
     Navigator.pop(context);
