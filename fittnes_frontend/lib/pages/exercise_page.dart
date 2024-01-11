@@ -1,3 +1,5 @@
+import 'package:fittnes_frontend/models/DetailsUserHistoryExercise.dart';
+import 'package:fittnes_frontend/models/DetailsUserHistoryModule.dart';
 import 'package:fittnes_frontend/pages/exercise_details_page.dart';
 import 'package:fittnes_frontend/pages/start_exercise_page.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
@@ -26,16 +28,18 @@ class _ExercisePageState extends State<ExercisePage> {
   late int userHistoryWorkoutId;
   bool isWorkoutStarted = false; // Initial flag for workout status
   late int exerciseIndex;
-  late int noSets;
+  late int noSets= 1;
   late bool isFirstExercise;
 
-  late int initialNoSets;
-  late int initialNoReps;
-  late double initialWeight;
-  late int initialNoSeconds;
+  late int lastUserHistoryModuleId;
+  late int lastUserHistoryExerciseId;
 
+  late int initialNoSets = 1;
+  late int initialNoReps = 0;
+  late double initialWeight = 0;
+  late int initialNoSeconds = 0;
 
-    @override
+  @override
   void initState() {
     super.initState();
     _checkWorkoutStatus(); // Check workout status on initialization
@@ -47,6 +51,67 @@ class _ExercisePageState extends State<ExercisePage> {
       isWorkoutStarted = workoutStarted;
     });
   }
+
+  Future<DetailsUserHistoryModule> getUserHistoryModuleDetails(
+      int userHistoryModuleId) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.get(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/user/getUserHistoryModuleDetails/$userHistoryModuleId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var decodedJson = json.decode(response.body);
+
+      int noSets = decodedJson['noSets'];
+      return DetailsUserHistoryModule(noSets: noSets);
+    } else {
+      throw Exception(
+          'Failed to fetch user history module with id $userHistoryModuleId. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<DetailsUserHistoryExercise> getUserHistoryExerciseDetails(
+      int userHistoryExerciseId) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    
+    final response = await http.get(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/user/getUserHistoryExerciseDetails/$userHistoryExerciseId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var decodedJson = json.decode(response.body);
+      int currentNoSeconds = decodedJson['currentNoSeconds'];
+      int noReps = decodedJson['noReps'];
+      double weight = decodedJson['weight'];
+      return DetailsUserHistoryExercise(currentNoSeconds: currentNoSeconds, noReps: noReps, weight: weight);
+    } else {
+      throw Exception(
+          'Failed to fetch user history exercise with id $userHistoryExerciseId. Status code: ${response.statusCode}');
+    }
+  }
+
   Future<void> saveWorkoutToHistory(int workoutId) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
@@ -71,10 +136,21 @@ class _ExercisePageState extends State<ExercisePage> {
       userHistoryWorkoutId = decodedJson['userHistoryWorkoutId'];
       exerciseIndex = decodedJson['moduleIndex'];
       isFirstExercise = false;
-      
-      noSets = decodedJson['noSetsLastModule'];
-    } else {
 
+      lastUserHistoryExerciseId = decodedJson['userHistoryExerciseId'];
+      lastUserHistoryModuleId = decodedJson['userHistoryModuleId'];
+
+      // noSets = decodedJson['noSetsLastModule'];
+
+      DetailsUserHistoryExercise detailsUserHistoryExercise = await getUserHistoryExerciseDetails(lastUserHistoryExerciseId);
+      DetailsUserHistoryModule detailsUserHistoryModule = await getUserHistoryModuleDetails(lastUserHistoryModuleId);
+
+      initialNoSets = detailsUserHistoryModule.noSets;
+      initialNoReps = detailsUserHistoryExercise.noReps;
+      initialNoSeconds = detailsUserHistoryExercise.currentNoSeconds;
+      initialWeight = detailsUserHistoryExercise.weight;
+
+    } else {
       exerciseIndex = 0;
       noSets = 1;
       isFirstExercise = true;
@@ -210,12 +286,16 @@ class _ExercisePageState extends State<ExercisePage> {
                 isFirstExercise: true,
                 userHistoryModuleId: 0,
                 userHistoryWorkoutId: userHistoryWorkoutId,
+                initialNoSets: initialNoSets,
+                initialNoReps: initialNoReps,
+                initialWeight: initialWeight,
+                initialNoSeconds: initialNoSeconds,
               ),
             ),
           );
         },
         icon: Icon(Icons.play_arrow),
-        label: isWorkoutStarted 
+        label: isWorkoutStarted
             ? Text('Continue Workout')
             : Text('Start Workout'), // Label for clarity
         backgroundColor: Colors.blue,

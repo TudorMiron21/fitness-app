@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:fittnes_frontend/models/workout.dart';
+import 'package:fittnes_frontend/pages/create_workout_page.dart';
 import 'package:fittnes_frontend/pages/exercise_page.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:flutter/material.dart';
@@ -195,8 +196,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-          // Add the functionality you want when the button is pressed to add a workout
-        },
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => CreateWorkoutPage()));        },
         style: ElevatedButton.styleFrom(
           primary: Colors.blue,
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),

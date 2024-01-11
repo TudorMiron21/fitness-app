@@ -4,6 +4,7 @@ import 'package:fittnes_frontend/components/bottom_nav.dart';
 import 'package:fittnes_frontend/components/my_button.dart';
 import 'package:fittnes_frontend/components/my_textfield.dart';
 import 'package:fittnes_frontend/components/square_tile.dart';
+import 'package:fittnes_frontend/pages/forgot_password_page.dart';
 import 'package:fittnes_frontend/pages/home_page.dart';
 import 'package:fittnes_frontend/pages/register_page.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +131,13 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ForgotPasswordPage(), // Replace with the actual registration page widget
+                          ),
+                        );
 
                         },
                         child: Text('Forgot Password?',

@@ -108,12 +108,14 @@ public class AuthService {
     }
 
     public User getUserByResetToken(String token) throws NotFoundException {
-        return userRepository.findByResetPasswordToken(token).orElseThrow(() -> new NotFoundException("user cannot be found by reset password token"));
+        return userRepository.findByResetPasswordToken(token).orElseThrow(() -> new NotFoundException("user cannot be found by reset password token " + token));
     }
 
     @Transactional
-    public void updatePassword(User user, String password) {
+    public void updatePassword(String token, String password) throws NotFoundException {
+        User user = getUserByResetToken(token);
         user.setPassword(passwordEncoder.encode(password));
+        user.setResetPasswordToken(null);
     }
 
 
@@ -131,11 +133,5 @@ public class AuthService {
 
     }
 
-    public void resetPasswordHandler(String token) throws NotFoundException
-    {
-        User user = this.getUserByResetToken(token);
-
-
-    }
 
 }

@@ -203,20 +203,20 @@ class StartExercisePage extends StatefulWidget {
   final double initialWeight;
   final int initialNoSeconds;
 
-  StartExercisePage({
-    Key? key,
-    required this.exercises,
-    required this.exerciseIndex,
-    required this.workoutId,
-    required this.noSets,
-    required this.isFirstExercise,
-    required this.userHistoryModuleId,
-    required this.userHistoryWorkoutId,
-    required this.initialNoSets,
-    required this.initialNoReps,
-    required this.initialWeight,
-    required this.initialNoSeconds
-  }) : super(key: key);
+  StartExercisePage(
+      {Key? key,
+      required this.exercises,
+      required this.exerciseIndex,
+      required this.workoutId,
+      required this.noSets,
+      required this.isFirstExercise,
+      required this.userHistoryModuleId,
+      required this.userHistoryWorkoutId,
+      required this.initialNoSets,
+      required this.initialNoReps,
+      required this.initialWeight,
+      required this.initialNoSeconds})
+      : super(key: key);
 
   @override
   State<StartExercisePage> createState() => _StartExercisePageState();
@@ -224,7 +224,8 @@ class StartExercisePage extends StatefulWidget {
 
 class _StartExercisePageState extends State<StartExercisePage> {
   Timer? countdownTimer;
-  Duration myDuration = const Duration(seconds: 0);
+  late Duration myDuration;
+  //= Duration(seconds: 0);
   bool isTimerRunning = false;
   Color pageBackgroundColor = Colors.white; // Initial background color
   late int numberOfSets; // Default value
@@ -349,11 +350,14 @@ class _StartExercisePageState extends State<StartExercisePage> {
       bool isExerciseDone = decodedJson['isExerciseDone'];
       bool isExerciseFirst = decodedJson['isFirstExercise'];
       int userHistoryExerciseId = decodedJson['userHistoryExerciseId'];
+      int userHistoryModuleId = decodedJson['userHistoryModuleId'];
       LastEntryUserHistoryExerciseDto lastEntryUserHistoryExerciseDto =
           new LastEntryUserHistoryExerciseDto(
               isExerciseDone: isExerciseDone,
               isExerciseFirst: isExerciseFirst,
-              userHistoryExerciseId: userHistoryExerciseId);
+              userHistoryExerciseId: userHistoryExerciseId,
+              userHistoryModuleId: userHistoryModuleId
+              );
       return lastEntryUserHistoryExerciseDto;
     } else {
       print(
@@ -423,7 +427,10 @@ class _StartExercisePageState extends State<StartExercisePage> {
   @override
   void initState() {
     super.initState();
-    numberOfSets = widget.noSets;
+    numberOfSets = widget.initialNoSets;
+    myDuration = Duration(seconds: widget.initialNoSeconds);
+    //numberOfReps = widget.initialNoReps.toDouble();
+   // weight = widget.initialWeight;
   }
 
   Future<void> _showSetSelectionDialog() async {
@@ -433,7 +440,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
         return AlertDialog(
           title: Text('Select Number of Sets'),
           content: SetSelectionDialogContent(
-            initialSelectedSets: numberOfSets,
+            initialSelectedSets: widget.initialNoSets,
             onSelectedSetsChanged: (int value) {
               setState(() {
                 numberOfSets = value;
@@ -460,7 +467,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
         return AlertDialog(
           title: Text('Select Number of Reps'),
           content: SelectionDialogContent(
-            initialValue: numberOfReps,
+            initialValue: widget.initialNoReps.toDouble(),
             onValueChanged: (value) {
               setState(() {
                 numberOfReps = value;
@@ -493,7 +500,8 @@ class _StartExercisePageState extends State<StartExercisePage> {
   }
 
   void _showWeightSelectionDialog() {
-    final TextEditingController _weightController = TextEditingController();
+    final TextEditingController _weightController =
+        TextEditingController(text: widget.initialWeight.toString());
 
     showDialog<double>(
       context: context,
@@ -598,6 +606,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
       await saveExerciseToModule(widget.userHistoryModuleId,
           myDuration.inSeconds, false, numberOfReps.toInt(), weight);
     } else {
+      
+      await updateModule(numberOfSets, lastEntryUserHistoryExerciseDto.userHistoryModuleId);
+      
       UpdateExerciseToModule updateExerciseToModuleDto =
           new UpdateExerciseToModule(
               currentNoSeconds: myDuration.inSeconds,
@@ -624,6 +635,10 @@ class _StartExercisePageState extends State<StartExercisePage> {
             isFirstExercise: isFirstExercise,
             userHistoryModuleId: widget.userHistoryModuleId,
             userHistoryWorkoutId: widget.userHistoryWorkoutId,
+            initialNoSets: 1,
+            initialNoReps: 0,
+            initialWeight: 0,
+            initialNoSeconds: 0,
           ),
         ),
       );
@@ -649,6 +664,10 @@ class _StartExercisePageState extends State<StartExercisePage> {
           isFirstExercise: isFirstExercise,
           userHistoryModuleId: widget.userHistoryModuleId,
           userHistoryWorkoutId: widget.userHistoryWorkoutId,
+          initialNoSets: numberOfSets,
+          initialNoReps: 0,
+          initialWeight: 0,
+          initialNoSeconds: 0,
         ),
       ),
     );

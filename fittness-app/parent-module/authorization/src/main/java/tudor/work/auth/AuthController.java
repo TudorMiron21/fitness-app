@@ -2,6 +2,7 @@ package tudor.work.auth;
 
 import javassist.NotFoundException;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +77,7 @@ public class AuthController {
 
         try {
             String randToken = userService.resetPassword(email);
-            String resetPasswordLink = "http://localhost:8080/resetPassword?token=" + randToken;
+            String resetPasswordLink = "http://localhost:8080/api/v1/auth/resetPassword?token=" + randToken;
             userService.sendResetPasswdLink(email, resetPasswordLink);
             return ResponseEntity.status(HttpStatus.OK).body(resetPasswordLink);
         } catch (EmailNotFoundException enf) {
@@ -84,6 +85,27 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> updatePassword(
+            @RequestParam("token") String token,
+            @RequestParam("password") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword) {
+
+        if (!newPassword.equals(confirmPassword)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Passwords do not match");
+        }
+
+        try {
+            userService.updatePassword(token, newPassword);
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
 
 //    @GetMapping("/resetPassword")
 //    public String resetPasswordHandler(@RequestParam("token") String randToken) {

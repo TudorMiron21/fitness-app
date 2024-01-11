@@ -48,7 +48,6 @@ public class Exercise {
 //    @JoinColumn(name = "adder_id")
 //    private User adder;
 
-
     @ManyToOne
     @JoinColumn(name ="equipment_id")
     private Equipment equipment;
@@ -71,6 +70,7 @@ public class Exercise {
 //    private Set<Workout> workouts;
 
 
+    //this is on true if this exercise is added by a coach;
     private boolean isExerciseExclusive;
 
     private boolean hasWeight;

@@ -13,6 +13,7 @@ import tudor.work.service.AuthorityService;
 import tudor.work.service.UserService;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "/api/selfCoach/user")
@@ -151,7 +152,7 @@ public class UserController {
     }
 
     @PutMapping("/updateUserHistoryModule/{userHistoryModuleId}")
-    public ResponseEntity<?> updateUserHistoryModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId, DetailsUserHistoryModuleDto updateUserHistoryModuleDto) {
+    public ResponseEntity<?> updateUserHistoryModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId,  @RequestBody DetailsUserHistoryModuleDto updateUserHistoryModuleDto) {
 
         try {
             userService.updateUserHistoryModule(userHistoryModuleId, updateUserHistoryModuleDto);
@@ -241,8 +242,41 @@ public class UserController {
         }
     }
 
-    @GetMapping("/getUserHistoryExerciseDetails/{userHistoryExerciseId")
-    public ResponseEntity<?> getUserHistoryExerciseDetails(@PathVariable("userHistoryExerciseId") Long userHistoryExerciseId)
+    @GetMapping("/getUserHistoryExerciseDetails/{userHistoryExerciseId}")
+    public ResponseEntity<?> getUserHistoryExerciseDetails(@PathVariable("userHistoryExerciseId") Long userHistoryExerciseId) {
+        try {
+            DetailsUserHistoryExerciseDto detailsUserHistoryExerciseDto = userService.getUserHistoryExerciseDetails(userHistoryExerciseId);
+            return ResponseEntity.status(HttpStatus.OK).body(detailsUserHistoryExerciseDto);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getUserHistoryModuleDetails/{userHistoryModuleId}")
+    public ResponseEntity<?> getUserHistoryModuleDetails(@PathVariable("userHistoryModuleId") Long userHistoryModuleId) {
+        try {
+            DetailsUserHistoryModuleDto detailsUserHistoryModuleDto = userService.getUserHistoryModuleDetails(userHistoryModuleId);
+            return ResponseEntity.status(HttpStatus.OK).body(detailsUserHistoryModuleDto);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getAllNonExclusiveExercisesByName/{exerciseName}")
+    public ResponseEntity<?> getAllNonExclusiveExercisesByName(@PathVariable("exerciseName") String exerciseName)
+    {
+        Set<SimplifiedExerciseDto> simplifiedExerciseDtos = userService.getAllNonExclusiveExercisesByName(exerciseName);
+        return ResponseEntity.status(HttpStatus.OK).body(simplifiedExerciseDtos);
+    }
+
+
+    @GetMapping("/getAllNonExclusiveExercises")
+    public ResponseEntity<?> getAllNonExclusiveExercises( )
+    {
+        Set<SimplifiedExerciseDto> simplifiedExerciseDtos = userService.getAllNonExclusiveExercises();
+        return ResponseEntity.status(HttpStatus.OK).body(simplifiedExerciseDtos);
+    }
+
 
 }
 

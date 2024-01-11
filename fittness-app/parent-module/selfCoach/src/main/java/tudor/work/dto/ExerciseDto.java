@@ -41,10 +41,8 @@ public class ExerciseDto {
 
     @JsonDeserialize(using = EquipmentDesirializer.class)
     private Equipment equipment;
-
     @JsonDeserialize(using = MuscleGroupDesirializer.class)
     private MuscleGroup muscleGroup;
-
     @JsonDeserialize(using = DifficultyDeserializer.class)
     private Difficulty difficulty;
     @JsonDeserialize(using = CategoryDeserializer.class)

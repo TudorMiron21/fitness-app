@@ -14,4 +14,6 @@ public class ResponseLastEntryUserHistoryExerciseDto {
     private Boolean isExerciseDone;
 
     private Long userHistoryExerciseId;
+
+    private Long userHistoryModuleId;
 }

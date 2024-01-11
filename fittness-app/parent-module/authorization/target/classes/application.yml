@@ -43,6 +43,14 @@ spring:
 
             redirect-uri: http://localhost:8080
 
+  thymeleaf:
+    cache: false # true for production
+    mode: HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    prefix: classpath:/templates/
+    suffix: .html
 
 eureka:
   client:

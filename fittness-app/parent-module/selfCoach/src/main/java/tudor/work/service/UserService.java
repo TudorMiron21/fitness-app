@@ -14,6 +14,7 @@ import tudor.work.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -155,7 +156,7 @@ public class UserService {
 
     }
 
-    //TODO: Finish this method
+
     @Transactional
     public void updateExerciseToWorkout(
             Long userHistoryExerciseId,
@@ -407,10 +408,15 @@ public class UserService {
 
         Integer noSetsLastModule = userHistoryWorkout.getUserHistoryModules().get(moduleIndex - 1).getNoSets();
 
+        Long userHistoryModuleId = userHistoryWorkout.getUserHistoryModules().get(moduleIndex - 1).getId();
+
+        Long userHistoryExerciseId = userHistoryWorkout.getUserHistoryModules().get(moduleIndex - 1).getUserHistoryExercises().get(exerciseIndex - 1).getId();
 
         return ResponseWorkoutPresentInUserHistoryDto
                 .builder()
                 .userHistoryWorkoutId(userHistoryWorkoutId)
+                .userHistoryModuleId(userHistoryModuleId)
+                .userHistoryExerciseId(userHistoryExerciseId)
                 .exerciseIndex(exerciseIndex - 1)
                 .moduleIndex(moduleIndex - 1)
                 .noSetsLastModule(noSetsLastModule)
@@ -427,6 +433,7 @@ public class UserService {
         Long userHistoryExerciseId = 0L;
         Integer noModules = userHistoryWorkout.getUserHistoryModules().size();
         UserHistoryModule lastUserHistoryModule;
+        Long userHistoryModuleId = 0L;
 
         if (!userHistoryWorkout.getUserHistoryModules().isEmpty()) {
 
@@ -436,6 +443,7 @@ public class UserService {
             UserHistoryExercise lastUserHistoryExercise = lastUserHistoryModule.getUserHistoryExercises().get(noExercises - 1);
 
             userHistoryExerciseId = lastUserHistoryExercise.getId();
+            userHistoryModuleId = lastUserHistoryModule.getId();
 
             if (noDoneExercises.equals(lastUserHistoryModule.getNoSets()))
                 isFirstValue = true;
@@ -450,6 +458,7 @@ public class UserService {
                 .isExerciseDone(isDone)
                 .isFirstExercise(isFirstValue)
                 .userHistoryExerciseId(userHistoryExerciseId)
+                .userHistoryModuleId(userHistoryModuleId)
                 .build();
     }
 
@@ -461,4 +470,60 @@ public class UserService {
         userHistoryModule.setNoSets(requestUpdateUserHistoryModuleDto.getNoSets());
 
     }
+
+    public DetailsUserHistoryModuleDto getUserHistoryModuleDetails(Long userHistoryModuleId) throws NotFoundException {
+
+        UserHistoryModule userHistoryModule = userHistoryModuleService.getModuleById(userHistoryModuleId);
+
+        return DetailsUserHistoryModuleDto
+                .builder()
+                .noSets(userHistoryModule.getNoSets())
+                .build();
+    }
+
+    public DetailsUserHistoryExerciseDto getUserHistoryExerciseDetails(Long userHistoryExerciseId) throws NotFoundException {
+        UserHistoryExercise userHistoryExercise = userHistoryExerciseService.findById(userHistoryExerciseId);
+
+        return DetailsUserHistoryExerciseDto
+                .builder()
+                .noReps(userHistoryExercise.getNoReps())
+                .currentNoSeconds(userHistoryExercise.getCurrNoSeconds())
+                .weight(userHistoryExercise.getWeight())
+                .build();
+    }
+
+    public Set<SimplifiedExerciseDto> getAllNonExclusiveExercisesByName(String exerciseName) {
+
+        return exerciseService.getAllNonExclusiveExercisesByName(exerciseName)
+                .stream()
+                .map(exercise -> SimplifiedExerciseDto
+                        .builder()
+                        .idExercise(exercise.getId())
+                        .name(exercise.getName())
+                        .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+//                        .equipmentName(exercise.getEquipment().getName())
+                        .muscleGroupName(exercise.getMuscleGroup().getName())
+                        .difficultyName(exercise.getDifficulty().getDificultyLevel())
+                        .categoryName(exercise.getCategory().getName())
+                        .build()
+                ).collect(Collectors.toSet());
+    }
+
+    public Set<SimplifiedExerciseDto> getAllNonExclusiveExercises() {
+        return exerciseService.getAllNonExclusiveExercises()
+                .stream()
+                .map(exercise -> SimplifiedExerciseDto
+                        .builder()
+                        .idExercise(exercise.getId())
+                        .name(exercise.getName())
+                        .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+//                        .equipmentName(exercise.getEquipment().getName())
+                        .muscleGroupName(exercise.getMuscleGroup().getName())
+                        .difficultyName(exercise.getDifficulty().getDificultyLevel())
+                        .categoryName(exercise.getCategory().getName())
+                        .build()
+                ).collect(Collectors.toSet());
+    }
+
+
 }

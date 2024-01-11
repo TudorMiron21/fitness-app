@@ -10,6 +10,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 @Setter
 public class ResponseWorkoutPresentInUserHistoryDto {
 
+    private Long userHistoryModuleId;
+
+    private Long userHistoryExerciseId;
+
     private Long userHistoryWorkoutId;
 
     private Integer exerciseIndex;
