@@ -36,4 +36,5 @@ public class UserHistoryExercise{
 
     private Double distance;// in meters
 
+    private Double caloriesBurned;
 }

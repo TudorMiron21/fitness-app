@@ -37,8 +37,8 @@ void main() async {
       await TokenChecker.checkTokenValidity(); // Implement this function
 
   // Determine the initial route based on token validity
-  // String initialRoute = isTokenValid ? AppPage.getNavbar() : AppPage.getLogin();
-  String initialRoute = AppPage.getLogin();
+  String initialRoute = isTokenValid ? AppPage.getNavbar() : AppPage.getLogin();
+  // String initialRoute = AppPage.getLogin();
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
     initialRoute: initialRoute,

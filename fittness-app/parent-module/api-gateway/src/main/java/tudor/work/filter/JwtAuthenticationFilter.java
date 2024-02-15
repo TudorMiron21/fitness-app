@@ -37,7 +37,9 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
                 }
                 try {
                     //REST call to AUTH service
+                    //TODO:modifica aici
                     String response = template.getForObject("http://localhost:8082/api/v1/auth/validateToken?token=" + authHeader, String.class);
+                    //String response = template.getForObject("http://authorization-service:8082/api/v1/auth/validateToken?token=" + authHeader, String.class);
 
                 } catch (Exception e) {
                     System.out.println("Invalid access...!");

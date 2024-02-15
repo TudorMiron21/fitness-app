@@ -2,6 +2,7 @@ package tudor.work.service;
 
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.*;
@@ -497,33 +498,86 @@ public class UserService {
         return exerciseService.getAllNonExclusiveExercisesByName(exerciseName)
                 .stream()
                 .map(exercise -> SimplifiedExerciseDto
-                        .builder()
-                        .idExercise(exercise.getId())
-                        .name(exercise.getName())
-                        .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+                                .builder()
+                                .idExercise(exercise.getId())
+                                .name(exercise.getName())
+                                .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
 //                        .equipmentName(exercise.getEquipment().getName())
-                        .muscleGroupName(exercise.getMuscleGroup().getName())
-                        .difficultyName(exercise.getDifficulty().getDificultyLevel())
-                        .categoryName(exercise.getCategory().getName())
-                        .build()
+                                .muscleGroupName(exercise.getMuscleGroup().getName())
+                                .difficultyName(exercise.getDifficulty().getDificultyLevel())
+                                .categoryName(exercise.getCategory().getName())
+                                .build()
                 ).collect(Collectors.toSet());
     }
 
+    @Cacheable(value = "longPeriodCache", key = "'getAllNonExclusiveExercises'")
     public Set<SimplifiedExerciseDto> getAllNonExclusiveExercises() {
         return exerciseService.getAllNonExclusiveExercises()
                 .stream()
                 .map(exercise -> SimplifiedExerciseDto
-                        .builder()
-                        .idExercise(exercise.getId())
-                        .name(exercise.getName())
-                        .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+                                .builder()
+                                .idExercise(exercise.getId())
+                                .name(exercise.getName())
+                                .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
 //                        .equipmentName(exercise.getEquipment().getName())
-                        .muscleGroupName(exercise.getMuscleGroup().getName())
-                        .difficultyName(exercise.getDifficulty().getDificultyLevel())
-                        .categoryName(exercise.getCategory().getName())
-                        .build()
+                                .muscleGroupName(exercise.getMuscleGroup().getName())
+                                .difficultyName(exercise.getDifficulty().getDificultyLevel())
+                                .categoryName(exercise.getCategory().getName())
+                                .build()
                 ).collect(Collectors.toSet());
     }
 
 
+    public void createUserWorkout(CreateUserWorkoutDto createUserWorkoutDto) throws NotFoundException {
+
+        Set<Exercise> exercises = createUserWorkoutDto.getExercisesIds().stream().map(exerciseService::getExerciseById).collect(Collectors.toSet());
+
+        workoutService.saveWorkout(
+                Workout
+                        .builder()
+                        .name(createUserWorkoutDto.getWorkoutName())
+                        .description(createUserWorkoutDto.getDescription())
+                        .exercises(exercises)
+                        .adder(authorityService.getUser())
+                        .isDeleted(false)
+                        .isGlobal(false)
+                        .difficultyLevel(calculateDifficultyLevel(exercises))
+                        .build()
+
+        );
+    }
+
+    public List<WorkoutDto> getPersonalWorkouts() {
+
+        return workoutService.getAllWorkouts()
+                .stream()
+                .filter(workout -> {
+                    try {
+                        return authorityService.getUser().equals(workout.getAdder());
+                    } catch (NotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .map(
+                        workout ->
+                        {
+                            try {
+                                return WorkoutDto.
+                                        builder().
+                                        id(workout.getId()).
+                                        name(workout.getName()).
+                                        description(workout.getDescription()).
+                                        coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                        difficultyLevel(workout.getDifficultyLevel()).
+                                        isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
+                                        noLikes(workoutService.getNoLikes(workout)).
+                                        exercises(workout.getExercises())
+                                        .build();
+                            } catch (NotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                ).toList();
+
+    }
 }

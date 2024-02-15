@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    field.cattle.io/targetWorkloadIds: '["c114a-orar/timetable-deployment"]'
+    kubectl.kubernetes.io/last-applied-configuration: >
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{"field.cattle.io/targetWorkloadIds":"[\"c114a-orar/timetable-deployment\"]","management.cattle.io/ui-managed":"true"},"creationTimestamp":"2023-12-12T07:09:19Z","managedFields":[{"apiVersion":"v1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{".":{},"f:field.cattle.io/targetWorkloadIds":{},"f:management.cattle.io/ui-managed":{}},"f:ownerReferences":{".":{},"k:{\"uid\":\"f5634da1-3a07-41de-a695-9e209b0f86c9\"}":{}}},"f:spec":{"f:internalTrafficPolicy":{},"f:ports":{".":{},"k:{\"port\":8080,\"protocol\":\"TCP\"}":{".":{},"f:name":{},"f:port":{},"f:protocol":{},"f:targetPort":{}}},"f:selector":{},"f:sessionAffinity":{},"f:type":{}}},"manager":"rancher","operation":"Update","time":"2023-12-12T07:09:19Z"}],"name":"timetable-deployment","namespace":"c114a-orar","ownerReferences":[{"apiVersion":"apps/v1","controller":true,"kind":"Deployment","name":"timetable-deployment","uid":"f5634da1-3a07-41de-a695-9e209b0f86c9"}],"resourceVersion":"16265470","uid":"24bbe8c2-af8e-4b48-bc3d-eb1d0acfce37"},"spec":{"clusterIP":"10.43.128.169","clusterIPs":["10.43.128.169"],"internalTrafficPolicy":"Cluster","ipFamilies":["IPv4"],"ipFamilyPolicy":"SingleStack","ports":[{"name":"tt-service","port":8080,"protocol":"TCP","targetPort":8080}],"selector":{"workload.user.cattle.io/workloadselector":"apps.deployment-c114a-orar-timetable-deployment"},"sessionAffinity":"None","type":"ClusterIP"},"status":{"loadBalancer":{}}}
+    management.cattle.io/ui-managed: 'true'
+  creationTimestamp: '2023-12-12T07:09:19Z'
+  managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:field.cattle.io/targetWorkloadIds: {}
+            f:management.cattle.io/ui-managed: {}
+          f:ownerReferences:
+            .: {}
+            k:{"uid":"f5634da1-3a07-41de-a695-9e209b0f86c9"}: {}
+        f:spec:
+          f:internalTrafficPolicy: {}
+          f:ports:
+            .: {}
+            k:{"port":8080,"protocol":"TCP"}:
+              .: {}
+              f:name: {}
+              f:port: {}
+              f:protocol: {}
+              f:targetPort: {}
+          f:selector: {}
+          f:sessionAffinity: {}
+          f:type: {}
+      manager: rancher
+      operation: Update
+      time: '2023-12-12T07:09:19Z'
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            f:kubectl.kubernetes.io/last-applied-configuration: {}
+      manager: kubectl-client-side-apply
+      operation: Update
+      time: '2023-12-14T06:45:32Z'
+  name: timetable-deployment
+  namespace: c114a-orar
+  ownerReferences:
+    - apiVersion: apps/v1
+      controller: true
+      kind: Deployment
+      name: timetable-deployment
+      uid: f5634da1-3a07-41de-a695-9e209b0f86c9
+  resourceVersion: '18827123'
+  uid: 24bbe8c2-af8e-4b48-bc3d-eb1d0acfce37
+spec:
+  clusterIP: 10.43.128.169
+  clusterIPs:
+    - 10.43.128.169
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: tt-service
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    workload.user.cattle.io/workloadselector: apps.deployment-c114a-orar-timetable-deployment
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

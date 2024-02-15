@@ -1,0 +1,80 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    field.cattle.io/publicEndpoints: >-
+      [{"addresses":["10.13.0.105","10.13.101.21","10.13.101.22","10.13.101.23"],"port":443,"protocol":"HTTPS","serviceName":"c114a-orar:timetable-deployment","ingressName":"c114a-orar:timetable-ingress","hostname":"time-table.apps.fsisc.ro","path":"/api/v1","allNodes":false},{"addresses":["10.13.0.105","10.13.101.21","10.13.101.22","10.13.101.23"],"port":443,"protocol":"HTTPS","serviceName":"c114a-orar:timetable-frontend-deployment","ingressName":"c114a-orar:timetable-ingress","hostname":"time-table.apps.fsisc.ro","path":"/","allNodes":false}]
+  creationTimestamp: '2023-12-14T06:49:56Z'
+  generation: 15
+  managedFields:
+    - apiVersion: networking.k8s.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:loadBalancer:
+            f:ingress: {}
+      manager: nginx-ingress-controller
+      operation: Update
+      subresource: status
+      time: '2024-01-03T08:53:10Z'
+    - apiVersion: networking.k8s.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:field.cattle.io/publicEndpoints: {}
+        f:spec:
+          f:defaultBackend:
+            .: {}
+            f:service:
+              .: {}
+              f:name: {}
+              f:port:
+                .: {}
+                f:number: {}
+          f:rules: {}
+          f:tls: {}
+      manager: rancher
+      operation: Update
+      time: '2024-01-03T08:53:10Z'
+  name: timetable-ingress
+  namespace: c114a-orar
+  resourceVersion: '45960828'
+  uid: b99b66f9-6955-47ff-b1cd-0c9353018fc2
+spec:
+  defaultBackend:
+    service:
+      name: timetable-deployment
+      port:
+        number: 8080
+  ingressClassName: nginx
+  rules:
+    - host: time-table.apps.fsisc.ro
+      http:
+        paths:
+          - backend:
+              service:
+                name: timetable-deployment
+                port:
+                  number: 8080
+            path: /api/v1
+            pathType: Prefix
+          - backend:
+              service:
+                name: timetable-frontend-deployment
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - time-table.apps.fsisc.ro
+      secretName: timetable-tls
+status:
+  loadBalancer:
+    ingress:
+      - ip: 10.13.0.105
+      - ip: 10.13.101.21
+      - ip: 10.13.101.22
+      - ip: 10.13.101.23

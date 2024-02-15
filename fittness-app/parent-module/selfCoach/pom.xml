@@ -93,6 +93,18 @@
             <version>1.14.0</version>
         </dependency>
 
+    <!--Redis dependencies-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!--Redis dependencies-->
+
     </dependencies>
 
     <build>

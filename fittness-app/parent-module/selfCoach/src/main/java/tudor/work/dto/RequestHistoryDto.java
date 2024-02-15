@@ -7,4 +7,5 @@ public class RequestHistoryDto {
 
 
 
-    private Workout workout;}
+    private Workout workout;
+}

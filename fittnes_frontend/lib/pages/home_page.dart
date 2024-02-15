@@ -21,7 +21,6 @@ class _HomePageState extends State<HomePage> {
     String? accessToken = await storage.read(key: 'accessToken');
 
     if (accessToken == null || accessToken.isEmpty) {
-      // Handle the case where the authToken is missing or empty
       throw Exception('Authentication token is missing or invalid.');
     }
 

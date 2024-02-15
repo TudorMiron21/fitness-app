@@ -24,6 +24,12 @@ public class UserController {
     private final AuthorityService authorityService;
 
     //this controller gets all the exercises available from the database depending on the authorities of the user
+
+    @GetMapping("/testController")
+    public String testController() {
+        return "Welcome to the Self Coach Service!";
+    }
+
     @GetMapping("/exercises")
     public List<ExerciseDto> getAllExercises() {
         return userService.getAllExercises();
@@ -152,7 +158,7 @@ public class UserController {
     }
 
     @PutMapping("/updateUserHistoryModule/{userHistoryModuleId}")
-    public ResponseEntity<?> updateUserHistoryModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId,  @RequestBody DetailsUserHistoryModuleDto updateUserHistoryModuleDto) {
+    public ResponseEntity<?> updateUserHistoryModule(@PathVariable("userHistoryModuleId") Long userHistoryModuleId, @RequestBody DetailsUserHistoryModuleDto updateUserHistoryModuleDto) {
 
         try {
             userService.updateUserHistoryModule(userHistoryModuleId, updateUserHistoryModuleDto);
@@ -263,20 +269,32 @@ public class UserController {
     }
 
     @GetMapping("/getAllNonExclusiveExercisesByName/{exerciseName}")
-    public ResponseEntity<?> getAllNonExclusiveExercisesByName(@PathVariable("exerciseName") String exerciseName)
-    {
+    public ResponseEntity<?> getAllNonExclusiveExercisesByName(@PathVariable("exerciseName") String exerciseName) {
         Set<SimplifiedExerciseDto> simplifiedExerciseDtos = userService.getAllNonExclusiveExercisesByName(exerciseName);
         return ResponseEntity.status(HttpStatus.OK).body(simplifiedExerciseDtos);
     }
 
 
     @GetMapping("/getAllNonExclusiveExercises")
-    public ResponseEntity<?> getAllNonExclusiveExercises( )
-    {
+    public ResponseEntity<?> getAllNonExclusiveExercises() {
         Set<SimplifiedExerciseDto> simplifiedExerciseDtos = userService.getAllNonExclusiveExercises();
         return ResponseEntity.status(HttpStatus.OK).body(simplifiedExerciseDtos);
     }
 
+    @PostMapping("/createUserWorkout")
+    public ResponseEntity<?> createUserWorkout(@RequestBody CreateUserWorkoutDto createUserWorkoutDto) {
+        try {
+            userService.createUserWorkout(createUserWorkoutDto);
+            return ResponseEntity.status(HttpStatus.OK).body("workout added successfully");
+        } catch (NotFoundException e) {
 
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getPersonalWorkouts")
+    public ResponseEntity<?> getPersonalWorkouts(){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getPersonalWorkouts());
+    }
 }
 

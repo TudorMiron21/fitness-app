@@ -19,8 +19,8 @@ class DiscoverPage extends StatefulWidget {
 class _DiscoverPageState extends State<DiscoverPage> {
   int currentPageIndex = 1;
 
-  List<String> workoutsList1 = List.empty();
-  List<String> workoutsList2 = List.empty();
+  List<Workout> startedWorkouts = List.empty();
+  List<Workout> personalWorkouts = List.empty();
 
   Future<List<Workout>> fetchStartedWorkouts() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
@@ -33,9 +33,69 @@ class _DiscoverPageState extends State<DiscoverPage> {
     String email = JwtUtils.extractSubject(accessToken);
 
     final response = await http.get(
+      Uri.parse('http://localhost:8080/api/selfCoach/user/getStartedWorkouts/' +
+          email),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    List<Workout> workouts = List.empty();
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+
+      // Map the API response to a list of Workout objects
+      workouts = data.map((json) {
+        List<Exercise> exerciseList = (json['exercises'] as List)
+            .map((exerciseJson) => Exercise(
+                  id: exerciseJson['id'],
+                  name: exerciseJson['name'],
+                  description: exerciseJson['description'] ?? "",
+                  descriptionUrl: exerciseJson['descriptionUrl'] ?? "",
+                  exerciseImageStartUrl:
+                      exerciseJson['exerciseImageStartUrl'] ?? "",
+                  exerciseImageEndUrl:
+                      exerciseJson['exerciseImageEndUrl'] ?? "",
+                  exerciseVideoUrl: exerciseJson['exerciseVideoUrl'] ?? "",
+                  difficulty: exerciseJson['difficulty']['dificultyLevel'],
+                  category: exerciseJson['category']['name'],
+                  exerciseExclusive: exerciseJson['exerciseExclusive'],
+                  equipment: exerciseJson['equipment']['name'],
+                  muscleGroup: exerciseJson['muscleGroup']['name'],
+                  rating: exerciseJson['rating'],
+                  hasNoReps: exerciseJson['hasNoReps'],
+                  hasWeight: exerciseJson['hasWeight'],
+                ))
+            .toList() as List<Exercise>;
+
+        return Workout(
+            id: json['id'],
+            name: json['name'],
+            description: json['description'],
+            difficultyLevel: json['difficultyLevel'],
+            coverPhotoUrl: json['coverPhotoUrl'] ?? "",
+            exercises: exerciseList,
+            likedByUser: json['likedByUser']);
+      }).toList();
+    } else {
+      throw Exception(
+          'Failed to load workouts. Status code: ${response.statusCode}');
+    }
+    return workouts;
+  }
+
+  Future<List<Workout>> fetchPersonalWorkouts() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+    String email = JwtUtils.extractSubject(accessToken);
+
+    final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getStartedWorkouts/' +
-              email),
+          'http://localhost:8080/api/selfCoach/user/getPersonalWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -151,44 +211,84 @@ class _DiscoverPageState extends State<DiscoverPage> {
       ),
       body: Column(
         children: [
-          SizedBox(
-            height: 200,
+          // SizedBox(
+          //   height: 200,
+          //   child: FutureBuilder<List<Workout>>(
+          //     future: fetchStartedWorkouts(),
+          //     builder: (context, startedWorkoutsSnapshot) {
+          //       if (startedWorkoutsSnapshot.connectionState ==
+          //           ConnectionState.waiting) {
+          //         return Center(child: CircularProgressIndicator());
+          //       } else if (startedWorkoutsSnapshot.hasError) {
+          //         return Center(
+          //             child: Text('Error: ${startedWorkoutsSnapshot.error}'));
+          //       } else {
+          //         List<Workout> mostLikedWorkouts =
+          //             startedWorkoutsSnapshot.data!;
+
+          //         return PageView.builder(
+          //           itemCount: mostLikedWorkouts.length,
+          //           itemBuilder: (context, index) {
+          //             Workout workout = mostLikedWorkouts[index];
+          //             return buildWorkoutCard(workout);
+          //           },
+
+          //         );
+          //       }
+          //     },
+          //   ),
+          // ),
+
+          Expanded(
+            flex: 1, // Adjust the flex factor as needed for balance
             child: FutureBuilder<List<Workout>>(
               future: fetchStartedWorkouts(),
-              builder: (context, mostLikedWorkoutsSnapshot) {
-                if (mostLikedWorkoutsSnapshot.connectionState ==
+              builder: (context, startedWorkoutsSnapshot) {
+                if (startedWorkoutsSnapshot.connectionState ==
                     ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
-                } else if (mostLikedWorkoutsSnapshot.hasError) {
+                } else if (startedWorkoutsSnapshot.hasError) {
                   return Center(
-                      child: Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
+                      child: Text('Error: ${startedWorkoutsSnapshot.error}'));
                 } else {
-                  List<Workout> mostLikedWorkouts =
-                      mostLikedWorkoutsSnapshot.data!;
+                  List<Workout> savedWorkouts =
+                      startedWorkoutsSnapshot.data!;
 
                   return PageView.builder(
-                    itemCount: mostLikedWorkouts.length,
+                    itemCount: savedWorkouts.length,
                     itemBuilder: (context, index) {
-                      Workout workout = mostLikedWorkouts[index];
-
+                      Workout workout = savedWorkouts[index];
                       return buildWorkoutCard(workout);
-
-                      // Remaining code remains the same...
                     },
                   );
                 }
               },
             ),
           ),
+
           Expanded(
             flex: 1, // Adjust the flex factor as needed for balance
-            child: ListView.builder(
-              itemCount: workoutsList2.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(workoutsList2[index]),
-                  // Add other properties like leading, subtitle, onTap, etc.
-                );
+            child: FutureBuilder<List<Workout>>(
+              future: fetchPersonalWorkouts(),
+              builder: (context, personalWorkoutsSnapshot) {
+                if (personalWorkoutsSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (personalWorkoutsSnapshot.hasError) {
+                  return Center(
+                      child: Text('Error: ${personalWorkoutsSnapshot.error}'));
+                } else {
+                  List<Workout> personalWorkouts =
+                      personalWorkoutsSnapshot.data!;
+
+                  return PageView.builder(
+                    itemCount: personalWorkouts.length,
+                    itemBuilder: (context, index) {
+                      Workout workout = personalWorkouts[index];
+                      return buildWorkoutCard(workout);
+                    },
+                  );
+                }
               },
             ),
           ),
@@ -196,8 +296,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => CreateWorkoutPage()));        },
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => CreateWorkoutPage()));
+        },
         style: ElevatedButton.styleFrom(
           primary: Colors.blue,
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
