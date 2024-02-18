@@ -18,9 +18,6 @@ import java.util.Set;
 @EqualsAndHashCode
 public class User implements UserDetails {
 
-
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,6 +42,14 @@ public class User implements UserDetails {
     inverseJoinColumns = @JoinColumn(name = "id_workout"))
     private Set<Workout> likedWorkouts;
 
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "_user_achievements",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_achievement")
+    )
+    private Set<Achievement> achievements;
 
     public void likeWorkout(Workout workout)
     {

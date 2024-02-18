@@ -14,6 +14,7 @@ import tudor.work.service.UserService;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping(path = "/api/selfCoach/user")
@@ -212,8 +213,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body("workout finished");
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
-
     }
 
 

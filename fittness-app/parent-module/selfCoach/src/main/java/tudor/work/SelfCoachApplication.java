@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.scheduling.annotation.EnableAsync;
+import tudor.work.service.UserService;
 
 /**
  * Hello world!
@@ -14,10 +15,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableEurekaClient
 @EnableCaching
-@EnableAsync
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 public class SelfCoachApplication
 {
+
+    static private UserService userService;
     public static void main( String[] args )
     {
         SpringApplication.run(SelfCoachApplication.class,args);

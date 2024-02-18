@@ -39,6 +39,7 @@ dependencies:
   dart_jsonwebtoken: any
   search_choices: any
   fl_chart: ^0.65.0
+  web_socket_channel: ^2.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

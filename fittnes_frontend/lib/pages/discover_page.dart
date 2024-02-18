@@ -300,7 +300,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               MaterialPageRoute(builder: (context) => CreateWorkoutPage()));
         },
         style: ElevatedButton.styleFrom(
-          primary: Colors.blue,
+          backgroundColor: Colors.blue,
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),

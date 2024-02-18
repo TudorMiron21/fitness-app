@@ -3,6 +3,7 @@ package tudor.work.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import tudor.work.model.UserHistoryWorkout;
 
@@ -24,5 +25,25 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
             "WHERE uhw.user.email = :emailUser " +
             "AND uhw.isWorkoutDone = false " +
             "AND uhw.workout.id= :workoutId")
-    Optional<UserHistoryWorkout> findSpecificStartedWorkoutByUserEmail(@Param("workoutId")Long workoutId,@Param("emailUser") String emailUser);
+    Optional<UserHistoryWorkout> findSpecificStartedWorkoutByUserEmail(@Param("workoutId") Long workoutId, @Param("emailUser") String emailUser);
+
+
+    @Query(
+            "SELECT uhe.currNoSeconds FROM UserHistoryWorkout uhw " +
+            "JOIN uhw.user u " +
+            "JOIN uhw.userHistoryModules uhm " + // assuming 'userHistoryModules' is the correct property name in UserHistoryWorkout entity
+            "JOIN uhm.userHistoryExercises uhe " + // assuming 'userHistoryExercises' is the correct property name in UserHistoryModule entity
+            "WHERE uhw.id = :workoutId AND u.email = :email"
+    )
+    List<Long> findAllUserHistoryExercisesSecondsByUserHistoryWorkoutId(@Param("workoutId") Long workoutId, @Param("email") String email);
+
+
+    @Query(
+            "SELECT uhe.caloriesBurned FROM UserHistoryWorkout uhw " +
+                    "JOIN uhw.user u " +
+                    "JOIN uhw.userHistoryModules uhm " + // assuming 'userHistoryModules' is the correct property name in UserHistoryWorkout entity
+                    "JOIN uhm.userHistoryExercises uhe " + // assuming 'userHistoryExercises' is the correct property name in UserHistoryModule entity
+                    "WHERE uhw.id = :workoutId AND u.email = :email"
+    )
+    List<Double> findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(@Param("workoutId") Long id, @Param("email") String email);
 }

@@ -14,7 +14,11 @@ import tudor.work.repository.ExerciseRepository;
 import tudor.work.repository.UserRepository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +34,9 @@ public class UserService {
     private final UserHistoryWorkoutService userHistoryWorkoutService;
     private final UserHistoryModuleService userHistoryModuleService;
     private final UserHistoryExerciseService userHistoryExerciseService;
+    private final WorkoutResultService workoutResultService;
+
+    private final StatisticsService statisticsService;
 
     public List<ExerciseDto> getAllExercises() {
 
@@ -259,6 +266,7 @@ public class UserService {
                 .userHistoryModules(new ArrayList<>())
                 .user(authorityService.getUser())
                 .isWorkoutDone(false)
+                .startedWorkoutDateAndTime(LocalDateTime.now())
                 .build();
 
         UserHistoryWorkout userHistoryWorkoutRetrieve = userHistoryWorkoutService.save(userHistoryWorkout);
@@ -349,15 +357,26 @@ public class UserService {
 
 
     @Transactional
-    public void finishWorkout(Long userHistoryWotkoutId) throws NotFoundException {
+    public void finishWorkout(Long userHistoryWorkoutId) throws NotFoundException, ExecutionException, InterruptedException {
 
         UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService
-                .getUserHistoryWorkout(userHistoryWotkoutId)
-                .orElseThrow(() -> new NotFoundException("user histtory workout" + userHistoryWotkoutId + " not found"));
+                .getUserHistoryWorkout(userHistoryWorkoutId)
+                .orElseThrow(() -> new NotFoundException("user histtory workout" + userHistoryWorkoutId + " not found"));
 
         userHistoryWorkout.setIsWorkoutDone(true);
+        userHistoryWorkout.setFinishedWorkoutDateAndTime(LocalDateTime.now());
+
+        //TODO: async generate the stats for the newly added workout history entry
+
+        String email = authorityService.getEmail();
+
+        CompletableFuture<WorkoutResult> result= statisticsService.getStatistics(userHistoryWorkoutId,email);
+
+        workoutResultService.save(result.get());
 
     }
+
+
 
 
     public Boolean userExists(String emailUser) {

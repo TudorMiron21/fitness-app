@@ -5,6 +5,7 @@ import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.query.criteria.internal.predicate.BooleanExpressionPredicate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -35,8 +36,11 @@ public class UserHistoryWorkout {
     @JoinColumn(name ="user_id")
     private User user;
 
-
     private Boolean isWorkoutDone;
+
+    //these members are not integrated in the workflow
+    private LocalDateTime startedWorkoutDateAndTime;
+    private LocalDateTime finishedWorkoutDateAndTime;
 
     public void addUserHistoryModule(UserHistoryModule userHistoryModule)
     {

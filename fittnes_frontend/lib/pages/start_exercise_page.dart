@@ -4,7 +4,9 @@ import 'package:fittnes_frontend/models/LastEntryUserHistoryExercise.dart';
 import 'package:fittnes_frontend/models/UpdateExerciseToModule.dart';
 
 import 'package:fittnes_frontend/models/exercise.dart';
+import 'package:fittnes_frontend/pages/profile_page.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
+import 'package:fittnes_frontend/utils/WebSocketManager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_connect/http/src/interceptors/get_modifiers.dart';
 import 'dart:ui';
@@ -223,6 +225,7 @@ class StartExercisePage extends StatefulWidget {
 }
 
 class _StartExercisePageState extends State<StartExercisePage> {
+
   Timer? countdownTimer;
   late Duration myDuration;
   //= Duration(seconds: 0);
@@ -318,6 +321,10 @@ class _StartExercisePageState extends State<StartExercisePage> {
       },
     );
 
+    // if (response.statusCode == 200) {
+
+    // }
+
     if (response.statusCode != 200) {
       throw Exception(
           'Failed to finish workout. Status code: ${response.statusCode}');
@@ -356,8 +363,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
               isExerciseDone: isExerciseDone,
               isExerciseFirst: isExerciseFirst,
               userHistoryExerciseId: userHistoryExerciseId,
-              userHistoryModuleId: userHistoryModuleId
-              );
+              userHistoryModuleId: userHistoryModuleId);
       return lastEntryUserHistoryExerciseDto;
     } else {
       print(
@@ -430,7 +436,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     numberOfSets = widget.initialNoSets;
     myDuration = Duration(seconds: widget.initialNoSeconds);
     //numberOfReps = widget.initialNoReps.toDouble();
-   // weight = widget.initialWeight;
+    // weight = widget.initialWeight;
   }
 
   Future<void> _showSetSelectionDialog() async {
@@ -606,9 +612,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
       await saveExerciseToModule(widget.userHistoryModuleId,
           myDuration.inSeconds, false, numberOfReps.toInt(), weight);
     } else {
-      
-      await updateModule(numberOfSets, lastEntryUserHistoryExerciseDto.userHistoryModuleId);
-      
+      await updateModule(
+          numberOfSets, lastEntryUserHistoryExerciseDto.userHistoryModuleId);
+
       UpdateExerciseToModule updateExerciseToModuleDto =
           new UpdateExerciseToModule(
               currentNoSeconds: myDuration.inSeconds,
@@ -643,8 +649,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
         ),
       );
     } else {
-      // Navigate to ExercisePage or perform any other action when the workout finishes.
-      Navigator.pop(context);
+      //workout finish
+      // Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfilePage()));
     }
   }
 
@@ -704,7 +711,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
         ElevatedButton(
           onPressed: toggleTimer,
           style: ElevatedButton.styleFrom(
-            primary: isTimerRunning ? Colors.red : Colors.green,
+            backgroundColor: isTimerRunning ? Colors.red : Colors.green,
           ),
           child: Text(
             isTimerRunning ? 'Stop' : 'Start',
@@ -924,4 +931,6 @@ class _StartExercisePageState extends State<StartExercisePage> {
       ),
     );
   }
+
+
 }

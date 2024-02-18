@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tudor.work.model.UserHistoryWorkout;
 import tudor.work.repository.UserHistoryWorkoutRepository;
-import tudor.work.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +46,17 @@ public class UserHistoryWorkoutService {
     public UserHistoryWorkout findById(Long userHistoryWorkoutId) throws NotFoundException {
         return userHistoryWorkoutRepository.findById(userHistoryWorkoutId).orElseThrow(()-> new NotFoundException( "user history workout entry with id"+ userHistoryWorkoutId + " not found"));
     }
+
+    public List<Long> findAllUserHistoryExercisesSecondsByUserHistoryWorkoutId(Long id, String email)
+    {
+        return userHistoryWorkoutRepository.findAllUserHistoryExercisesSecondsByUserHistoryWorkoutId(id,email);
+    }
+
+    public List<Double> findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(Long id, String email)
+    {
+        return userHistoryWorkoutRepository.findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(id,email);
+    }
+
 
 
 }

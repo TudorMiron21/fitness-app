@@ -186,7 +186,6 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                     this.selectedExercises);
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor,
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

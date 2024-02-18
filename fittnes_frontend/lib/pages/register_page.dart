@@ -170,7 +170,7 @@ class _RegisterState extends State<Register> {
                 ),
                 if (!passwordsMatch)
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.red),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     onPressed: () {
                       _showPasswordMismatchSnackBar();
                     },

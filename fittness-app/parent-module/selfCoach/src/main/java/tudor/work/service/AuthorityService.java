@@ -65,6 +65,9 @@ public class AuthorityService {
         if (authentication != null && authentication.isAuthenticated()) {
             email = authentication.getName();
         }
+        else {
+            throw new RuntimeException("failed to extract email from token");
+        }
 
         return email;
     }
@@ -75,5 +78,10 @@ public class AuthorityService {
         return userRepository.findByEmail(username).orElseThrow(()->new NotFoundException("User not found"));
     }
 
+
+    public Long getUserId() throws NotFoundException {
+        String username = getEmail();
+        return userRepository.findByEmail(username).orElseThrow(()->new NotFoundException("User not found")).getId();
+    }
 
 }
