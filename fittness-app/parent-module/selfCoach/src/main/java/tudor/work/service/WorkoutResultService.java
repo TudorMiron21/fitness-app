@@ -8,6 +8,8 @@ import tudor.work.model.User;
 import tudor.work.model.WorkoutResult;
 import tudor.work.repository.WorkoutResultRepository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,4 +46,21 @@ public class WorkoutResultService {
 
         return null;
     }
+
+    public List<WorkoutResult> findLastEntriesByUser(String userEmail,Integer noWorkoutResults){
+        List<WorkoutResult>  workoutResultsByEmail = findByUserEmail(userEmail);
+
+        Integer workoutResultsByEmailCount = workoutResultsByEmail.size();
+
+        if(!workoutResultsByEmail.isEmpty())
+        {
+            if(workoutResultsByEmailCount >= noWorkoutResults)
+                return workoutResultsByEmail.subList(workoutResultsByEmailCount - noWorkoutResults,workoutResultsByEmailCount);
+            else
+                return workoutResultsByEmail;
+        }
+        return  Collections.emptyList();
+
+    }
+
 }

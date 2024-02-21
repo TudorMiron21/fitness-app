@@ -643,4 +643,25 @@ public class UserService {
                 .resultMuscleGroupPercentages(workoutResult.getResultMuscleGroupPercentages())
                 .build();
     }
+
+
+    public List<LastWorkoutResultDto> getGeneralWorkoutInformation(Integer noWorkoutResults)
+    {
+        return workoutResultService.
+                findLastEntriesByUser(authorityService.getEmail(),noWorkoutResults)
+                .stream()
+                .map(
+                        workoutResult ->
+                                LastWorkoutResultDto
+                                        .builder()
+                                        .id(workoutResult.getId())
+                                        .totalTime(workoutResult.getTotalTime())
+                                        .totalCaloriesBurned(workoutResult.getTotalCaloriesBurned())
+                                        .totalVolume(workoutResult.getTotalVolume())
+                                        .resultCategoryPercentages(workoutResult.getResultCategoryPercentages())
+                                        .resultDifficultyPercentages(workoutResult.getResultDifficultyPercentages())
+                                        .resultMuscleGroupPercentages(workoutResult.getResultMuscleGroupPercentages())
+                                        .build()
+                ).toList();
+    }
 }

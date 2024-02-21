@@ -1,3 +1,4 @@
+import 'package:fittnes_frontend/pages/general_stats_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fittnes_frontend/pages/last_workout_stats_page.dart';
 import 'package:fittnes_frontend/pages/user_information.dart';
@@ -44,19 +45,17 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile Page"),
-        centerTitle: true,
-      ),
+
       body: Column(
         children: [
           Expanded(
             child: PageView(
               controller: _pageController,
               onPageChanged: _onPageChanged,
-              children: const [
+              children: [
                 UserInformation(),
                 LastWorkoutStatsPage(),
+                GeneralStatsPage(),
                 // Add more pages as needed
               ],
             ),

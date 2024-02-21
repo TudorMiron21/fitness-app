@@ -1,6 +1,7 @@
 package tudor.work.controller;
 
 import com.ctc.wstx.io.ReaderSource;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -304,6 +305,11 @@ public class UserController {
     public ResponseEntity<?> getLastWorkoutStatistics()
     {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLastWorkoutStatistics());
+    }
+
+    @GetMapping("/getGeneralWorkoutInformation/{noWorkoutResults}")
+    public ResponseEntity<?> getGeneralWorkoutInformation(@PathVariable("noWorkoutResults") Integer noWorkoutResults){
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getGeneralWorkoutInformation(noWorkoutResults));
     }
 }
 

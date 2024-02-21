@@ -206,8 +206,19 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Your Workouts'),
+      appBar:AppBar(
+        title: Text(
+          'Your Workouts',
+          style: TextStyle(
+            fontSize: 20, 
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        centerTitle: true,
+        toolbarHeight: 30, 
+        backgroundColor: Colors.blue,
+        elevation: 4
+    
       ),
       body: Column(
         children: [
