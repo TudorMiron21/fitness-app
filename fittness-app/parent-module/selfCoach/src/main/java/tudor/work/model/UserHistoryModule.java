@@ -1,5 +1,7 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
@@ -25,10 +27,12 @@ public class UserHistoryModule {
     private Long Id;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "userHistoryModule",cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<UserHistoryExercise> userHistoryExercises;
 
     @ManyToOne
     @JoinColumn(name = "id_userHistoryWorkout")
+    @JsonBackReference
     private UserHistoryWorkout userHistoryWorkout;
 
     private Integer noSets;

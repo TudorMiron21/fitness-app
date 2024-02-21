@@ -1,4 +1,13 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="tudor.work.fitness_app"> <!-- Replace with your actual package name -->
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!-- Add this if you plan to allow users to take pictures directly -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- This permission is not required for API level 29 and above -->
+
+    
     <application
         android:label="fittnes_frontend"
         android:name="${applicationName}"

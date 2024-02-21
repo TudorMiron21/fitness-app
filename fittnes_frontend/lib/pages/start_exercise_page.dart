@@ -835,7 +835,8 @@ class _StartExercisePageState extends State<StartExercisePage> {
             }
 
             if (widget.exerciseIndex == widget.exercises.length - 1) {
-              await finishWorkout(widget.userHistoryWorkoutId);
+              if(noSets == 1)
+                await finishWorkout(widget.userHistoryWorkoutId);
             }
           },
           child: Text(

@@ -1,5 +1,6 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import tudor.work.embeddables.ResultCategoryPercentageId;
 
@@ -15,11 +16,12 @@ import javax.persistence.*;
 public class ResultCategoryPercentage {
 
     @EmbeddedId
-    private ResultCategoryPercentageId id;
+    private ResultCategoryPercentageId id = new ResultCategoryPercentageId();
 
     @ManyToOne
     @MapsId("idWorkoutResult")
     @JoinColumn(name = "id_workout_result")
+    @JsonBackReference
     private WorkoutResult workoutResult;
 
     @ManyToOne

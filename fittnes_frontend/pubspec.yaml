@@ -48,6 +48,10 @@ dependencies:
   google_nav_bar: any
   get: any
 
+  
+  image_picker: any
+  smooth_page_indicator: any
+
 
 
 dev_dependencies:

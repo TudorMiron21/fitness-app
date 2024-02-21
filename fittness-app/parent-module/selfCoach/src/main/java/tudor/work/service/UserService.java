@@ -5,9 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import tudor.work.dto.*;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
+import tudor.work.exceptions.LastWorkoutResultEmpty;
 import tudor.work.exceptions.UserAccessException;
 import tudor.work.model.*;
 import tudor.work.repository.ExerciseRepository;
@@ -21,6 +26,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.springframework.transaction.annotation.Propagation.*;
 
 @Service
 @RequiredArgsConstructor
@@ -355,9 +362,8 @@ public class UserService {
         workoutService.saveWorkout(workout);
     }
 
-
     @Transactional
-    public void finishWorkout(Long userHistoryWorkoutId) throws NotFoundException, ExecutionException, InterruptedException {
+    public WorkoutResult saveUserHistoryWorkoutAndGetWorkoutResult(Long userHistoryWorkoutId) throws NotFoundException {
 
         UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService
                 .getUserHistoryWorkout(userHistoryWorkoutId)
@@ -366,18 +372,38 @@ public class UserService {
         userHistoryWorkout.setIsWorkoutDone(true);
         userHistoryWorkout.setFinishedWorkoutDateAndTime(LocalDateTime.now());
 
-        //TODO: async generate the stats for the newly added workout history entry
+        //saves the workout result first
+        WorkoutResult workoutResult = workoutResultService
+                .saveAndFlush(WorkoutResult
+                        .builder()
+                        .userHistoryWorkout(userHistoryWorkoutService.findById(userHistoryWorkoutId))
+                        .build());
 
-        String email = authorityService.getEmail();
-
-        CompletableFuture<WorkoutResult> result= statisticsService.getStatistics(userHistoryWorkoutId,email);
-
-        workoutResultService.save(result.get());
-
+        return workoutResult;
     }
 
 
+    public void finishWorkout(Long userHistoryWorkoutId) throws NotFoundException, ExecutionException, InterruptedException {
 
+        WorkoutResult workoutResult = saveUserHistoryWorkoutAndGetWorkoutResult(userHistoryWorkoutId);
+
+        User user = authorityService.getUser();
+        //TODO: async generate the stats for the newly added workout history entry
+        CompletableFuture<WorkoutResult> result = statisticsService.getStatistics(userHistoryWorkoutId,workoutResult.getId(),user);
+
+        WorkoutResult completedWorkoutResult = result.get();
+
+        workoutResult.setTotalTime(completedWorkoutResult.getTotalTime());
+        workoutResult.setTotalCaloriesBurned(completedWorkoutResult.getTotalCaloriesBurned());
+        workoutResult.setTotalVolume(completedWorkoutResult.getTotalVolume());
+        workoutResult.setResultCategoryPercentages(completedWorkoutResult.getResultCategoryPercentages());
+        workoutResult.setResultDifficultyPercentages(completedWorkoutResult.getResultDifficultyPercentages());
+        workoutResult.setResultMuscleGroupPercentages(completedWorkoutResult.getResultMuscleGroupPercentages());
+
+
+        workoutResultService.save(workoutResult);
+
+    }
 
     public Boolean userExists(String emailUser) {
         return userRepository.findByEmail(emailUser).isPresent();
@@ -598,5 +624,23 @@ public class UserService {
                         }
                 ).toList();
 
+    }
+
+    public LastWorkoutResultDto getLastWorkoutStatistics(){
+
+        WorkoutResult workoutResult =workoutResultService.findLastByUser(authorityService.getEmail());
+        if(workoutResult == null)
+            throw new LastWorkoutResultEmpty("there is no last workout result entry for this user");
+
+        return LastWorkoutResultDto
+                .builder()
+                .id(workoutResult.getId())
+                .totalTime(workoutResult.getTotalTime())
+                .totalCaloriesBurned(workoutResult.getTotalCaloriesBurned())
+                .totalVolume(workoutResult.getTotalVolume())
+                .resultCategoryPercentages(workoutResult.getResultCategoryPercentages())
+                .resultDifficultyPercentages(workoutResult.getResultDifficultyPercentages())
+                .resultMuscleGroupPercentages(workoutResult.getResultMuscleGroupPercentages())
+                .build();
     }
 }

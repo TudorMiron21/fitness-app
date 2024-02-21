@@ -1,7 +1,9 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -19,10 +21,12 @@ public class UserHistoryExercise{
 
     @ManyToOne
     @JoinColumn(name = "id_exercise")
+
     private Exercise exercise;
 
     @ManyToOne
     @JoinColumn(name = "id_userHistoryModule")
+    @JsonBackReference
     private UserHistoryModule userHistoryModule;
 
     //this represents the current number of seconds

@@ -1,5 +1,6 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.query.criteria.internal.predicate.BooleanExpressionPredicate;
@@ -30,11 +31,13 @@ public class UserHistoryWorkout {
     private Workout workout;
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "userHistoryWorkout",cascade = CascadeType.ALL)
+    @JsonManagedReference
     List<UserHistoryModule> userHistoryModules;
 
     @ManyToOne
     @JoinColumn(name ="user_id")
     private User user;
+
 
     private Boolean isWorkoutDone;
 

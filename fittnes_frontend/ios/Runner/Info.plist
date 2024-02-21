@@ -2,6 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
+	<!-- Info.plist -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Your custom message explaining why you need to access the gallery.</string>
+
+	<!-- Add these if you plan to allow users to take pictures directly -->
+	<key>NSCameraUsageDescription</key>
+	<string>Your custom message explaining why you need to access the camera.</string>
+
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Your custom message explaining why you need to access the microphone.</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

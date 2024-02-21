@@ -1,5 +1,6 @@
 package tudor.work.controller;
 
+import com.ctc.wstx.io.ReaderSource;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -297,6 +298,12 @@ public class UserController {
     @GetMapping("/getPersonalWorkouts")
     public ResponseEntity<?> getPersonalWorkouts(){
         return ResponseEntity.status(HttpStatus.OK).body(userService.getPersonalWorkouts());
+    }
+
+    @GetMapping("/getLastWorkoutStatistics")
+    public ResponseEntity<?> getLastWorkoutStatistics()
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getLastWorkoutStatistics());
     }
 }
 

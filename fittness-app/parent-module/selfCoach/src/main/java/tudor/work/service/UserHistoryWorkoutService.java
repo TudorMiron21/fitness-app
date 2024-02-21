@@ -3,7 +3,7 @@ package tudor.work.service;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tudor.work.model.UserHistoryWorkout;
+import tudor.work.model.*;
 import tudor.work.repository.UserHistoryWorkoutRepository;
 
 import java.util.List;
@@ -47,16 +47,38 @@ public class UserHistoryWorkoutService {
         return userHistoryWorkoutRepository.findById(userHistoryWorkoutId).orElseThrow(()-> new NotFoundException( "user history workout entry with id"+ userHistoryWorkoutId + " not found"));
     }
 
-    public List<Long> findAllUserHistoryExercisesSecondsByUserHistoryWorkoutId(Long id, String email)
+    public List<Long> findAllUserHistoryExercisesSecondsByUserHistoryWorkoutId(Long id)
     {
-        return userHistoryWorkoutRepository.findAllUserHistoryExercisesSecondsByUserHistoryWorkoutId(id,email);
+        return userHistoryWorkoutRepository.findAllUserHistoryExercisesSecondsByUserHistoryWorkoutId(id);
     }
 
-    public List<Double> findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(Long id, String email)
+    public List<Double> findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(Long id)
     {
-        return userHistoryWorkoutRepository.findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(id,email);
+        return userHistoryWorkoutRepository.findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(id);
     }
 
 
+    public List<Category> findAllCategoriesByUserHistoryWorkoutId(Long id) {
+        return userHistoryWorkoutRepository.findAllCategoriesByUserHistoryWorkoutId(id);
+    }
 
+    public List<Difficulty> findAllDifficultiesByUserHistoryWorkoutId(Long id)
+    {
+        return userHistoryWorkoutRepository.findAllDifficultiesByUserHistoryWorkoutId(id);
+    }
+
+    public List<MuscleGroup> findAllMuscleGroupsByUserHistoryWorkoutId(Long id)
+    {
+        return userHistoryWorkoutRepository.findAllMuscleGroupsByUserHistoryWorkoutId(id);
+    }
+
+
+    public List<UserHistoryExercise> findAllUserHistoryExercisesByUserHistoryWorkoutId(Long userHistoryWorkoutId) {
+        return userHistoryWorkoutRepository.findAllUserHistoryExercisesByUserHistoryWorkoutId(userHistoryWorkoutId);
+    }
+
+    public List<Double> findAllUserHistoryVolumesWeightsByUserHistoryWorkoutId(Long userHistoryWorkoutId) {
+
+        return userHistoryWorkoutRepository.findAllUserHistoryVolumesWeightsByUserHistoryWorkoutId(userHistoryWorkoutId);
+    }
 }
