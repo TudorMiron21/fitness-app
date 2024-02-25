@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       String loginDataJson = json.encode(loginData);
 
       Uri url = Uri.parse(
-          'http://localhost:8080/api/v1/auth/login'); // Use Uri.http
+          'http://192.168.199.182:8080/api/v1/auth/login'); // Use Uri.http
 
       Response response =
           await post(url, headers: headers, body: loginDataJson);

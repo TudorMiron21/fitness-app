@@ -46,11 +46,9 @@ dependencies:
   curved_navigation_bar: any
   google_nav_bar: any
   get: any
-
-  
   image_picker: any
   smooth_page_indicator: any
-
+  webview_flutter: ^3.0.0
 
 
 dev_dependencies:
@@ -78,6 +76,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - lib/images/
+    - lib/assets/html/
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

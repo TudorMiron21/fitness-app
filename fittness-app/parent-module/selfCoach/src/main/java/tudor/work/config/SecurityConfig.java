@@ -30,6 +30,7 @@ import static tudor.work.model.Roles.*;
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {"/api/selfCoach/user/**",
+            "/api/selfCoach/paypal/getPayPalSubscriptionButton",
             "/api-docs",
             "/v2/api-docs",
             "/v3/api-docs",
@@ -48,53 +49,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(req ->
-//                                req.antMatchers(WHITE_LIST_URL)
-//                                        .permitAll()
-//                                        .antMatchers("/api/selfCoach/admin/**").hasRole(ADMIN.name())
-////                                .antMatchers(GET, "/api/v1/admin/**").hasAnyAuthority(ADMIN_READ.name())
-////                                .antMatchers(POST, "/api/v1/admin/**").hasAnyAuthority(ADMIN_WRITE.name())
-////                                .antMatchers(PUT, "/api/v1/admin/**").hasAnyAuthority(ADMIN_UPDATE.name())
-////                                .antMatchers(DELETE, "/api/v1/admin/**").hasAnyAuthority(ADMIN_DELETE.name())
-//                                        .antMatchers("/api/selfCoach/coach/**").hasAnyRole(ADMIN.name(), COACH.name())
-////                                .antMatchers(GET, "/api/v1/coach/**").hasAnyAuthority(ADMIN_READ.name(), COACH_READ.name())
-////                                .antMatchers(POST, "/api/v1/coach/**").hasAnyAuthority(ADMIN_WRITE.name(), COACH_WRITE.name())
-////                                .antMatchers(PUT, "/api/v1/coach/**").hasAnyAuthority(ADMIN_UPDATE.name(), COACH_UPDATE.name())
-////                                .antMatchers(DELETE, "/api/v1/coach/**").hasAnyAuthority(ADMIN_DELETE.name(), COACH_DELETE.name())
-//                                        .antMatchers("/api/selfCoach/payingUser/**").hasAnyRole(ADMIN.name(), COACH.name(), PAYING_USER.name())
-////                                .antMatchers(GET, "/api/v1/payingUser/**").hasAnyAuthority(ADMIN_READ.name(), COACH_READ.name(), PAYING_USER_READ.name())
-////                                .antMatchers(POST, "/api/v1/payingUser/**").hasAnyAuthority(ADMIN_READ.name(), COACH_READ.name(), PAYING_USER_WRITE.name())
-////                                .antMatchers(PUT, "/api/v1/payingUser/**").hasAnyAuthority(ADMIN_READ.name(), COACH_READ.name(), PAYING_USER_UPDATE.name())
-////                                .antMatchers(DELETE, "/api/v1/payingUser/**").hasAnyAuthority(ADMIN_READ.name(), COACH_READ.name(), PAYING_USER_DELETE.name())
-//                                        .anyRequest()
-//                                        .authenticated()
-//
-//
-//                )
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-////                .authenticationProvider(authenticationProvider)
-////
-//        ;
-//        return http.build();
-//        http.csrf().disable()
-//                .authorizeRequests(authorizeRequests ->
-//                        authorizeRequests
-//                                .antMatchers("/api/selfCoach/admin/**")
-//                                .hasRole(ADMIN.name())
-//                                .antMatchers("/api/selfCoach/coach/**")
-//                                .hasAnyRole(ADMIN.name(), COACH.name())
-//                                .antMatchers("/api/selfCoach/payingUser/**")
-//                                .hasAnyRole(ADMIN.name(), COACH.name(), PAYING_USER.name())
-//                                .antMatchers(WHITE_LIST_URL)
-//                                .anonymous()
-//                                .anyRequest()
-//                                .authenticated()
-//                )
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
         http
                 .csrf().disable()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

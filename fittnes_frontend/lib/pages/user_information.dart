@@ -1,7 +1,10 @@
 import 'dart:ui'; // For ImageFilter
 import 'dart:io'; // For File
+import 'package:fittnes_frontend/pages/paypal_subscription_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserInformation extends StatefulWidget {
   const UserInformation({super.key});
@@ -33,23 +36,31 @@ class _UserInformationState extends State<UserInformation> {
     }
   }
 
+  Future<void> _launchAsInAppWebViewWithCustomHeaders(Uri url) async {
+    final bool result = await launchUrl(
+      url,
+    );
+
+    if (!result) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'User Information',
-          style: TextStyle(
-            fontSize: 20, 
-            fontWeight: FontWeight.w500,
+          title: Text(
+            'User Information',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-        centerTitle: true,
-        toolbarHeight: 30, 
-        backgroundColor: Colors.blue,
-        elevation: 4
-    
-      ),
+          centerTitle: true,
+          toolbarHeight: 30,
+          backgroundColor: Colors.blue,
+          elevation: 4),
       body: Stack(
         fit: StackFit.expand, // Ensure the stack fills the screen
         children: <Widget>[
@@ -112,14 +123,18 @@ class _UserInformationState extends State<UserInformation> {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () {
-                    // Handle "Go Premium" button tap
-                  },
                   child: Text('Go Premium'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.green, // Text color
+                    backgroundColor: Colors.green,
+                    // Text color
                   ),
+                  onPressed: () async {
+                    const url =
+                        'http://192.168.199.182:8080/api/selfCoach/paypal/getPayPalSubscriptionButton';
+                    await _launchAsInAppWebViewWithCustomHeaders(
+                        Uri.parse(url));
+                  },
                 ),
               ],
             ),

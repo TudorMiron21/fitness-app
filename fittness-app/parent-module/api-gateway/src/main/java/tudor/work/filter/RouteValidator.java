@@ -14,6 +14,7 @@ public class RouteValidator {
             "/api/v1/auth/login",
             "/api/v1/auth/googleAuth",
             "/api/v1/auth/validateToken/**",
+            "/api/selfCoach/paypal/getPayPalSubscriptionButton",
             "/eureka"
     );
 

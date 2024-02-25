@@ -92,7 +92,12 @@
             <artifactId>rest-api-sdk</artifactId>
             <version>1.14.0</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/com.paypal.sdk/checkout-sdk -->
+        <dependency>
+            <groupId>com.paypal.sdk</groupId>
+            <artifactId>checkout-sdk</artifactId>
+            <version>1.0.2</version>
+        </dependency>
     <!--Redis dependencies-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -114,6 +119,9 @@
             <version>1.19.0</version>
             <scope>compile</scope>
         </dependency>
+
+
+
     </dependencies>
 
     <build>

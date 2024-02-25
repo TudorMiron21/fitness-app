@@ -311,5 +311,7 @@ public class UserController {
     public ResponseEntity<?> getGeneralWorkoutInformation(@PathVariable("noWorkoutResults") Integer noWorkoutResults){
             return ResponseEntity.status(HttpStatus.OK).body(userService.getGeneralWorkoutInformation(noWorkoutResults));
     }
+
+
 }
 

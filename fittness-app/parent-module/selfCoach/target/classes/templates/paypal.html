@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Ensures optimal rendering on mobile devices. -->
+</head>
+<body>
+<script src="https://www.paypal.com/sdk/js?client-id=Ach-mwpZQauApIvPKUPDPV_fls6TuT5emEmkB3fDtKu62CHZ1etTaEXOcuwuZ93YrFFZyER6YsWvd_8G&vault=true&intent=subscription">
+</script> // Add your client_id
+<div id="paypal-button-container"></div>
+<script>
+    paypal.Buttons({
+     createSubscription: function(data, actions) {
+       return actions.subscription.create({
+        'plan_id': 'P-3TG59070VR247690FMXL244Y' // Creates the subscription
+        });
+      },
+      onApprove: function(data, actions) {
+        alert('You have successfully subscribed to ' + data.subscriptionID); // Optional message given to subscriber
+      }
+    }).render('#paypal-button-container'); // Renders the PayPal button
+</script>
+</body>
+</html>
+

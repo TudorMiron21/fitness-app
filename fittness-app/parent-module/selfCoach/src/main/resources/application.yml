@@ -22,6 +22,15 @@ spring:
   application:
     name: selfCoach
 
+  thymeleaf:
+    cache: false # true for production
+    mode: HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    prefix: classpath:/templates/
+    suffix: .html
+
 eureka:
   client:
     service-url:
@@ -36,3 +45,4 @@ paypal:
   client:
     id: Ach-mwpZQauApIvPKUPDPV_fls6TuT5emEmkB3fDtKu62CHZ1etTaEXOcuwuZ93YrFFZyER6YsWvd_8G
     secret: EDzjRV8hAl9dO-hrEFEOGyyHPK7pQfi-A9IwqKMEiMC3atxIBtDZdvJj6w_yUU_yZoYE9IEZ_NzMfhX7
+    baseUrl: https://api-m.sandbox.paypal.com
