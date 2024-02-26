@@ -1,30 +1,28 @@
-name: Authentication Service Pipeline
+name: SelfCoach Service Pipeline
 
 on:
   push:
     branches: [ master ]
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
-  
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
-  
-    - name: Set up JDK 17
-      uses: actions/setup-java@v2
-      with:
-        java-version: '17'
-        distribution: 'adopt'
-        cache: 'maven'
-  
-    - name: Build with Maven
-      run: |
-        cd ./fittness-app/parent-module
-        mvn clean install
-          
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: "17"
+          distribution: "adopt"
+          cache: "maven"
+
+      - name: Build with Maven
+        run: |
+          cd ./fittness-app/parent-module
+          mvn clean install
+
   test:
     needs: build
     runs-on: ubuntu-latest
@@ -53,7 +51,7 @@ jobs:
 
     - name: Test with Maven
       run: |
-        cd ./fittness-app/parent-module/authorization
+        cd ./fittness-app/parent-module/selfCoach
         mvn test
 
   package:
@@ -77,11 +75,10 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: ./fittness-app
-        file: ./fittness-app/Dockerfile.authorization
+        file: ./fittness-app/Dockerfile.selfCoach
         push: true
-        tags: tudormiron/fitness-app-authorization:latest
-        
-        
+        tags: tudormiron/fitness-app-self-coach:latest
+
   deploy:
     needs: package
     runs-on: ubuntu-latest
@@ -99,4 +96,4 @@ jobs:
 
     - name: Deploy
       run: |
-        echo "Add your deployment commands here"
+        echo "Add your deployment commands here"      
