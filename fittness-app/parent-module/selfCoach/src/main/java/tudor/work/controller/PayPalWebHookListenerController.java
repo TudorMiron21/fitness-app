@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import tudor.work.paypal.dtos.AccessTokenResponseDTO;
 import tudor.work.service.PayPalService;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/selfCoach/paypal")
@@ -19,13 +24,19 @@ public class PayPalWebHookListenerController {
 
     private final PayPalService payPalService;
 
-    @PostMapping("/webhookListener")
-    public ResponseEntity<?> eventListener()
-    {
 
+
+    @PostMapping("/webhookListener")
+    public ResponseEntity<?> eventListener(HttpServletRequest request)
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(payPalService.webhookSignatureVerification(request));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @GetMapping("getAuthToken")
+    @GetMapping("/getAuthToken")
     public ResponseEntity<?> getAuthToken()
     {
         try {

@@ -9,8 +9,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import tudor.work.config.PayPalConfig;
 import tudor.work.paypal.PayPalHttpClient;
+import tudor.work.paypal.ValidateWebhookServlet;
 import tudor.work.paypal.dtos.AccessTokenResponseDTO;
+import tudor.work.utils.PayPalUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
@@ -29,8 +35,13 @@ public class PayPalService {
 
     private final PayPalHttpClient payPalHttpClient;
 
+    private final PayPalUtils payPalUtils;
     public AccessTokenResponseDTO getAccessToken() throws Exception {
         return payPalHttpClient.getAccessToken();
+    }
+
+    public Boolean webhookSignatureVerification(HttpServletRequest req) throws IOException {
+        return payPalUtils.validateWebhookSignature(req);
     }
 
 
