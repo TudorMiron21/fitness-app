@@ -650,8 +650,8 @@ class _StartExercisePageState extends State<StartExercisePage> {
       );
     } else {
       //workout finish
-      // Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfilePage()));
+      Navigator.pop(context);
+      // Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfilePage()));
     }
   }
 
