@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
 #    url: jdbc:postgresql://localhost:5432/authorization
-    url: jdbc:postgresql://my-postgres-postgresql:5432/authorization
+    url: jdbc:postgresql://my-postgres-postgresql.default.svc.cluster.local:5432/authorization
 
     username: postgres
 #    password: root
