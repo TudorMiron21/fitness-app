@@ -7,8 +7,8 @@ spring:
     url: jdbc:postgresql://my-postgres-postgresql.default.svc.cluster.local:5432/authorization
 
     username: postgres
-#    password: root
-    password: 3rM6lhVhZF
+    password: root
+    #    password: 3rM6lhVhZF
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -35,7 +35,7 @@ spring:
 eureka:
   client:
     service-url:
-#      defaultZone: http://localhost:8761/eureka
+      #      defaultZone: http://localhost:8761/eureka
       defaultZone: http://fitness-eureka-service:8761/eureka
 security:
   basic:
