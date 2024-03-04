@@ -1,11 +1,7 @@
 package tudor.work.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import lombok.*;
 
 import javax.persistence.*;
 import java.security.CodeSigner;
@@ -16,21 +12,24 @@ import java.security.CodeSigner;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class CoachDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "id_user")
     @JsonBackReference
     private User user;
 
-    private String CoachCertificateBlobUrl;
+    private String coachCertificatePath;
 
     private CertificationType certificationType;
 
     private Integer yearsOfExperience;
+
+    private Boolean isValidated;
 
 }

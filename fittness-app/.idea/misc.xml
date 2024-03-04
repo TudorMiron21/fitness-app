@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/parent-module/api-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/parent-module/authorization/pom.xml" />
         <option value="$PROJECT_DIR$/parent-module/selfCoach/pom.xml" />
+        <option value="$PROJECT_DIR$/parent-module/admin-coach-service/pom.xml" />
       </list>
     </option>
   </component>

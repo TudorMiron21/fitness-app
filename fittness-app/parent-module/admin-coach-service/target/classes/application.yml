@@ -32,3 +32,11 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 #      defaultZone: http://fitness-eureka-service:8761/eureka
+
+minio:
+  accessKey: dAh2wTxgKQK3B6TPi20p
+  secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
+  endpoint: http://192.168.147.140:9000
+
+
+
