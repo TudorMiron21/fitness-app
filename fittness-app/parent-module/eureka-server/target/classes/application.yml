@@ -9,4 +9,4 @@ eureka:
     register-with-eureka: false
   instance:
     hostname: localhost
-#    hostname: eureka-service
+#    hostname: fitness-eureka-service

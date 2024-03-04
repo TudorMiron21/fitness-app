@@ -3,6 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/parent-module/TestModule/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/parent-module/TestModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/parent-module/admin-coach-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/parent-module/admin-coach-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/parent-module/api-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/parent-module/api-gateway/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/parent-module/authorization/src/main/java" charset="UTF-8" />

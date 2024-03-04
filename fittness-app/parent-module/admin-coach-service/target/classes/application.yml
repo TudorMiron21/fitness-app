@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8083
 
 spring:
   datasource:
@@ -8,12 +8,12 @@ spring:
 
     username: postgres
     password: root
-    #    password: 3rM6lhVhZF
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       #      ddl-auto: create-drop
       ddl-auto: update
+
     show-sql: true
     properties:
       hibernate:
@@ -21,29 +21,14 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   application:
-    name: selfCoach
+    name: adminCoachService
 
-  thymeleaf:
-    cache: false # true for production
-    mode: HTML
-    encoding: UTF-8
-    servlet:
-      content-type: text/html
-    prefix: classpath:/templates/
-    suffix: .html
+security:
+  basic:
+    enabled: false
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
 #      defaultZone: http://fitness-eureka-service:8761/eureka
-security:
-  basic:
-    enabled: false
-
-paypal:
-  mode: sandbox
-  client:
-    id: Ach-mwpZQauApIvPKUPDPV_fls6TuT5emEmkB3fDtKu62CHZ1etTaEXOcuwuZ93YrFFZyER6YsWvd_8G
-    secret: EDzjRV8hAl9dO-hrEFEOGyyHPK7pQfi-A9IwqKMEiMC3atxIBtDZdvJj6w_yUU_yZoYE9IEZ_NzMfhX7
-    baseUrl: https://api-m.sandbox.paypal.com

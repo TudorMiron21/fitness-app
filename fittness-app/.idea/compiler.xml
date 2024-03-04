@@ -14,6 +14,7 @@
         <module name="api-gateway" />
         <module name="authorization" />
         <module name="selfCoach" />
+        <module name="admin-coach-service" />
         <module name="eureka-server" />
       </profile>
     </annotationProcessing>
