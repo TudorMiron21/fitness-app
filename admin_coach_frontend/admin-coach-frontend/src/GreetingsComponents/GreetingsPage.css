@@ -1,0 +1,54 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: white;
+  }
+  
+  .greetings-page {
+    height: 100vh;
+    background: url('https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* Positioning the button on the right */
+  .register-button-container {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+  }
+  
+  .register-button {
+    padding: 15px 30px;
+    background-color: #f04;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-size: 18px;
+  }
+  
+  .register-button:hover {
+    background-color: #c03;
+  }
+  
+  /* Centering the typing message on the left */
+  .typing-message {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 24px;
+    color: black;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }

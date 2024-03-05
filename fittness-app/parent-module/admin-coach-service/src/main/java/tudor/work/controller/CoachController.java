@@ -1,6 +1,7 @@
 package tudor.work.controller;
 
 import io.minio.errors.*;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,16 @@ public class CoachController {
             throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/checkAreCoachDetailsValid")
+    public ResponseEntity<?> checkAreCoachDetailsValid()
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.checkAreCoachDetailsValid());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e);
         }
     }
 

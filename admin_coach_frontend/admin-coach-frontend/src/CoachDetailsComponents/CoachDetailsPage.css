@@ -1,0 +1,115 @@
+
+body,html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color:#3D405B;
+}
+.coach-explanation {
+    background-color: #f8f9fa; /* Light background color for the explanation box */
+    border-left: 4px solid #5cb85c; /* A colored line on the left for emphasis */
+    padding: 20px;
+    margin-bottom: 20px; /* Space before the form starts */
+    border-radius: 5px;
+    color: #495057; /* Slightly darker text color for better readability */
+  }
+  
+  .coach-explanation p {
+    margin-bottom: 10px; /* Spacing between paragraphs */
+  }
+.coach-details-page{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #3D405B;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+}
+  /* Set the form container to have a white background */
+  .coach-details-container {
+    width: 90%;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff; /* White background for the form */
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    color: #333; /* Darker text color for contrast */
+  }
+  .coach-details-container .form-title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .coach-details-form .form-group {
+    margin-bottom: 30px;
+  }
+  
+  .coach-details-form .form-control, .coach-details-form .form-control-file {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .coach-details-form .form-control::placeholder {
+    color: #bbb;
+  }
+  
+  .coach-details-form .form-control:focus, .coach-details-form .form-control-file:focus {
+    border-color: #00c6ff;
+    outline: none;
+    transform: scale(1.02);
+  }
+  
+  .coach-details-form .btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .coach-details-form .btn:hover, .coach-details-form .btn:focus {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Image preview styles */
+  .image-preview {
+    display: block;
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 10px;
+    border-radius: 4px;
+    margin-left: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Hover effects for inputs and buttons */
+  .coach-details-form .form-control:hover, .coach-details-form .form-control-file:hover {
+    border-color: #00c6ff;
+  }
+  
+  /* Focus styles for accessibility */
+  .coach-details-form .form-control:focus-visible, .coach-details-form .form-control-file:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .coach-details-container {
+      padding: 10px;
+    }
+  }
+
+  

@@ -12,7 +12,7 @@ import tudor.work.model.User;
 @Builder
 public class UploadCoachDetailsRequestDto {
 
-    private String emailUser;
+//    private String emailUser;
 
     private MultipartFile certificateImg;
 

@@ -4,6 +4,7 @@ package tudor.work.service;
 import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.UploadCoachDetailsRequestDto;
 import tudor.work.model.CoachDetails;
@@ -18,16 +19,12 @@ import java.security.NoSuchAlgorithmException;
 public class CoachService {
 
     private final MinioService minioService;
-    private final UserService userService;
     private final CoachDetailsService coachDetailsService;
-    public void uploadCoachDetails(UploadCoachDetailsRequestDto uploadCoachDetailsRequestDto) throws  IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    private final AuthorityService authorityService;
+    public void uploadCoachDetails(UploadCoachDetailsRequestDto uploadCoachDetailsRequestDto) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException, NotFoundException {
 
-        User user = null;
-        try {
-            user = userService.getUserByEmail(uploadCoachDetailsRequestDto.getEmailUser());
-        } catch (NotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        User user = authorityService.getUser();
+
         String imgFileName = user.getId() + ".png";
 
         String imgPath =  minioService.uploadCertificateImage(uploadCoachDetailsRequestDto.getCertificateImg().getInputStream(),imgFileName);
@@ -42,5 +39,11 @@ public class CoachService {
                         .isValidated(false)
                         .build()
         );
+    }
+
+    public Boolean checkAreCoachDetailsValid() throws NotFoundException {
+
+        authorityService.getUser();
+        return authorityService.getUser().getCoachDetails().stream().anyMatch(CoachDetails::getIsValidated);
     }
 }

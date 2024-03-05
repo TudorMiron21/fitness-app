@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./LoginPage.css";
+import { Link } from 'react-router-dom'; 
+
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -30,7 +32,7 @@ const Form = ({ email, setEmail, password, setPassword, onSubmit }) => {
         <h2 className="form-title">Login</h2>
         <div className="form-group">
           <input
-            type="text"
+            type="email"
             className="form-input"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -51,6 +53,11 @@ const Form = ({ email, setEmail, password, setPassword, onSubmit }) => {
         <button type="submit" className="form-button">
           Log In
         </button>
+
+        <p className="login-link">
+          Don't have an account? <Link to="/register">Register now</Link>
+        </p>
+
       </form>
     </div>
   );
