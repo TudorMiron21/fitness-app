@@ -120,7 +120,7 @@ public class AuthServiceTest {
 
         when(userRepository.findByEmail(testEmail)).thenReturn(Optional.of(user));
 
-        when(jwtService.isTokenValid(token, user)).thenReturn(true);
+        when(jwtService.isTokenValid(token)).thenReturn(true);
 
         Boolean result = authService.isTokenValid(token);
 

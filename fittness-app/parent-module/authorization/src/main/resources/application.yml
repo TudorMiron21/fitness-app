@@ -44,7 +44,7 @@ spring:
             client-id: 414630485898-1tav66nkrrq0f2jqfnep4i6fi6cakkns.apps.googleusercontent.com
             client-secret: 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
 
-            redirect-uri: http://localhost:8080
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
 
   thymeleaf:
     cache: false # true for production

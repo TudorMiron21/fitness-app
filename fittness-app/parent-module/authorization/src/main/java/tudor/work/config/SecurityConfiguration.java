@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import tudor.work.jwt.JwtAuthenticationFilter;
+//import tudor.work.jwt.JwtAuthenticationFilter;
 
 import static org.springframework.http.HttpMethod.*;
 
@@ -28,7 +28,7 @@ public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {
              "/api/v1/auth/**",
-            "/oauth2/authorization/google", "/login/oauth2/code/google",
+            "/login/oauth2/code/google",
             "/resetPassword?token=*",
             "/v2/api-docs",
             "/v3/api-docs",
@@ -40,7 +40,7 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html"};
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private final AuthenticationProvider authenticationProvider;
 

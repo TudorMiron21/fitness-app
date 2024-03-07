@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/login/oauth2/code/google")
 public class GoogleController {
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<?> googleAuth(OAuth2AuthenticationToken oAuth2AuthenticationToken)
     {
         if (oAuth2AuthenticationToken != null) {

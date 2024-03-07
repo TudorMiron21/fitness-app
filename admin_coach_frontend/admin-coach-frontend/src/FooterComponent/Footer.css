@@ -1,0 +1,25 @@
+/* Footer.css */
+.site-footer {
+    width: 100%;
+    background-color: #f8f9fa; /* Light gray background, you can choose your own */
+    border-top: 1px solid #e7e7e7; /* Light border for the top of the footer */
+    padding: 20px 0; /* Padding at the top and bottom */
+    text-align: center; /* Center the footer content */
+    font-size: 0.9em; /* Adjust the font size as necessary */
+  }
+  
+  .footer-content p {
+    margin: 10px 0; /* Spacing between paragraphs */
+    color: #6c757d; /* Adjust the text color as necessary */
+  }
+  
+  .footer-content a {
+    margin: 0 5px;
+    color: #007bff; /* Adjust link color as necessary */
+    text-decoration: none; /* No underline */
+    transition: color 0.3s ease; /* Smooth transition for hover effect */
+  }
+  
+  .footer-content a:hover {
+    color: #0056b3; /* Adjust hover color as necessary */
+  }

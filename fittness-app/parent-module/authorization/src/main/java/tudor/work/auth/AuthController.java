@@ -107,40 +107,9 @@ public class AuthController {
         }
     }
 
-//    @GetMapping("/resetPassword")
-//    public String resetPasswordHandler(@RequestParam("token") String randToken) {
-//        try {
-//            ModelAndView mav = new ModelAndView("reset_password_form");
-//            userService.getUserByResetToken(randToken);
-//            mav.addObject("token", randToken);
-//            return mav;
-//        } catch (NotFoundException nfe) {
-////`            model.addAttribute("title","Reset your password");
-////            model.addAttribute("message", "Invalid token");`
-//            return null;
-//        }
-//    }
-
-//    @GetMapping("/resetPassword")
-//
-//    public String resetPassword(@RequestParam(name = "token")String token, Model page){
-//        try {
-//            userService.getUserByResetToken(token);
-//            page.addAttribute("token",token);
-//            return "reset_password_form.html";
-//        } catch (NotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-
     @GetMapping("/googleAuth")
-    public ResponseEntity<?> googleAuth(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-        if (oAuth2AuthenticationToken != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(oAuth2AuthenticationToken.getPrincipal().getAttributes());
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("OAuth2 token is null");
-        }
+    public Map<String, Object> googleAuth(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+        return oAuth2AuthenticationToken.getPrincipal().getAttributes();
     }
 
 

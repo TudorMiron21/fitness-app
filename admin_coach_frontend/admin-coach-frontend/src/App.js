@@ -5,6 +5,7 @@ import { Register } from './RegisterPageComponents/RegisterPage.jsx';
 import{GreetingsPage} from './GreetingsComponents/GreetingsPage.jsx'
 import {CoachDetails} from './CoachDetailsComponents/CoachDetailsPage.jsx'
 import{HomePage} from './HomePageComponents/HomePage.jsx'
+import { CreateExercise } from './CreateExerciseComponents/CreateExercisePage.jsx';
 function App() {
   return (
     <div>
@@ -15,6 +16,7 @@ function App() {
           <Route path="/login" element ={<Login/>}></Route>
           <Route path="/coach-details" element ={<CoachDetails/>}></Route>
           <Route path="/home-page" element ={<HomePage/>}></Route>
+          <Route path="/create-exercise-page" element ={<CreateExercise/>}></Route>
 
           <Route path="/" element ={<GreetingsPage/>}></Route>
 

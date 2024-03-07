@@ -3,7 +3,10 @@ import axios from "axios";
 import { WaitForApprovalPage } from "../WaitForApprovalPageComponents/WaitForApprovalPage.jsx"; // Assuming this is in the same directory
 import { validateToken } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
-
+import { NavBar } from "../NavBarComponents/NavBar.jsx";
+import { ActionCard } from "./ActionCard.jsx";
+import './HomePage.css'
+import {Footer} from "../FooterComponent/Footer.jsx";
 export const HomePage = () => {
   const [areCoachDetailsValid, setAreCoachDetailsValid] = useState(null);
   const [isTokenValid, setIsTokenValid] = useState(false);
@@ -37,6 +40,23 @@ export const HomePage = () => {
 
     checkCoachDetails();
   }, []);
+  const handleCreateExercise = () => {
+    // Implement the logic to navigate to the create exercise page or open a modal
+
+    navigate('/create-exercise-page');
+  };
+
+  const handleCreateWorkout = () => {
+    // Implement the logic to navigate to the create workout page or open a modal
+  };
+
+  const handleCreateProgram = () => {
+    // Implement the logic to navigate to the create program page or open a modal
+  };
+
+  const handleCreateChallenge = () => {
+    // Implement the logic to navigate to the create challenge page or open a modal
+  };
 
   if (!isTokenValid) {
     navigate("/login");
@@ -46,12 +66,43 @@ export const HomePage = () => {
     if (areCoachDetailsValid === null) {
       return <div>Loading...</div>; // Or some loading component/spinner
     } else if (areCoachDetailsValid) {
-      return (
-        <div>
-          <h1>Greetings, Coach!</h1>
-          <p>Welcome to your dashboard. Your details are valid.</p>
-        </div>
-      );
+  return (
+    <div>
+      <NavBar />
+      <h1>Greetings, Coach!</h1>
+      <div className="actions-container">
+        <ActionCard
+          title="Create Exercise"
+          description="Define new exercises to include in workouts."
+          onClick={handleCreateExercise}
+          hoverContent="more content"
+          backgroundImage={'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg'}
+        />
+        <ActionCard
+          title="Create Workout"
+          description="Build a workout session for your trainees."
+          onClick={handleCreateWorkout}
+          hoverContent="more content"
+          backgroundImage={'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg'}
+        />
+        <ActionCard
+          title="Create Program"
+          description="Design a comprehensive training program."
+          onClick={handleCreateProgram}
+          hoverContent="more content"
+          backgroundImage={'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg'}
+        />
+        <ActionCard
+          title="Create Challenge"
+          description="Set up challenges to motivate your trainees."
+          onClick={handleCreateChallenge}
+          hoverContent="more content"
+          backgroundImage={'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg'}
+        />
+      </div>
+      <Footer/>
+    </div>
+  );
     } else {
       return <WaitForApprovalPage />;
     }

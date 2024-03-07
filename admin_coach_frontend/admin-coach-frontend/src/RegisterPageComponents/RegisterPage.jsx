@@ -13,7 +13,7 @@ export const Register = () => {
 
   const navigate = useNavigate();
   const onSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault();//this is used to prevent the default behaviour of the onSubmit function that is to reload/redirect the page in order for the asynchronous event to take place 
 
     if (password !== repeatPassword) {
       alert("Passwords do not match!");
@@ -31,6 +31,8 @@ export const Register = () => {
       const token = response.data.access_token;
 
       localStorage.setItem('access_token', token);
+
+      localStorage.setItem('role','ROLE_COACH');
 
       navigate('/coach-details');
 

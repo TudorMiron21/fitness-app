@@ -1,0 +1,179 @@
+/* Updated NavBar.css with aesthetic improvements */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4a4e69; /* Updated color for a modern look */
+    color: white;
+    padding: 0.5rem 1rem;
+    min-height: 50px; /* Ensure navbar does not shrink */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: padding 0.3s ease; /* Smooth transition for padding changes */
+  }
+  
+  .nav-brand {
+    text-decoration: none;
+    color: white;
+    font-size: 1.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+    flex-shrink: 0;
+  }
+  
+  .nav-menu {
+    display: flex;
+    align-items: center; /* Added for vertical centering of menu items */
+  }
+  
+  .nav-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+  }
+  
+  .nav-menu li {
+    padding: 0 1rem;
+  }
+  
+  .nav-menu a {
+    text-decoration: none;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Consistent font */
+  }
+  
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .hamburger {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin-top: 15px; /* Ensure the hamburger is centered */
+    background: white;
+    position: relative;
+    transition: background-color 0.3s ease;
+  }
+  
+  .hamburger::before,
+  .hamburger::after {
+    content: '';
+    background: white;
+    width: 25px;
+    height: 3px;
+    display: block;
+    position: absolute;
+    transition: transform 0.3s ease;
+  }
+  
+  .hamburger::before {
+    top: -8px;
+  }
+  
+  .hamburger::after {
+    bottom: -8px;
+  }
+  
+  /* Responsive styling */
+  @media (max-width: 768px) {
+    .navbar {
+      padding: 0.5rem; /* Reduced padding for smaller screens */
+    }
+  
+    .nav-menu {
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: -100%;
+      height: 100%;
+      width: 100%;
+      max-width: 300px;
+      background-color: #4a4e69; /* Consistent with navbar color */
+      overflow-y: auto;
+      transition: left 0.3s ease;
+      z-index: 1;
+      padding-top: 60px; /* Padding to avoid overlapping the brand */
+    }
+  
+    .nav-menu.expanded {
+      left: 0;
+    }
+  
+    .nav-menu ul {
+      flex-direction: column;
+      width: 100%;
+    }
+  
+    .nav-menu li {
+      text-align: center; /* Center align for a uniform look */
+      padding: 1rem;
+    }
+  
+    .nav-menu a {
+      display: block;
+      width: 100%;
+    }
+  
+    .nav-toggle {
+      display: block;
+      position: absolute;
+      right: 1rem;
+      top: 1rem; /* Adjusted to vertically center with the reduced padding */
+      z-index: 2;
+    }
+  
+    .nav-brand {
+      position: fixed;
+      left: 1rem;
+      top: 1rem; /* Adjusted to vertically center with the reduced padding */
+      z-index: 2;
+    }
+  }
+  
+  /* Ensure the hamburger icon and navbar do not change size */
+  .nav-toggle.active .hamburger,
+  .nav-toggle.active .hamburger::before,
+  .nav-toggle.active .hamburger::after {
+    background: transparent;
+  }
+  
+  .nav-toggle.active .hamburger::before {
+    transform: translateY(11px) rotate(45deg);
+  }
+  
+  .nav-toggle.active .hamburger::after {
+    transform: translateY(-11px) rotate(-45deg);
+  }
+  
+  .nav-menu a {
+    position: relative; /* Ensure the pseudo-element is positioned relative to the link */
+    text-decoration: none;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden; /* Clip the pseudo-element to the link's dimensions */
+  }
+  
+  .nav-menu a::after {
+    content: '';
+    display: block;
+    height: 2px; /* Set the underline thickness */
+    width: 0;
+    background: white; /* Set the underline color */
+    transition: width 0.3s ease; /* Animate the width */
+    position: absolute;
+    bottom: -5px; /* Adjust the distance below the text */
+    left: 50%;
+    transform: translateX(-50%); /* Center the pseudo-element */
+  }
+  
+  .nav-menu a:hover::after {
+    width: 100%; /* Extend the underline across the link on hover */
+    left: 0;
+    transform: translateX(0); /* Reset the transformation */
+  }

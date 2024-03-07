@@ -38,5 +38,7 @@ minio:
   secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
   endpoint: http://192.168.147.140:9000
 
-
+app:
+  firebase-configuration-file: fitness-app-firebase-adminsdk.json
+  firebase-app-name: fitness-app
 

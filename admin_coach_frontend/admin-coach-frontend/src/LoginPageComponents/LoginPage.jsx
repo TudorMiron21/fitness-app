@@ -1,15 +1,55 @@
 import { useState } from "react";
 import "./LoginPage.css";
-import { Link } from 'react-router-dom'; 
-
+import { Link ,useNavigate} from "react-router-dom";
+import axios from "axios";
+import {jwtDecode} from "jwt-decode";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmit = (event) => {
+  const navigate = useNavigate();
+
+  const onSubmit = async (event) => {
     event.preventDefault();
-    // Your login logic goes here
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/auth/login",
+        {
+          email,
+          password,
+        }
+      );
+      const token = response.data.access_token;
+      console.log(token)
+      localStorage.setItem("access_token", token);
+
+      const decoded = jwtDecode(token);
+      
+
+      const authoritiesString = decoded.authorities;
+      console.log(authoritiesString)
+
+      const authoritiesArray = authoritiesString.slice(1, -1).split(', ');
+
+      const authorities = authoritiesArray.map(role => role.trim());
+
+
+      console.log(authorities)
+      if (authorities.includes("ROLE_ADMIN")) {
+        localStorage.setItem("role", "ROLE_ADMIN");
+      } else if (authorities.includes("ROLE_COACH")) {
+        localStorage.setItem("role", "ROLE_COACH");
+        navigate('/home-page');
+
+      } else {
+        alert("Unauthorized: You do not have access to this area.");
+      }
+    } catch (err) {
+      console.log(err);
+      alert("You don't have an account");
+    }
   };
 
   return (
@@ -57,7 +97,6 @@ const Form = ({ email, setEmail, password, setPassword, onSubmit }) => {
         <p className="login-link">
           Don't have an account? <Link to="/register">Register now</Link>
         </p>
-
       </form>
     </div>
   );

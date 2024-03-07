@@ -13,8 +13,10 @@ public class RouteValidator {
             "/api/v1/auth/register",
             "/api/v1/auth/login",
             "/api/v1/auth/googleAuth",
+            "/api/v1/auth/googleAuth",
             "/api/v1/auth/validateToken/**",
             "/api/selfCoach/paypal/getPayPalSubscriptionButton",
+            "/login/oauth2/code/google",
             "/eureka"
     );
 

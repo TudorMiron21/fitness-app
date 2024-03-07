@@ -74,15 +74,20 @@ public class AuthService {
     }
 
 
+//    public Boolean isTokenValid(String token) {
+//
+//        final String email = jwtService.extractUsername(token);
+//
+//        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("user not found"));
+//        System.out.println("user is:" + user.getUsername());
+//        return jwtService.isTokenValid(token, user);
+//    }
+
+
     public Boolean isTokenValid(String token) {
 
-        final String email = jwtService.extractUsername(token);
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("user not found"));
-        System.out.println("user is:" + user.getUsername());
-        if (jwtService.isTokenValid(token, user))
-            return true;
-        return false;
+        return jwtService.isTokenValid(token);
     }
 
     public String[] getUserAuthorities(String token) {
