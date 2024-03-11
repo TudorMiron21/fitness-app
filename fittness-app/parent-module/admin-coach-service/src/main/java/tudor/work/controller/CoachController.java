@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tudor.work.dto.UploadCoachDetailsRequestDto;
+import tudor.work.dto.UploadExerciseDto;
 import tudor.work.service.CoachService;
 import tudor.work.service.MinioService;
 
@@ -55,6 +56,20 @@ public class CoachController {
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e);
         }
+    }
+
+
+    @PostMapping("/uploadExercise")
+    public ResponseEntity<?> uploadExercise(@ModelAttribute UploadExerciseDto uploadExerciseDto){
+        try {
+            coachService.uploadExercise("exercises",10,"application/octet-stream");
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.uploadExercise("exercises",10,"application/octet-stream"));
+        } catch (ServerException  | InsufficientDataException | ErrorResponseException |
+                 NoSuchAlgorithmException | IOException  | InvalidKeyException |
+                 InvalidResponseException | XmlParserException | InternalException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 

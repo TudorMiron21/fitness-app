@@ -39,7 +39,7 @@ public class AdminService {
                         .build();
             } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                      NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                     InternalException e) {
+                     InternalException  e) {
                 throw new RuntimeException(e);
             }
 

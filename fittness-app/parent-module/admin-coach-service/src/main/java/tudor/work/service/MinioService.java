@@ -25,22 +25,24 @@ public class MinioService {
     private final UserService userService;
     private final CoachDetailsService coachDetailsService;
 
-    private void createBucket(String bucketName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        minioClient.makeBucket(
-                MakeBucketArgs
-                        .builder()
-                        .bucket(bucketName)
-                        .build()
-        );
+    public void createBucket(String bucketName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+
+
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
+            minioClient.makeBucket(
+                    MakeBucketArgs
+                            .builder()
+                            .bucket(bucketName)
+                            .build()
+            );
+        }
     }
 
 
     //  this method takes as parameter the image as stream and the image file name and should return the path to the image on the minio server
     public String uploadCertificateImage(InputStream imgStream, String imageFileName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         String bucketName = "certificates";
-        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
-            createBucket(bucketName);
-        }
+        createBucket(bucketName);
 
         minioClient.putObject(
                 PutObjectArgs
@@ -59,7 +61,8 @@ public class MinioService {
         String[] parts = imgPath.split("/", 2);
         if (parts.length < 2) {
             throw new IllegalArgumentException("Invalid image path");
-        }        String bucketName = parts[0]; // "certificates"
+        }
+        String bucketName = parts[0]; // "certificates"
         String imageFileName = parts[1]; // "1.png"
 
         return minioClient.getObject(
@@ -76,7 +79,9 @@ public class MinioService {
         String[] parts = imgPath.split("/", 2);
         if (parts.length < 2) {
             throw new IllegalArgumentException("Invalid image path");
-        }        String bucketName = parts[0]; // "certificates"
+        }
+
+        String bucketName = parts[0]; // "certificates"
         String imageFileName = parts[1]; // "1.png"
 
         return minioClient.getPresignedObjectUrl(
