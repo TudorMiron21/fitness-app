@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./CreateExercisePage.css";
 import { NavBar } from "../NavBarComponents/NavBar";
 import { Footer } from "../FooterComponent/Footer";
+import axios from 'axios';
 
 export const CreateExercise = () => {
   // State for the form fields
@@ -63,13 +64,104 @@ export const CreateExercise = () => {
     if (videoPreview) URL.revokeObjectURL(videoPreview);
   };
 
-  const handleSubmit = (event) => {
+  async function handleSubmit(event) {
     event.preventDefault();
-    // Revoke URLs to avoid memory leaks
+
+    console.log(exercise.video.size);
+    const { uploadId, uploadUrls } = await uploadExerciseDetails(
+      exercise.video.size
+    );
+
+    console.log(uploadUrls);
+    const fileSize = exercise.video.size;
+    const chunkSize = Math.ceil(fileSize / uploadUrls.length); // size of each chunk
+    const chunks = [];
+
+    for (let start = 0; start < fileSize; start += chunkSize) {
+      const end = Math.min(start + chunkSize, fileSize);
+      chunks.push(exercise.video.slice(start, end));
+    }
+    const uploadPromises = chunks.map((chunk, index) =>
+      uploadChunkToPresignedUrl(uploadUrls[index], chunk)
+    );
+
+    const uploadResults = await Promise.all(uploadPromises);
+
+    const completionResponse = await completeMultipartUpload(
+      uploadId
+    );
+
     revokePreviewUrls();
-    // Handle the submission...
-    console.log(exercise);
-  };
+  }
+
+  async function uploadExerciseDetails(videoSize) {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/adminCoachService/coach/uploadExerciseDetails",
+        { videoSize },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+  
+      const { uploadId, uploadUrls } = response.data;
+  
+      return { uploadId, uploadUrls };
+    } catch (error) {
+      console.error("Failed to upload exercise details:", error);
+      throw error;
+    }
+  }
+
+  async function uploadChunkToPresignedUrl(presignedUrl, chunk) {
+    let response;
+  
+    try {
+      response = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: chunk, // assuming chunk is already a Blob or similar object
+        headers: {
+          "Content-Type": "application/octet-stream",
+        },
+      });
+    } catch (error) {
+      // Network errors or CORS issues will be caught here.
+      console.error("Error while uploading chunk:", error);
+      throw new Error("Chunk upload failed due to network error");
+    }
+  
+    if (!response.ok) {
+      // Server responded with HTTP error code.
+      console.error("Response error while uploading chunk:", response);
+      throw new Error(`Chunk upload failed with status: ${response.status}`);
+    }
+  
+    return response.headers.get("ETag");
+  }
+
+  async function completeMultipartUpload(uploadId) {
+    const response = await axios.put(
+      "http://localhost:8080/api/v1/adminCoachService/coach/completeMultipartUpload",
+      {
+        uploadId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      }
+    );
+
+    if (response.data == true) {
+      console.log("upload success " + response.status);
+    } else {
+      console.log("upload failed" + response.status);
+    }
+  }
 
   return (
     <div>

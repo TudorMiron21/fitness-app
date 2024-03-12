@@ -7,15 +7,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tudor.work.dto.CompleteMultipartUploadDto;
 import tudor.work.dto.UploadCoachDetailsRequestDto;
+import tudor.work.dto.UploadExerciseDetailsDto;
 import tudor.work.dto.UploadExerciseDto;
 import tudor.work.service.CoachService;
 import tudor.work.service.MinioService;
 
+import javax.swing.text.StyledEditorKit;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 
 @RestController
@@ -49,8 +54,7 @@ public class CoachController {
     }
 
     @GetMapping("/checkAreCoachDetailsValid")
-    public ResponseEntity<?> checkAreCoachDetailsValid()
-    {
+    public ResponseEntity<?> checkAreCoachDetailsValid() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(coachService.checkAreCoachDetailsValid());
         } catch (NotFoundException e) {
@@ -59,20 +63,42 @@ public class CoachController {
     }
 
 
-    @PostMapping("/uploadExercise")
-    public ResponseEntity<?> uploadExercise(@ModelAttribute UploadExerciseDto uploadExerciseDto){
+//    @PostMapping("/uploadExercise")
+//    public ResponseEntity<?> uploadExercise(@ModelAttribute UploadExerciseDto uploadExerciseDto){
+//        try {
+//            coachService.uploadExercise("exercises",10,"application/octet-stream");
+//            return ResponseEntity.status(HttpStatus.OK).body(coachService.uploadExercise("exercises",10,"application/octet-stream"));
+//        } catch (ServerException  | InsufficientDataException | ErrorResponseException |
+//                 NoSuchAlgorithmException | IOException  | InvalidKeyException |
+//                 InvalidResponseException | XmlParserException | InternalException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
+
+    @PostMapping("/uploadExerciseDetails")
+    public ResponseEntity<?> uploadExerciseDetails(@RequestBody UploadExerciseDetailsDto uploadExerciseDetailsDto) {
+
         try {
-            coachService.uploadExercise("exercises",10,"application/octet-stream");
-            return ResponseEntity.status(HttpStatus.OK).body(coachService.uploadExercise("exercises",10,"application/octet-stream"));
-        } catch (ServerException  | InsufficientDataException | ErrorResponseException |
-                 NoSuchAlgorithmException | IOException  | InvalidKeyException |
-                 InvalidResponseException | XmlParserException | InternalException e) {
-            throw new RuntimeException(e);
+            Map<String, Object> response = coachService.UploadExerciseDetailsAndInitMultipart("exercises", "application/octet-stream", uploadExerciseDetailsDto);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
 
     }
 
+    @PutMapping("/completeMultipartUpload")
+    public ResponseEntity<?> completeMultipartUpload(@RequestBody CompleteMultipartUploadDto completeMultipartUploadDto) {
+        Boolean uploadCompleted = coachService.completeMultipartUpload("exercises", completeMultipartUploadDto);
+        if (uploadCompleted)
+            return ResponseEntity.status(HttpStatus.OK).body(uploadCompleted);
+        else
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(uploadCompleted);
 
+    }
 
 
 }

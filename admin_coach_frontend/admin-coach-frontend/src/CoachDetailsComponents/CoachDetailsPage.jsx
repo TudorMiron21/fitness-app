@@ -72,7 +72,7 @@ export const CoachDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    // Create an instance of FormData
+    // Create an instance of Data
     const formDataToSend = new FormData();
     formDataToSend.append('certificationType', formData.certificationType);
     formDataToSend.append('yearsOfExperience', formData.yearsOfExperience);

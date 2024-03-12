@@ -25,7 +25,7 @@ public class UploadExerciseDto {
 //
 //    private String exerciseImageEndPath;
 
-//    private MultipartFile exerciseVideoFile;
+    private MultipartFile exerciseVideoFile;
 
 //    private boolean isExerciseExclusive;
 

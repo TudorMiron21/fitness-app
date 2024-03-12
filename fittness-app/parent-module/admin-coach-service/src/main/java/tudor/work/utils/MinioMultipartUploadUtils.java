@@ -3,11 +3,14 @@ package tudor.work.utils;
 import com.google.common.collect.HashMultimap;
 import com.netflix.discovery.converters.Auto;
 import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.ListPartsResponse;
 import io.minio.MinioClient;
 import io.minio.errors.*;
 import io.minio.http.Method;
+import io.minio.messages.Part;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -23,11 +26,13 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
+//https://github.com/tuine/minio-multipart-upload/tree/main
 public class MinioMultipartUploadUtils {
 
     private final MinioClient minioClient;
 
-    public Map<String,Object>initMultipartUpload(String bucketName,String objectName,Integer partCount, String contentType) throws ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, IOException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+
+    public Map<String, Object> initMultipartUpload(String bucketName, String objectName, Integer partCount, String contentType) throws ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, IOException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         Map<String, Object> result = new HashMap<>();
 
         if (contentType.isBlank()) {
@@ -39,7 +44,7 @@ public class MinioMultipartUploadUtils {
 
         MinioMultipartUploadClient minioMultipartUploadClient = new MinioMultipartUploadClient(minioClient);
 
-        String uploadId = minioMultipartUploadClient.initMultiPartUpload(bucketName,null,objectName,headers,null);
+        String uploadId = minioMultipartUploadClient.initMultiPartUpload(bucketName, null, objectName, headers, null);
 
         result.put("uploadId", uploadId);
 
@@ -48,9 +53,8 @@ public class MinioMultipartUploadUtils {
         reqParams.put("uploadId", uploadId);
         List<String> partList = new ArrayList<>();
 
-        for(int i = 0; i< partCount;i++)
-        {
-            reqParams.put("partNumber", String.valueOf(i));
+        for (int i = 0; i < partCount; i++) {
+            reqParams.put("partNumber", String.valueOf(i + 1));
             String uploadUrl = minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.PUT)
@@ -66,6 +70,33 @@ public class MinioMultipartUploadUtils {
         result.put("uploadUrls", partList);
 
         return result;
+    }
+
+
+    public Boolean mergeMultipartUploads(String bucketName, String objectName, String uploadId) {
+
+        try {
+            Part[] parts = new Part[1000];
+
+            MinioMultipartUploadClient minioMultipartUploadClient = new MinioMultipartUploadClient(minioClient);
+
+            ListPartsResponse partResult = minioMultipartUploadClient.listMultipart(bucketName, null, objectName, 1000, 0, uploadId, null, null);
+
+            int partNumber = 0;
+            for (Part part : partResult.result().partList()) {
+                parts[partNumber] = new Part(partNumber + 1, part.etag());
+                partNumber++;
+            }
+            minioMultipartUploadClient.mergeMultipartUpload(bucketName, null, objectName, uploadId, parts, null, null);
+        } catch (IOException | InvalidKeyException | NoSuchAlgorithmException | InsufficientDataException |
+                 ServerException | InternalException | XmlParserException | InvalidResponseException |
+                 ErrorResponseException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+
     }
 
 
