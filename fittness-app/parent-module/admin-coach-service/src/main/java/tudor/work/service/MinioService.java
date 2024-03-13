@@ -40,21 +40,19 @@ public class MinioService {
 
 
     //  this method takes as parameter the image as stream and the image file name and should return the path to the image on the minio server
-    public String uploadCertificateImage(InputStream imgStream, String imageFileName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        String bucketName = "certificates";
-        createBucket(bucketName);
+    public String uploadImageToObjectStorage(InputStream imgStream, String object, String bucket) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        createBucket(bucket);
 
         minioClient.putObject(
                 PutObjectArgs
                         .builder()
-                        .bucket(bucketName)
-                        .object(imageFileName)
+                        .bucket(bucket)
+                        .object(object)
                         .stream(imgStream, -1, 10485760)
                         .contentType("image/png")
                         .build()
         );
-
-        return bucketName + "/" + imageFileName;
+        return bucket + "/" + object;
     }
 
     public InputStream getCertificateImage(String imgPath) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {

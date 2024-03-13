@@ -34,11 +34,10 @@ public class DifficultyDeserializer extends StdDeserializer<Difficulty> {
         // Here, you would typically query your database to retrieve the Difficulty entity
         // based on the name or identifier. Replace this with your actual logic.
 
-        Difficulty difficulty= new Difficulty();
+        Difficulty difficulty = new Difficulty();
         try {
             difficulty = difficultyService.getDifficultyByName(difficultyName);
-        }
-        catch(NotFoundException nfe){
+        } catch (NotFoundException nfe) {
             return null;
         }
 
@@ -46,7 +45,8 @@ public class DifficultyDeserializer extends StdDeserializer<Difficulty> {
             throw new JsonParseException(jsonParser, "Invalid Difficulty: " + difficultyName);
         }
 
-        return difficulty;    }
+        return difficulty;
+    }
 
 
 }

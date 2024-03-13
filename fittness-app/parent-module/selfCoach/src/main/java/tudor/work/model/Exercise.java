@@ -19,7 +19,6 @@ import java.util.Set;
 @ToString
 public class Exercise {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

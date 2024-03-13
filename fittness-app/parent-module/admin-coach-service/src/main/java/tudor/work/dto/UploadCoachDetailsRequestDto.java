@@ -16,7 +16,7 @@ public class UploadCoachDetailsRequestDto {
 
     private MultipartFile certificateImg;
 
-   private CertificationType certificationType;
+    private CertificationType certificationType;
 
     private Integer yearsOfExperience;
 
