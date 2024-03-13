@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./CreateExercisePage.css";
 import { NavBar } from "../NavBarComponents/NavBar";
 import { Footer } from "../FooterComponent/Footer";
-import axios from 'axios';
+import axios from "axios";
 
 export const CreateExercise = () => {
   // State for the form fields
@@ -67,48 +67,87 @@ export const CreateExercise = () => {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    console.log(exercise.video.size);
-    const { uploadId, uploadUrls } = await uploadExerciseDetails(
-      exercise.video.size
+    const { uploadId, uploadUrls, exerciseId } = await uploadExerciseDetails(
+      exercise.name,
+      exercise.description,
+      exercise.video.size,
+      exercise.video.name,
+      exercise.photos.before,
+      exercise.photos.after,
+      exercise.equipment,
+      exercise.muscleGroup,
+      exercise.difficulty,
+      exercise.category
     );
 
-    console.log(uploadUrls);
-    const fileSize = exercise.video.size;
-    const chunkSize = Math.ceil(fileSize / uploadUrls.length); // size of each chunk
-    const chunks = [];
+    console.log(exerciseId)
 
-    for (let start = 0; start < fileSize; start += chunkSize) {
-      const end = Math.min(start + chunkSize, fileSize);
-      chunks.push(exercise.video.slice(start, end));
+    if (uploadId) {
+      const fileSize = exercise.video.size;
+      const chunkSize = Math.ceil(fileSize / uploadUrls.length); // size of each chunk
+      const chunks = [];
+
+      for (let start = 0; start < fileSize; start += chunkSize) {
+        const end = Math.min(start + chunkSize, fileSize);
+        chunks.push(exercise.video.slice(start, end));
+      }
+      const uploadPromises = chunks.map((chunk, index) =>
+        uploadChunkToPresignedUrl(uploadUrls[index], chunk)
+      );
+
+      const uploadResults = await Promise.all(uploadPromises);
+
+      const completionResponse = await completeMultipartUpload(
+        uploadId,
+        exerciseId,
+        exercise.video.name
+      );
     }
-    const uploadPromises = chunks.map((chunk, index) =>
-      uploadChunkToPresignedUrl(uploadUrls[index], chunk)
-    );
-
-    const uploadResults = await Promise.all(uploadPromises);
-
-    const completionResponse = await completeMultipartUpload(
-      uploadId
-    );
 
     revokePreviewUrls();
   }
 
-  async function uploadExerciseDetails(videoSize) {
+  async function uploadExerciseDetails(
+    exerciseName,
+    description,
+    videoSize,
+    videoName,
+    beforeImage,
+    afterImage,
+    equipmentName,
+    muscleGroupName,
+    difficultyName,
+    categoryName
+  ) {
     try {
+      const formData = new FormData();
+      formData.append("exerciseName", exerciseName);
+      formData.append("description", description);
+      formData.append("videoSize", videoSize);
+      formData.append("videoName", videoName);
+      formData.append("beforeImage", beforeImage);
+      formData.append("afterImage", afterImage);
+      formData.append("equipmentName", equipmentName);
+      formData.append("muscleGroupName", muscleGroupName);
+      formData.append("difficultyName", difficultyName);
+      formData.append("categoryName", categoryName);
+
+      console.log(formData);
       const response = await axios.post(
         "http://localhost:8080/api/v1/adminCoachService/coach/uploadExerciseDetails",
-        { videoSize },
+
+        formData,
+
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       );
-  
+
       const { uploadId, uploadUrls } = response.data;
-  
+
       return { uploadId, uploadUrls };
     } catch (error) {
       console.error("Failed to upload exercise details:", error);
@@ -118,10 +157,10 @@ export const CreateExercise = () => {
 
   async function uploadChunkToPresignedUrl(presignedUrl, chunk) {
     let response;
-  
+
     try {
       response = await fetch(presignedUrl, {
-        method: 'PUT',
+        method: "PUT",
         body: chunk, // assuming chunk is already a Blob or similar object
         headers: {
           "Content-Type": "application/octet-stream",
@@ -132,21 +171,24 @@ export const CreateExercise = () => {
       console.error("Error while uploading chunk:", error);
       throw new Error("Chunk upload failed due to network error");
     }
-  
+
     if (!response.ok) {
       // Server responded with HTTP error code.
       console.error("Response error while uploading chunk:", response);
       throw new Error(`Chunk upload failed with status: ${response.status}`);
     }
-  
+
     return response.headers.get("ETag");
   }
 
-  async function completeMultipartUpload(uploadId) {
+  async function completeMultipartUpload(uploadId, exerciseId, videoName) {
+    // console.log(exerciseId)
     const response = await axios.put(
       "http://localhost:8080/api/v1/adminCoachService/coach/completeMultipartUpload",
       {
+        exerciseId,
         uploadId,
+        videoName,
       },
       {
         headers: {
@@ -195,10 +237,24 @@ export const CreateExercise = () => {
           onChange={handleInputChange}
           required
         >
-          <option value="">Select difficulty</option>
-          <option value="Category1">Beginner</option>
-          <option value="Category2">Intermediate</option>
-          <option value="Category3">Advanced</option>
+          <option value="">Select Muscle Group</option>
+          <option value="Forearms">Forearms</option>
+          <option value="Quadriceps">Quadriceps</option>
+          <option value="Abdominals">Abdominals</option>
+          <option value="Lats">Lats</option>
+          <option value="Middle Back">Middle Back</option>
+          <option value="Lower Back">Lower Back</option>
+          <option value="Shoulders">Shoulders</option>
+          <option value="Biceps">Biceps</option>
+          <option value="Glutes">Glutes</option>
+          <option value="Triceps">Triceps</option>
+          <option value="Hamstrings">Hamstrings</option>
+          <option value="Neck">Neck</option>
+          <option value="Chest">Chest</option>
+          <option value="Traps">Traps</option>
+          <option value="Calves">Calves</option>
+          <option value="Adductors">Adductors</option>
+          <option value="Abductors">Abductors</option>
         </select>
 
         <label htmlFor="category">Category:</label>
@@ -210,10 +266,14 @@ export const CreateExercise = () => {
           onChange={handleInputChange}
           required
         >
-          <option value="">Select difficulty</option>
-          <option value="Category1">Beginner</option>
-          <option value="Category2">Intermediate</option>
-          <option value="Category3">Advanced</option>
+          <option value="">Select Category</option>
+          <option value="Strongman">Strongman</option>
+          <option value="Strength">Strength</option>
+          <option value="Olympic Weightlifting">Olympic Weightlifting</option>
+          <option value="Powerlifting">Powerlifting</option>
+          <option value="Cardio">Cardio</option>
+          <option value="Plyometrics">Plyometrics</option>
+          <option value="Stretching">Stretching</option>
         </select>
 
         <label htmlFor="difficulty">Difficulty Level:</label>
@@ -224,7 +284,7 @@ export const CreateExercise = () => {
           onChange={handleInputChange}
           required
         >
-          <option value="">Select difficulty</option>
+          <option value="">Select Difficulty</option>
           <option value="Beginner">Beginner</option>
           <option value="Intermediate">Intermediate</option>
           <option value="Advanced">Advanced</option>
@@ -239,10 +299,18 @@ export const CreateExercise = () => {
           onChange={handleInputChange}
           required
         >
-          <option value="">Select difficulty</option>
-          <option value="1">Beginner</option>
-          <option value="2">Intermediate</option>
-          <option value="3">Advanced</option>
+          <option value="">Select Equipment</option>
+          <option value="Other">Other</option>
+          <option value="Machine">Machine</option>
+          <option value="Barbell">Barbell</option>
+          <option value="Dumbbell">Dumbbell</option>
+          <option value="Body Only">Body Only</option>
+          <option value="Kettlebells">Kettlebells</option>
+          <option value="Cable">Cable</option>
+          <option value="E-Z Curl Bar">E-Z Curl Bar</option>
+          <option value="Bands">Bands</option>
+          <option value="Medicine Ball">Medicine Ball</option>
+          <option value="Exercise Ball">Exercise Ball</option>
         </select>
 
         <label htmlFor="photos-before">Before Photo:</label>

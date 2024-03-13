@@ -77,14 +77,14 @@ public class CoachController {
 //    }
 
     @PostMapping("/uploadExerciseDetails")
-    public ResponseEntity<?> uploadExerciseDetails(@RequestBody UploadExerciseDetailsDto uploadExerciseDetailsDto) {
+    public ResponseEntity<?> uploadExerciseDetails(@ModelAttribute UploadExerciseDetailsDto uploadExerciseDetailsDto) {
 
         try {
-            Map<String, Object> response = coachService.UploadExerciseDetailsAndInitMultipart("exercises", "application/octet-stream", uploadExerciseDetailsDto);
+            Map<String, Object> response = coachService.UploadExerciseDetailsAndInitMultipart("exercise-videos", "application/octet-stream", uploadExerciseDetailsDto);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+                 InternalException | NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
 
@@ -92,13 +92,16 @@ public class CoachController {
 
     @PutMapping("/completeMultipartUpload")
     public ResponseEntity<?> completeMultipartUpload(@RequestBody CompleteMultipartUploadDto completeMultipartUploadDto) {
-        Boolean uploadCompleted = coachService.completeMultipartUpload("exercises", completeMultipartUploadDto);
-        if (uploadCompleted)
-            return ResponseEntity.status(HttpStatus.OK).body(uploadCompleted);
-        else
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(uploadCompleted);
-
+        Boolean uploadCompleted = null;
+        try {
+            uploadCompleted = coachService.completeMultipartUpload("exercise-videos", completeMultipartUploadDto);
+            if (uploadCompleted)
+                return ResponseEntity.status(HttpStatus.OK).body(uploadCompleted);
+            else
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(uploadCompleted);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
     }
-
 
 }

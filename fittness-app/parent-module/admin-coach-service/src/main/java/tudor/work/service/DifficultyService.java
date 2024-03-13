@@ -12,6 +12,6 @@ public class DifficultyService {
     private final DifficultyRepository difficultyRepository;
 
     public Difficulty getDifficultyByName(String difficultyName) throws NotFoundException {
-        return difficultyRepository.findByDifficultyLevel(difficultyName).orElseThrow(() -> new NotFoundException("difficultyName with name " +difficultyName+ "not found"));
+        return difficultyRepository.findByDificultyLevel(difficultyName).orElseThrow(() -> new NotFoundException("difficultyName with name " +difficultyName+ "not found"));
     }
 }

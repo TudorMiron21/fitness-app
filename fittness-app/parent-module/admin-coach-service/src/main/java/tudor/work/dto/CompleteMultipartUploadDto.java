@@ -9,6 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CompleteMultipartUploadDto {
+
+    private Long exerciseId;
     private String uploadId;
+    private String filename;
 }
 

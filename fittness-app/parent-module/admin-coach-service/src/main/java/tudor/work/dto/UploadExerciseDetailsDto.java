@@ -26,19 +26,16 @@ public class UploadExerciseDetailsDto {
 
     private Long videoSize;
 
-    private String videoExtension;
+    private String videoName;
 
     private MultipartFile beforeImage;
 
+
     private MultipartFile afterImage;
 
-    @JsonDeserialize(using = EquipmentDesirializer.class)
-    private Equipment equipment;
-    @JsonDeserialize(using = MuscleGroupDesirializer.class)
-    private MuscleGroup muscleGroup;
-    @JsonDeserialize(using = DifficultyDeserializer.class)
-    private Difficulty difficulty;
-    @JsonDeserialize(using = CategoryDeserializer.class)
-    private Category category;
+    private String equipmentName;
+    private String muscleGroupName;
+    private String difficultyName;
+    private String categoryName;
 
 }
