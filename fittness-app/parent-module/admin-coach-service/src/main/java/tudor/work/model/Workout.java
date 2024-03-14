@@ -21,7 +21,7 @@ import java.util.Set;
 //@EqualsAndHashCode(exclude = "likers")
 public class Workout {
 
-    @Id
+    @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 

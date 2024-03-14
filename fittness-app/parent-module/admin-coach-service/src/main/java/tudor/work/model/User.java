@@ -44,6 +44,13 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
+    @ManyToMany(fetch = FetchType.LAZY,cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "User_Workouts",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_workout"))
+    private Set<Workout> likedWorkouts;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

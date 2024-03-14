@@ -10,7 +10,8 @@ import java.util.Collection;
 import java.util.Set;
 
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "_user")

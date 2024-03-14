@@ -72,3 +72,12 @@
       margin: 20px auto;
     }
   }
+
+  .completion-message {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+    text-align: center;
+    color: #4caf50; /* or #f44336 for errors */
+  }

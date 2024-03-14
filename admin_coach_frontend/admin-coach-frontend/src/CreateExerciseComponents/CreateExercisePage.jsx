@@ -3,10 +3,10 @@ import "./CreateExercisePage.css";
 import { NavBar } from "../NavBarComponents/NavBar";
 import { Footer } from "../FooterComponent/Footer";
 import axios from "axios";
+import { Spinner } from "../SpinnerComponents/Spinner";
 
 export const CreateExercise = () => {
-  // State for the form fields
-  const [exercise, setExercise] = useState({
+  const initialState = {
     name: "",
     description: "",
     muscleGroup: "",
@@ -18,13 +18,19 @@ export const CreateExercise = () => {
       after: null,
     },
     video: null,
-  });
+  };
+
+  const [exercise, setExercise] = useState(initialState);
+
+  const [loading, setLoading] = useState(false);
 
   const [imagePreviews, setImagePreviews] = useState({
     before: null,
     after: null,
   });
   const [videoPreview, setVideoPreview] = useState(null);
+
+  const [completionMessage, setCompletionMessage] = useState("");
 
   // Handlers for the form inputs
   const handleInputChange = (event) => {
@@ -66,42 +72,62 @@ export const CreateExercise = () => {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setLoading(true);
 
-    const { uploadId, uploadUrls, exerciseId } = await uploadExerciseDetails(
-      exercise.name,
-      exercise.description,
-      exercise.video.size,
-      exercise.video.name,
-      exercise.photos.before,
-      exercise.photos.after,
-      exercise.equipment,
-      exercise.muscleGroup,
-      exercise.difficulty,
-      exercise.category
-    );
+    try {
+      const { uploadId, uploadUrls, exerciseId } = await uploadExerciseDetails(
+        exercise.name,
+        exercise.description,
+        exercise.video ? exercise.video.size : 0,
+        exercise.video ? exercise.video.name : "",
+        exercise.photos.before,
+        exercise.photos.after,
+        exercise.equipment,
+        exercise.muscleGroup,
+        exercise.difficulty,
+        exercise.category
+      );
 
-    console.log(exerciseId)
+      console.log(exerciseId);
 
-    if (uploadId) {
-      const fileSize = exercise.video.size;
-      const chunkSize = Math.ceil(fileSize / uploadUrls.length); // size of each chunk
-      const chunks = [];
+      if (uploadId) {
+        const fileSize = exercise.video.size;
+        const chunkSize = Math.ceil(fileSize / uploadUrls.length); // size of each chunk
+        const chunks = [];
 
-      for (let start = 0; start < fileSize; start += chunkSize) {
-        const end = Math.min(start + chunkSize, fileSize);
-        chunks.push(exercise.video.slice(start, end));
+        for (let start = 0; start < fileSize; start += chunkSize) {
+          const end = Math.min(start + chunkSize, fileSize);
+          chunks.push(exercise.video.slice(start, end));
+        }
+        const uploadPromises = chunks.map((chunk, index) =>
+          uploadChunkToPresignedUrl(uploadUrls[index], chunk)
+        );
+
+        const uploadResults = await Promise.all(uploadPromises);
+
+        const completionResponse = await completeMultipartUpload(
+          uploadId,
+          exerciseId,
+          exercise.video.name
+        );
+
+        if (completionResponse == true) {
+          setCompletionMessage("Exercise added successfully!");
+          setExercise(initialState);
+        } else {
+          setCompletionMessage("Failed to add exercise. Please try again.");
+        }
+        setVideoPreview(null);
+      } else {
+        setCompletionMessage("Exercise added successfully!");
+        setExercise(initialState);
       }
-      const uploadPromises = chunks.map((chunk, index) =>
-        uploadChunkToPresignedUrl(uploadUrls[index], chunk)
-      );
-
-      const uploadResults = await Promise.all(uploadPromises);
-
-      const completionResponse = await completeMultipartUpload(
-        uploadId,
-        exerciseId,
-        exercise.video.name
-      );
+      setImagePreviews({ before: null, after: null });
+    } catch (error) {
+      console.error("An error occurred:", error);
+      setCompletionMessage("Failed to add exercise. Please try again.");
+    } finally {
+      setLoading(false);
     }
 
     revokePreviewUrls();
@@ -146,9 +172,9 @@ export const CreateExercise = () => {
         }
       );
 
-      const { uploadId, uploadUrls } = response.data;
+      const { uploadId, uploadUrls, exerciseId } = response.data;
 
-      return { uploadId, uploadUrls };
+      return { uploadId, uploadUrls, exerciseId };
     } catch (error) {
       console.error("Failed to upload exercise details:", error);
       throw error;
@@ -181,14 +207,14 @@ export const CreateExercise = () => {
     return response.headers.get("ETag");
   }
 
-  async function completeMultipartUpload(uploadId, exerciseId, videoName) {
+  async function completeMultipartUpload(uploadId, exerciseId, filename) {
     // console.log(exerciseId)
     const response = await axios.put(
       "http://localhost:8080/api/v1/adminCoachService/coach/completeMultipartUpload",
       {
         exerciseId,
         uploadId,
-        videoName,
+        filename,
       },
       {
         headers: {
@@ -200,9 +226,12 @@ export const CreateExercise = () => {
 
     if (response.data == true) {
       console.log("upload success " + response.status);
+
     } else {
       console.log("upload failed" + response.status);
     }
+    return response.data;
+
   }
 
   return (
@@ -320,6 +349,7 @@ export const CreateExercise = () => {
           name="before"
           onChange={handlePhotoChange}
           accept="image/*"
+          required
         />
         {imagePreviews.before && (
           <div>
@@ -339,6 +369,7 @@ export const CreateExercise = () => {
           name="after"
           onChange={handlePhotoChange}
           accept="image/*"
+          required
         />
 
         {imagePreviews.after && (
@@ -372,6 +403,12 @@ export const CreateExercise = () => {
         )}
         <button type="submit">Add Exercise</button>
       </form>
+      {loading && <Spinner />}
+
+      {completionMessage && (
+        <div className="completion-message">{completionMessage}</div>
+      )}
+
       <Footer />
     </div>
   );

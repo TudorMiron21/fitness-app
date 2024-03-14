@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.xmlunit.diff.Diff;
-import tudor.work.dto.CompleteMultipartUploadDto;
-import tudor.work.dto.UploadCoachDetailsRequestDto;
-import tudor.work.dto.UploadExerciseDetailsDto;
+import tudor.work.dto.*;
 import tudor.work.model.CoachDetails;
 import tudor.work.model.Exercise;
 import tudor.work.model.User;
@@ -23,6 +21,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,17 +88,31 @@ public class CoachService {
     public Map<String, Object> UploadExerciseDetailsAndInitMultipart(String bucketName, String contentType, UploadExerciseDetailsDto uploadExerciseDetailsDto) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException, NotFoundException//also add the UploadExerciseDto as a parameter
     {
 
+        boolean hasReps = true;
+        boolean hasWeight = true;
+        if (uploadExerciseDetailsDto.getCategoryName().equals("Cardio")) {
 
+            hasReps = false;
+            hasWeight = false;
+        }
+
+        if (uploadExerciseDetailsDto.getEquipmentName().equals("Body Only")) {
+            hasWeight = false;
+        }
 
         Exercise savedExercise = exerciseService.saveExercise(
                 Exercise.
                         builder()
                         .name(uploadExerciseDetailsDto.getExerciseName())
                         .description(uploadExerciseDetailsDto.getDescription())
-                        .equipment(equipmentService.getEquipmentByName( uploadExerciseDetailsDto.getEquipmentName()))
-                        .muscleGroup(muscleGroupService.getMuscleGroupByName( uploadExerciseDetailsDto.getMuscleGroupName()))
-                        .difficulty(difficultyService.getDifficultyByName( uploadExerciseDetailsDto.getDifficultyName()))
-                        .category(categoryService.getCategoryByName( uploadExerciseDetailsDto.getCategoryName()))
+                        .equipment(equipmentService.getEquipmentByName(uploadExerciseDetailsDto.getEquipmentName()))
+                        .muscleGroup(muscleGroupService.getMuscleGroupByName(uploadExerciseDetailsDto.getMuscleGroupName()))
+                        .difficulty(difficultyService.getDifficultyByName(uploadExerciseDetailsDto.getDifficultyName()))
+                        .category(categoryService.getCategoryByName(uploadExerciseDetailsDto.getCategoryName()))
+                        .adder(authorityService.getUser())
+                        .isExerciseExclusive(true)
+                        .hasWeight(hasWeight)
+                        .hasNoReps(hasReps)
                         .build()
         );
 
@@ -106,26 +120,26 @@ public class CoachService {
             minioService.createBucket("exercise-images");
             minioService.uploadImageToObjectStorage(
                     uploadExerciseDetailsDto.getBeforeImage().getInputStream(),
-                    savedExercise.getId() + "_before" + this.getFileExtension(uploadExerciseDetailsDto.getBeforeImage().getName()),
+                    savedExercise.getId() + "_before." + this.getFileExtension(uploadExerciseDetailsDto.getBeforeImage().getOriginalFilename()),
                     "exercise-images"
-                    );
-            String pathBeforeImage = "exercise-images/" +savedExercise.getId() + "_before" + this.getFileExtension(uploadExerciseDetailsDto.getBeforeImage().getName());
+            );
+            String pathBeforeImage = "exercise-images/" + savedExercise.getId() + "_before." + this.getFileExtension(uploadExerciseDetailsDto.getBeforeImage().getOriginalFilename());
             savedExercise.setExerciseImageStartUrl(pathBeforeImage);
         }
         if (!uploadExerciseDetailsDto.getAfterImage().isEmpty()) {
             minioService.createBucket("exercise-images");
             minioService.uploadImageToObjectStorage(
-                    uploadExerciseDetailsDto.getBeforeImage().getInputStream(),
-                    savedExercise.getId() + "_after" + this.getFileExtension(uploadExerciseDetailsDto.getBeforeImage().getName()),
+                    uploadExerciseDetailsDto.getAfterImage().getInputStream(),
+                    savedExercise.getId() + "_after." + this.getFileExtension(uploadExerciseDetailsDto.getAfterImage().getOriginalFilename()),
                     "exercise-images"
             );
-            String pathAfterImage = "exercise-images/" +savedExercise.getId() + "_after" + this.getFileExtension(uploadExerciseDetailsDto.getBeforeImage().getName());
+            String pathAfterImage = "exercise-images/" + savedExercise.getId() + "_after." + this.getFileExtension(uploadExerciseDetailsDto.getAfterImage().getOriginalFilename());
             savedExercise.setExerciseImageEndUrl(pathAfterImage);
         }
         if (uploadExerciseDetailsDto.getVideoSize() > 0) {
             minioService.createBucket(bucketName);
 
-            Map<String,Object> response = minioMultipartUploadUtils
+            Map<String, Object> response = minioMultipartUploadUtils
                     .initMultipartUpload(bucketName,
                             savedExercise.getId() + "." + getFileExtension(uploadExerciseDetailsDto.getVideoName()),
                             generatePartCount(uploadExerciseDetailsDto.getVideoSize()), contentType);
@@ -137,16 +151,6 @@ public class CoachService {
         return new HashMap<>();
     }
 
-//    public Boolean uploadExercise(String bucketName, Integer partCount, String contentType) throws ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, IOException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-//
-//        minioService.createBucket(bucketName);
-//        Map<String, Object> initMultipartResponse = minioMultipartUploadUtils.initMultipartUpload(bucketName, "id_exercise.mp4", partCount, contentType);
-//
-//        return minioMultipartUploadUtils.mergeMultipartUploads(bucketName, "id_exercise.mp4", initMultipartResponse.get("uploadId").toString());
-//
-//    }
-//
-
 
     @Transactional
     public Boolean completeMultipartUpload(String bucketName, CompleteMultipartUploadDto completeMultipartUploadDto) throws NotFoundException {
@@ -155,10 +159,33 @@ public class CoachService {
         Exercise uploadExercise = exerciseService.getExerciseByid(completeMultipartUploadDto.getExerciseId());
 
         String objectName = uploadExercise.getId() + "." + getFileExtension(completeMultipartUploadDto.getFilename());
-        String videoPath = bucketName + "/" +objectName;
+        String videoPath = bucketName + "/" + objectName;
 
         uploadExercise.setExerciseVideoUrl(videoPath);
 
         return minioMultipartUploadUtils.mergeMultipartUploads(bucketName, objectName, completeMultipartUploadDto.getUploadId());
     }
+
+
+    public Set<ExerciseResponseDto> getFilteredExercises(ExerciseFilteredRequestDto exerciseFilteredRequestDto) {
+        Set<Exercise> exercises = exerciseService.getFilteredExercises(exerciseFilteredRequestDto);
+
+        return exercises.stream().map(exercise ->
+                ExerciseResponseDto
+                        .builder()
+                        .exerciseId(exercise.getId())
+                        .name(exercise.getName())
+                        //TODO: complete here for the case where the exercise is exclusive(it has a path saved, not the url)
+                        .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+                        .muscleGroup(exercise.getMuscleGroup())
+                        .equipment(exercise.getEquipment())
+                        .difficulty(exercise.getDifficulty())
+                        .category(exercise.getCategory())
+                        .isExerciseExclusive(exercise.isExerciseExclusive())
+                        .build()
+        ).collect(Collectors.toSet());
+    }
 }
+
+
+

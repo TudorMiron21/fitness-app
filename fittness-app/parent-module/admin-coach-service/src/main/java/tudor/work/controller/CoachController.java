@@ -63,18 +63,6 @@ public class CoachController {
     }
 
 
-//    @PostMapping("/uploadExercise")
-//    public ResponseEntity<?> uploadExercise(@ModelAttribute UploadExerciseDto uploadExerciseDto){
-//        try {
-//            coachService.uploadExercise("exercises",10,"application/octet-stream");
-//            return ResponseEntity.status(HttpStatus.OK).body(coachService.uploadExercise("exercises",10,"application/octet-stream"));
-//        } catch (ServerException  | InsufficientDataException | ErrorResponseException |
-//                 NoSuchAlgorithmException | IOException  | InvalidKeyException |
-//                 InvalidResponseException | XmlParserException | InternalException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
 
     @PostMapping("/uploadExerciseDetails")
     public ResponseEntity<?> uploadExerciseDetails(@ModelAttribute UploadExerciseDetailsDto uploadExerciseDetailsDto) {
@@ -103,5 +91,8 @@ public class CoachController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
     }
+
+
+
 
 }
