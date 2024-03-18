@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CreateExercisePage.css";
 import { NavBar } from "../NavBarComponents/NavBar";
 import { Footer } from "../FooterComponent/Footer";
 import axios from "axios";
 import { Spinner } from "../SpinnerComponents/Spinner";
+import { validateToken } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 export const CreateExercise = () => {
   const initialState = {
@@ -32,6 +34,25 @@ export const CreateExercise = () => {
 
   const [completionMessage, setCompletionMessage] = useState("");
 
+  const [isTokenValid, setIsTokenValid] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isTokenValid = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+
+        if (token) {
+          setIsTokenValid(await validateToken(token));
+        }
+      } catch (error) {
+        console.error("Error fetching coach details status", error);
+      }
+    };
+
+    isTokenValid();
+  });
   // Handlers for the form inputs
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -226,190 +247,193 @@ export const CreateExercise = () => {
 
     if (response.data == true) {
       console.log("upload success " + response.status);
-
     } else {
       console.log("upload failed" + response.status);
     }
     return response.data;
-
   }
 
-  return (
-    <div>
-      <NavBar />
-      <form className="exercise-form" onSubmit={handleSubmit}>
-        <label htmlFor="name">Exercise Name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={exercise.name}
-          onChange={handleInputChange}
-          required
-        />
+  if (!isTokenValid) {
+    navigate("/login");
+    return;
+  } else {
+    return (
+      <div>
+        <NavBar />
+        <form className="exercise-form" onSubmit={handleSubmit}>
+          <label htmlFor="name">Exercise Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={exercise.name}
+            onChange={handleInputChange}
+            required
+          />
 
-        <label htmlFor="description">Description:</label>
-        <textarea
-          id="description"
-          name="description"
-          value={exercise.description}
-          onChange={handleInputChange}
-          required
-        ></textarea>
+          <label htmlFor="description">Description:</label>
+          <textarea
+            id="description"
+            name="description"
+            value={exercise.description}
+            onChange={handleInputChange}
+            required
+          ></textarea>
 
-        <label htmlFor="muscleGroup">Muscle Group:</label>
-        <select
-          type="text"
-          id="muscleGroup"
-          name="muscleGroup"
-          value={exercise.muscleGroup}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Muscle Group</option>
-          <option value="Forearms">Forearms</option>
-          <option value="Quadriceps">Quadriceps</option>
-          <option value="Abdominals">Abdominals</option>
-          <option value="Lats">Lats</option>
-          <option value="Middle Back">Middle Back</option>
-          <option value="Lower Back">Lower Back</option>
-          <option value="Shoulders">Shoulders</option>
-          <option value="Biceps">Biceps</option>
-          <option value="Glutes">Glutes</option>
-          <option value="Triceps">Triceps</option>
-          <option value="Hamstrings">Hamstrings</option>
-          <option value="Neck">Neck</option>
-          <option value="Chest">Chest</option>
-          <option value="Traps">Traps</option>
-          <option value="Calves">Calves</option>
-          <option value="Adductors">Adductors</option>
-          <option value="Abductors">Abductors</option>
-        </select>
+          <label htmlFor="muscleGroup">Muscle Group:</label>
+          <select
+            type="text"
+            id="muscleGroup"
+            name="muscleGroup"
+            value={exercise.muscleGroup}
+            onChange={handleInputChange}
+            required
+          >
+            <option value="">Select Muscle Group</option>
+            <option value="Forearms">Forearms</option>
+            <option value="Quadriceps">Quadriceps</option>
+            <option value="Abdominals">Abdominals</option>
+            <option value="Lats">Lats</option>
+            <option value="Middle Back">Middle Back</option>
+            <option value="Lower Back">Lower Back</option>
+            <option value="Shoulders">Shoulders</option>
+            <option value="Biceps">Biceps</option>
+            <option value="Glutes">Glutes</option>
+            <option value="Triceps">Triceps</option>
+            <option value="Hamstrings">Hamstrings</option>
+            <option value="Neck">Neck</option>
+            <option value="Chest">Chest</option>
+            <option value="Traps">Traps</option>
+            <option value="Calves">Calves</option>
+            <option value="Adductors">Adductors</option>
+            <option value="Abductors">Abductors</option>
+          </select>
 
-        <label htmlFor="category">Category:</label>
-        <select
-          type="text"
-          id="category"
-          name="category"
-          value={exercise.category}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Category</option>
-          <option value="Strongman">Strongman</option>
-          <option value="Strength">Strength</option>
-          <option value="Olympic Weightlifting">Olympic Weightlifting</option>
-          <option value="Powerlifting">Powerlifting</option>
-          <option value="Cardio">Cardio</option>
-          <option value="Plyometrics">Plyometrics</option>
-          <option value="Stretching">Stretching</option>
-        </select>
+          <label htmlFor="category">Category:</label>
+          <select
+            type="text"
+            id="category"
+            name="category"
+            value={exercise.category}
+            onChange={handleInputChange}
+            required
+          >
+            <option value="">Select Category</option>
+            <option value="Strongman">Strongman</option>
+            <option value="Strength">Strength</option>
+            <option value="Olympic Weightlifting">Olympic Weightlifting</option>
+            <option value="Powerlifting">Powerlifting</option>
+            <option value="Cardio">Cardio</option>
+            <option value="Plyometrics">Plyometrics</option>
+            <option value="Stretching">Stretching</option>
+          </select>
 
-        <label htmlFor="difficulty">Difficulty Level:</label>
-        <select
-          id="difficulty"
-          name="difficulty"
-          value={exercise.difficulty}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Difficulty</option>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-        </select>
+          <label htmlFor="difficulty">Difficulty Level:</label>
+          <select
+            id="difficulty"
+            name="difficulty"
+            value={exercise.difficulty}
+            onChange={handleInputChange}
+            required
+          >
+            <option value="">Select Difficulty</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
 
-        <label htmlFor="equipment">Equipment Required:</label>
-        <select
-          type="text"
-          id="equipment"
-          name="equipment"
-          value={exercise.equipment}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Equipment</option>
-          <option value="Other">Other</option>
-          <option value="Machine">Machine</option>
-          <option value="Barbell">Barbell</option>
-          <option value="Dumbbell">Dumbbell</option>
-          <option value="Body Only">Body Only</option>
-          <option value="Kettlebells">Kettlebells</option>
-          <option value="Cable">Cable</option>
-          <option value="E-Z Curl Bar">E-Z Curl Bar</option>
-          <option value="Bands">Bands</option>
-          <option value="Medicine Ball">Medicine Ball</option>
-          <option value="Exercise Ball">Exercise Ball</option>
-        </select>
+          <label htmlFor="equipment">Equipment Required:</label>
+          <select
+            type="text"
+            id="equipment"
+            name="equipment"
+            value={exercise.equipment}
+            onChange={handleInputChange}
+            required
+          >
+            <option value="">Select Equipment</option>
+            <option value="Other">Other</option>
+            <option value="Machine">Machine</option>
+            <option value="Barbell">Barbell</option>
+            <option value="Dumbbell">Dumbbell</option>
+            <option value="Body Only">Body Only</option>
+            <option value="Kettlebells">Kettlebells</option>
+            <option value="Cable">Cable</option>
+            <option value="E-Z Curl Bar">E-Z Curl Bar</option>
+            <option value="Bands">Bands</option>
+            <option value="Medicine Ball">Medicine Ball</option>
+            <option value="Exercise Ball">Exercise Ball</option>
+          </select>
 
-        <label htmlFor="photos-before">Before Photo:</label>
-        <input
-          type="file"
-          id="photos-before"
-          name="before"
-          onChange={handlePhotoChange}
-          accept="image/*"
-          required
-        />
-        {imagePreviews.before && (
-          <div>
-            <label>Before Photo Preview:</label>
-            <img
-              src={imagePreviews.before}
-              alt="Before Preview"
-              style={{ width: "100%", height: "auto" }}
-            />
-          </div>
+          <label htmlFor="photos-before">Before Photo:</label>
+          <input
+            type="file"
+            id="photos-before"
+            name="before"
+            onChange={handlePhotoChange}
+            accept="image/*"
+            required
+          />
+          {imagePreviews.before && (
+            <div>
+              <label>Before Photo Preview:</label>
+              <img
+                src={imagePreviews.before}
+                alt="Before Preview"
+                style={{ width: "100%", height: "auto" }}
+              />
+            </div>
+          )}
+
+          <label htmlFor="photos-after">After Photo:</label>
+          <input
+            type="file"
+            id="photos-after"
+            name="after"
+            onChange={handlePhotoChange}
+            accept="image/*"
+            required
+          />
+
+          {imagePreviews.after && (
+            <div>
+              <label>After Photo Preview:</label>
+              <img
+                src={imagePreviews.after}
+                alt="After Preview"
+                style={{ width: "100%", height: "auto" }}
+              />
+            </div>
+          )}
+          <label htmlFor="video">Video:</label>
+          <input
+            type="file"
+            id="video"
+            name="video"
+            onChange={handleVideoChange}
+            accept="video/*"
+          />
+
+          {videoPreview && (
+            <div>
+              <label>Video Preview:</label>
+              <video
+                src={videoPreview}
+                controls
+                style={{ width: "100%", height: "auto" }}
+              />
+            </div>
+          )}
+          <button type="submit">Add Exercise</button>
+        </form>
+        {loading && <Spinner />}
+
+        {completionMessage && (
+          <div className="completion-message">{completionMessage}</div>
         )}
 
-        <label htmlFor="photos-after">After Photo:</label>
-        <input
-          type="file"
-          id="photos-after"
-          name="after"
-          onChange={handlePhotoChange}
-          accept="image/*"
-          required
-        />
-
-        {imagePreviews.after && (
-          <div>
-            <label>After Photo Preview:</label>
-            <img
-              src={imagePreviews.after}
-              alt="After Preview"
-              style={{ width: "100%", height: "auto" }}
-            />
-          </div>
-        )}
-        <label htmlFor="video">Video:</label>
-        <input
-          type="file"
-          id="video"
-          name="video"
-          onChange={handleVideoChange}
-          accept="video/*"
-        />
-
-        {videoPreview && (
-          <div>
-            <label>Video Preview:</label>
-            <video
-              src={videoPreview}
-              controls
-              style={{ width: "100%", height: "auto" }}
-            />
-          </div>
-        )}
-        <button type="submit">Add Exercise</button>
-      </form>
-      {loading && <Spinner />}
-
-      {completionMessage && (
-        <div className="completion-message">{completionMessage}</div>
-      )}
-
-      <Footer />
-    </div>
-  );
+        <Footer />
+      </div>
+    );
+  }
 };

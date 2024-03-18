@@ -15,4 +15,5 @@ public class EquipmentService {
     public Equipment getEquipmentByName(String equipmentName) throws NotFoundException {
         return equipmentRepository.findByName(equipmentName).orElseThrow(() -> new NotFoundException("equipment with name " + equipmentName + " not found "));
     }
+
 }

@@ -7,12 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tudor.work.dto.CompleteMultipartUploadDto;
-import tudor.work.dto.UploadCoachDetailsRequestDto;
-import tudor.work.dto.UploadExerciseDetailsDto;
-import tudor.work.dto.UploadExerciseDto;
-import tudor.work.service.CoachService;
-import tudor.work.service.MinioService;
+import tudor.work.dto.*;
+import tudor.work.model.Category;
+import tudor.work.service.*;
 
 import javax.swing.text.StyledEditorKit;
 import javax.ws.rs.core.Response;
@@ -20,7 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -63,7 +63,6 @@ public class CoachController {
     }
 
 
-
     @PostMapping("/uploadExerciseDetails")
     public ResponseEntity<?> uploadExerciseDetails(@ModelAttribute UploadExerciseDetailsDto uploadExerciseDetailsDto) {
 
@@ -92,7 +91,34 @@ public class CoachController {
         }
     }
 
-
+    @GetMapping("/getFilteredExercises")
+    public ResponseEntity<?> getFilteredExercises(
+            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "isExercisePrivate", required = false) Boolean isExercisePrivate,
+            @RequestParam(value = "muscleGroupNames",required = false) List<String> muscleGroupNames,
+            @RequestParam(value = "equipmentNames",required = false) List<String> equipmentNames,
+            @RequestParam(value = "difficultyNames",required = false) List<String> difficultyNames,
+            @RequestParam(value = "categoryNames",required = false) List<String> categoryNames
+    ) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(coachService
+                            .getFilteredExercises(
+                                    ExerciseFilteredRequestDto
+                                            .builder()
+                                            .name(name)
+                                            .isExercisePrivate(isExercisePrivate)
+                                            .muscleGroupNames(muscleGroupNames != null ? new HashSet<>(muscleGroupNames) : null)
+                                            .equipmentNames(equipmentNames != null ? new HashSet<>(equipmentNames) : null)
+                                            .difficultyNames(difficultyNames != null ? new HashSet<>(difficultyNames) : null)
+                                            .categoryNames(categoryNames != null ? new HashSet<>(categoryNames) : null)
+                                            .build()
+                            )
+                    );
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
 
 
 }

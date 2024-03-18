@@ -1,0 +1,242 @@
+.create-workout-page {
+  display: grid;
+  grid-template-columns: 1fr; /* Start with a single column */
+  gap: 40px;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* When the .with-filters class is added to .create-workout-page, use two columns */
+.create-workout-page.with-filters {
+  grid-template-columns: 1fr 300px; /* Two-column layout when filters are visible */
+}
+
+.exercise-filters-container {
+  display: none; /* Start hidden by default */
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.exercise-filters-container.visible {
+  display: flex; /* Show when class 'visible' is added */
+}
+
+.workout-form-container {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 24px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label,
+.dropdown-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.input-group input[type="text"],
+.input-group textarea,
+.input-group input[type="file"],
+.input-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.input-group textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.button {
+  width: auto;
+  max-width: 200px;
+  padding: 8px 15px;
+  background-color: #0056b3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  align-self: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.button:hover,
+.button:focus {
+  background-color: #003973;
+  transform: translateY(2px);
+}
+
+.image-preview-container img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 20px;
+  border-radius: 6px;
+}
+
+@media (max-width: 992px) {
+  .create-workout-page,
+  .create-workout-page.with-filters {
+    grid-template-columns: 1fr; /* Single column layout for smaller screens */
+    padding: 20px;
+  }
+}
+
+.workout-form-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Align children to stretch to the container's width */
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 24px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.input-group input[type="text"],
+.input-group textarea,
+.input-group input[type="file"] {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.input-group textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.button {
+  padding: 8px 15px;
+  background-color: #0056b3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  align-self: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.button:hover,
+.button:focus {
+  background-color: #003973;
+  transform: translateY(2px);
+}
+
+.image-preview-container img {
+  height: auto;
+  margin-top: 20px;
+  border-radius: 6px;
+}
+
+.exercise-filters-container {
+  display: flex; /* Adjust to always visible */
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  align-items: flex-start; /* Align children to the top of the container */
+  justify-content: flex-start; /* Align children horizontally to the start */
+}
+
+.filter-item {
+  margin-bottom: 15px;
+  min-width: 150px;
+  margin-right: 15px;
+}
+
+.filters-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.hidden {
+  display: none;
+}
+
+.dropdown-toggle {
+  padding: 5px 0;
+}
+
+.checkboxes {
+  display: flex;
+  flex-direction: column;
+  max-height: 200px; 
+  overflow-y: auto; 
+  margin-top: 10px;
+  }
+
+.checkboxes label {
+  margin-bottom: 5px;
+  align-items: center;
+}
+
+.checkboxes input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+#isPrivate {
+  margin-right: 5px;
+}
+
+/* Add a class for when the exercise filters container is hidden */
+.is-exercise-container-hidden .exercise-filters-container {
+  display: none;
+}

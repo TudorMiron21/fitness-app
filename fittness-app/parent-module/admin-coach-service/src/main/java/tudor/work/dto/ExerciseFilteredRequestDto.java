@@ -22,8 +22,6 @@ public class ExerciseFilteredRequestDto {
 
     private Set<String> categoryNames;
 
-    private Boolean isExercisePublic;
-
     private Boolean isExercisePrivate;
 
 }

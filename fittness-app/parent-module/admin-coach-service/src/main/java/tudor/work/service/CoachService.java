@@ -167,7 +167,7 @@ public class CoachService {
     }
 
 
-    public Set<ExerciseResponseDto> getFilteredExercises(ExerciseFilteredRequestDto exerciseFilteredRequestDto) {
+    public Set<ExerciseResponseDto> getFilteredExercises(ExerciseFilteredRequestDto exerciseFilteredRequestDto) throws NotFoundException {
         Set<Exercise> exercises = exerciseService.getFilteredExercises(exerciseFilteredRequestDto);
 
         return exercises.stream().map(exercise ->

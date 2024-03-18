@@ -7,6 +7,7 @@ import { NavBar } from "../NavBarComponents/NavBar.jsx";
 import { ActionCard } from "./ActionCard.jsx";
 import './HomePage.css'
 import {Footer} from "../FooterComponent/Footer.jsx";
+import { Spinner } from "../SpinnerComponents/Spinner.jsx";
 export const HomePage = () => {
   const [areCoachDetailsValid, setAreCoachDetailsValid] = useState(null);
   const [isTokenValid, setIsTokenValid] = useState(false);
@@ -41,13 +42,11 @@ export const HomePage = () => {
     checkCoachDetails();
   }, []);
   const handleCreateExercise = () => {
-    // Implement the logic to navigate to the create exercise page or open a modal
-
     navigate('/create-exercise-page');
   };
 
   const handleCreateWorkout = () => {
-    // Implement the logic to navigate to the create workout page or open a modal
+    navigate('/create-workout-page');
   };
 
   const handleCreateProgram = () => {
@@ -64,7 +63,7 @@ export const HomePage = () => {
   } else {
     // Conditional rendering based on the 'isCoachDetailsValid' state
     if (areCoachDetailsValid === null) {
-      return <div>Loading...</div>; // Or some loading component/spinner
+      return <Spinner/>; 
     } else if (areCoachDetailsValid) {
   return (
     <div>
