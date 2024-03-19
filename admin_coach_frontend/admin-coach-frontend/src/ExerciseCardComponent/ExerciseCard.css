@@ -1,0 +1,64 @@
+.exercise-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 5px; /* Adjusted margin for spacing between cards */
+  max-width: 300px; /* Smaller max-width for the cards */
+  /* If you want all cards to have the same height */
+  /* flex: 1; */
+}
+.exercise-card.selected {
+  border: 2px solid #4a4e69; /* Blue border for selection */
+  transform: scale(1.03); /* Slightly scale up the card */
+  background-color: rgba(0, 123, 255, 0.1); /* Light blue background */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Stronger shadow for depth */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out,
+    border 0.2s ease-in-out, background-color 0.2s ease-in-out; /* Smooth transition for the effects */
+}
+
+.exercise-image-container {
+    width: 100%;
+    height: 100px; /* Fixed height for the images */
+    background-color: #f3f3f3;
+    display: flex; /* Use flex to center the image */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    overflow: hidden; /* In case of very wide images */
+  }
+.exercise-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.exercise-details {
+  padding: 12px;
+}
+
+.exercise-name {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.exercise-description {
+  font-size: 14px; /* Adjusted font size */
+  color: #666;
+  margin-bottom: 8px; /* Adjusted margin */
+}
+
+.exercise-info {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.exercise-info li {
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.exercise-info li strong {
+  font-weight: bold;
+}

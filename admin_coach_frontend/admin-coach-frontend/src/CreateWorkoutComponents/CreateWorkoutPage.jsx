@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavBar } from "../NavBarComponents/NavBar";
 import { Footer } from "../FooterComponent/Footer";
-
+import axios from "axios";
+import { ExerciseCard } from "../ExerciseCardComponent/ExerciseCard";
 const CreateWorkoutPage = () => {
   const [workoutForm, setWorkoutForm] = useState({
     workoutName: "",
@@ -21,7 +22,27 @@ const CreateWorkoutPage = () => {
     categoryNames: [],
   });
 
+  const [exercises, setExercises] = useState([]);
+
+  const [addedExercises, setAddedExercises] = useState([]);
+
+  const addOrRemoveExercise = (selectedExercise) => {
+    setAddedExercises((prevExercises) => {
+      const exerciseExists = prevExercises.some(
+        (e) => e.exerciseId === selectedExercise.exerciseId
+      );
+
+      if (exerciseExists) {
+        return prevExercises.filter(
+          (e) => e.exerciseId !== selectedExercise.exerciseId
+        );
+      } else {
+        return [...prevExercises, selectedExercise];
+      }
+    });
+  };
   const [imagePreview, setImagePreview] = useState(null);
+
   const [isTokenValid, setIsTokenValid] = useState(false);
 
   const navigate = useNavigate();
@@ -46,10 +67,6 @@ const CreateWorkoutPage = () => {
     setIsEquipmentVisible(!isEquipmentVisible);
   };
 
-  const [isExercisePrivate, setIsExercisePrivate] = useState(false);
-  const handlePrivateCheckboxChange = (event) => {
-    setIsExercisePrivate(event.target.checked);
-  };
 
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const toggleFilter = () => {
@@ -58,8 +75,55 @@ const CreateWorkoutPage = () => {
 
   const [isExerciseContainerVisible, setIsExerciseContainerVisible] =
     useState(false);
-  const handleAddExercisesClick = () => {
+  const handleAddExercisesClick = async () => {
     setIsExerciseContainerVisible(!isExerciseContainerVisible);
+
+    await getFilteredExercises();
+  };
+
+  const handleApplyFilters = async () => {
+    await getFilteredExercises();
+  };
+
+  const getFilteredExercises = async () => {
+    const queryParams = new URLSearchParams();
+
+    if (filters.name) queryParams.append("name", filters.name);
+    queryParams.append("isExercisePrivate", filters.isExercisePrivate);
+    if (filters.muscleGroupNames)
+      filters.muscleGroupNames.forEach((mg) =>
+        queryParams.append("muscleGroupNames", mg)
+      );
+    if (filters.equipmentNames)
+      filters.equipmentNames.forEach((eq) =>
+        queryParams.append("equipmentNames", eq)
+      );
+    if (filters.difficultyNames)
+      filters.difficultyNames.forEach((d) =>
+        queryParams.append("difficultyNames", d)
+      );
+    if (filters.categoryNames)
+      filters.categoryNames.forEach((c) =>
+        queryParams.append("categoryNames", c)
+      );
+
+    try {
+      console.log(
+        `http://localhost:8080/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`
+      );
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setExercises(response.data);
+    } catch (err) {
+      console.error("Error loading filtered exercises", err);
+    }
   };
 
   useEffect(() => {
@@ -106,6 +170,14 @@ const CreateWorkoutPage = () => {
     }));
   };
 
+  const handlePrivateCheckboxChange = (event) => {
+    setFilters({
+      ...filters,
+      isExercisePrivate: event.target.checked
+    });
+  };
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Submit form logic here
@@ -134,13 +206,78 @@ const CreateWorkoutPage = () => {
       });
     }
   };
+
+
+  const handleCategoryFilterChange = (event) => {
+    const { value } = event.target;
+    const newCategories = [...filters.categoryNames];
+    if (newCategories.includes(value)) {
+      setFilters({
+        ...filters,
+        categoryNames: newCategories.filter(
+          (category) => category !== value
+        ),
+      });
+    } else {
+      newCategories.push(value);
+      setFilters({
+        ...filters,
+        categoryNames: newCategories,
+      });
+    }
+  };
+
+  const handleDifficultyFilterChange = (event) => {
+    const { value } = event.target;
+    const newDifficulties = [...filters.difficultyNames];
+    if (newDifficulties.includes(value)) {
+      setFilters({
+        ...filters,
+        difficultyNames: newDifficulties.filter(
+          (difficulty) => difficulty !== value
+        ),
+      });
+    } else {
+      newDifficulties.push(value);
+      setFilters({
+        ...filters,
+        difficultyNames: newDifficulties,
+      });
+    }
+  };
+
+  const handleEquipmentFilterChange = (event) => {
+    const { value } = event.target;
+    const newEquipments = [...filters.equipmentNames];
+    if (newEquipments.includes(value)) {
+      setFilters({
+        ...filters,
+        equipmentNames: newEquipments.filter(
+          (equipment) => equipment !== value
+        ),
+      });
+    } else {
+      newEquipments.push(value);
+      setFilters({
+        ...filters,
+        equipmentNames: newEquipments,
+      });
+    }
+  };
+
+
   if (!isTokenValid) {
     navigate("/login");
   } else {
     return (
       <div>
         <NavBar />
-        <div className="create-workout-page">
+        <div
+          className={`create-workout-page ${
+            isExerciseContainerVisible ? "with-filters" : ""
+          }`}
+        >
+          {" "}
           <div className="workout-form-container">
             <h2>Create Workout</h2>
             <form onSubmit={handleSubmit}>
@@ -172,6 +309,17 @@ const CreateWorkoutPage = () => {
                 </button>
               </div>
 
+              <div className="exercise-list">
+                {addedExercises.map((exercise) => (
+                  <div
+                    key={exercise.exerciseId}
+                    onClick={() => addOrRemoveExercise(exercise)}
+                  >
+                    <ExerciseCard exercise={exercise} />
+                  </div>
+                ))}
+              </div>
+
               <div className="input-group">
                 <label htmlFor="cover-photo">Cover Photo:</label>
                 <input
@@ -193,13 +341,11 @@ const CreateWorkoutPage = () => {
               </div>
             </form>
           </div>
-
           <div
             className={`exercise-filters-container ${
-              isExerciseContainerVisible ? "" : "hidden"
+              isExerciseContainerVisible ? "visible" : ""
             }`}
           >
-            {" "}
             {isFilterVisible && (
               <div
                 className={`filters-content ${isFilterVisible ? "" : "hidden"}`}
@@ -285,18 +431,18 @@ const CreateWorkoutPage = () => {
                         "Cardio",
                         "Plyometrics",
                         "Stretching",
-                      ].map((muscleGroup) => (
-                        <label key={muscleGroup}>
+                      ].map((category) => (
+                        <label key={category}>
                           <input
                             type="checkbox"
-                            name="muscleGroup"
-                            value={muscleGroup}
-                            checked={filters.muscleGroupNames.includes(
-                              muscleGroup
+                            name="category"
+                            value={category}
+                            checked={filters.categoryNames.includes(
+                              category
                             )}
-                            onChange={handleMuscleGroupFilterChange}
+                            onChange={handleCategoryFilterChange}
                           />
-                          {muscleGroup}
+                          {category}
                         </label>
                       ))}
                     </div>
@@ -316,18 +462,18 @@ const CreateWorkoutPage = () => {
                   {isDifficultyVisible && (
                     <div className="checkboxes">
                       {["Beginner", "Intermediate", "Advanced"].map(
-                        (muscleGroup) => (
-                          <label key={muscleGroup}>
+                        (difficulty) => (
+                          <label key={difficulty}>
                             <input
                               type="checkbox"
-                              name="muscleGroup"
-                              value={muscleGroup}
-                              checked={filters.muscleGroupNames.includes(
-                                muscleGroup
+                              name="difficulty"
+                              value={difficulty}
+                              checked={filters.difficultyNames.includes(
+                                difficulty
                               )}
-                              onChange={handleMuscleGroupFilterChange}
+                              onChange={handleDifficultyFilterChange}
                             />
-                            {muscleGroup}
+                            {difficulty}
                           </label>
                         )
                       )}
@@ -359,18 +505,18 @@ const CreateWorkoutPage = () => {
                         "Bands",
                         "Medicine Ball",
                         "Exercise Ball",
-                      ].map((muscleGroup) => (
-                        <label key={muscleGroup}>
+                      ].map((equipment) => (
+                        <label key={equipment}>
                           <input
                             type="checkbox"
-                            name="muscleGroup"
-                            value={muscleGroup}
-                            checked={filters.muscleGroupNames.includes(
-                              muscleGroup
+                            name="equipment"
+                            value={equipment}
+                            checked={filters.equipmentNames.includes(
+                              equipment
                             )}
-                            onChange={handleMuscleGroupFilterChange}
+                            onChange={handleEquipmentFilterChange}
                           />
-                          {muscleGroup}
+                          {equipment}
                         </label>
                       ))}
                     </div>
@@ -385,9 +531,18 @@ const CreateWorkoutPage = () => {
                     type="checkbox"
                     id="isPrivate"
                     name="isPrivate"
-                    checked={isExercisePrivate}
+                    checked={filters.isExercisePrivate}
                     onChange={handlePrivateCheckboxChange}
                   />
+                </div>
+
+                <div>
+                  <button
+                    onClick={handleApplyFilters}
+                    className="apply-filters-button"
+                  >
+                    Apply FIlters
+                  </button>
                 </div>
               </div>
             )}
@@ -395,6 +550,17 @@ const CreateWorkoutPage = () => {
               <button onClick={toggleFilter} className="button">
                 {isFilterVisible ? "Hide Filters" : "Show Filters"}
               </button>
+            </div>
+
+            <div className="exercise-list">
+              {exercises.map((exercise) => (
+                <div
+                  key={exercise.exerciseId}
+                  onClick={() => addOrRemoveExercise(exercise)}
+                >
+                  <ExerciseCard exercise={exercise} />
+                </div>
+              ))}
             </div>
             {/* Rest of the component */}
           </div>

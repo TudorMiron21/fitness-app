@@ -121,4 +121,7 @@ public class CoachController {
     }
 
 
+    @PostMapping("/createWorkout")
+    public ResponseEntity<?> createWorkout()
+
 }
