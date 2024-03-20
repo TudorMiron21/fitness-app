@@ -65,4 +65,8 @@ public class ExerciseService {
 
         return new HashSet<>(exerciseRepository.findAll(spec));
     }
+
+    public Exercise findById(Long id) throws NotFoundException {
+        return exerciseRepository.findById(id).orElseThrow(() -> new NotFoundException("exercise with id " + id + " not found"));
+    }
 }

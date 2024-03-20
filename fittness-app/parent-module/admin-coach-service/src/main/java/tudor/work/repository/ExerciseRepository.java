@@ -8,6 +8,7 @@ import tudor.work.dto.ExerciseFilteredRequestDto;
 import tudor.work.dto.ExerciseResponseDto;
 import tudor.work.model.Exercise;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -15,5 +16,7 @@ public interface ExerciseRepository extends JpaRepository<Exercise,Long>, JpaSpe
     Exercise save(Exercise exercise);
 
     Set<Exercise> findAllByAdderId(Long adderId);
+
+    Optional<Exercise> findById(Long id);
 
 }

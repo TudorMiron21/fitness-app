@@ -5,6 +5,7 @@ tudor\work\service\MuscleGroupService.class
 tudor\work\service\MinioService.class
 tudor\work\utils\MinioMultipartUploadUtils.class
 tudor\work\dto\UploadExerciseDetailsDto.class
+tudor\work\dto\CreateWorkoutDto$CreateWorkoutDtoBuilder.class
 tudor\work\service\CategoryService.class
 tudor\work\service\DifficultyService.class
 tudor\work\controller\AdminController.class
@@ -39,6 +40,7 @@ tudor\work\repository\MuscleGroupRepository.class
 tudor\work\AdminCoachServiceApp.class
 tudor\work\model\Permissions.class
 tudor\work\model\CoachDetails.class
+tudor\work\dto\CreateWorkoutDto.class
 tudor\work\dto\desirializer\CategoryDeserializer.class
 tudor\work\service\EquipmentService.class
 tudor\work\repository\CoachDetailsRepository.class

@@ -6,12 +6,16 @@ import { NavBar } from "../NavBarComponents/NavBar";
 import { Footer } from "../FooterComponent/Footer";
 import axios from "axios";
 import { ExerciseCard } from "../ExerciseCardComponent/ExerciseCard";
-const CreateWorkoutPage = () => {
-  const [workoutForm, setWorkoutForm] = useState({
+import { Spinner } from "../SpinnerComponents/Spinner";
+
+export const CreateWorkoutPage = () => {
+  const initilaWorkoutState = {
     workoutName: "",
     description: "",
     coverPhoto: null,
-  });
+  };
+
+  const [workoutForm, setWorkoutForm] = useState(initilaWorkoutState);
 
   const [filters, setFilters] = useState({
     name: "",
@@ -25,6 +29,10 @@ const CreateWorkoutPage = () => {
   const [exercises, setExercises] = useState([]);
 
   const [addedExercises, setAddedExercises] = useState([]);
+
+  const [completionMessage, setCompletionMessage] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const addOrRemoveExercise = (selectedExercise) => {
     setAddedExercises((prevExercises) => {
@@ -66,7 +74,6 @@ const CreateWorkoutPage = () => {
   const toggleEquipmentVisibility = () => {
     setIsEquipmentVisible(!isEquipmentVisible);
   };
-
 
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const toggleFilter = () => {
@@ -173,17 +180,52 @@ const CreateWorkoutPage = () => {
   const handlePrivateCheckboxChange = (event) => {
     setFilters({
       ...filters,
-      isExercisePrivate: event.target.checked
+      isExercisePrivate: event.target.checked,
     });
   };
 
-
-  const handleSubmit = (e) => {
+  const handleSubmitWorkout = async (e) => {
     e.preventDefault();
-    // Submit form logic here
-    console.log(workoutForm);
-    // Assuming you have a function to handle the submission
-    // submitWorkoutForm(workoutForm);
+    setLoading(true);
+
+    const formDataToSend = new FormData();
+
+    formDataToSend.append("name", workoutForm.workoutName);
+    formDataToSend.append("description", workoutForm.description);
+    formDataToSend.append(
+      "exerciseIds",
+      addedExercises.map((exercise) => exercise.exerciseId).join(",")
+    );
+    formDataToSend.append("coverPhoto", workoutForm.coverPhoto);
+
+    console.log(
+      addedExercises.map((exercise) => exercise.exerciseId).join(",")
+    );
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/adminCoachService/coach/createWorkout",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      if (response.status == 200) {
+        setCompletionMessage("Workout added successfully!");
+        setWorkoutForm(initilaWorkoutState);
+        setAddedExercises([]);
+        setImagePreview([]);
+        setIsExerciseContainerVisible(false);
+        e.target.reset();
+      } else {
+        setCompletionMessage("Failed to add workout. Please try again.");
+      }
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleMuscleGroupFilterChange = (event) => {
@@ -207,16 +249,13 @@ const CreateWorkoutPage = () => {
     }
   };
 
-
   const handleCategoryFilterChange = (event) => {
     const { value } = event.target;
     const newCategories = [...filters.categoryNames];
     if (newCategories.includes(value)) {
       setFilters({
         ...filters,
-        categoryNames: newCategories.filter(
-          (category) => category !== value
-        ),
+        categoryNames: newCategories.filter((category) => category !== value),
       });
     } else {
       newCategories.push(value);
@@ -265,7 +304,6 @@ const CreateWorkoutPage = () => {
     }
   };
 
-
   if (!isTokenValid) {
     navigate("/login");
   } else {
@@ -280,7 +318,7 @@ const CreateWorkoutPage = () => {
           {" "}
           <div className="workout-form-container">
             <h2>Create Workout</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmitWorkout}>
               <div className="input-group">
                 <label htmlFor="workoutName">Workout Name:</label>
                 <input
@@ -304,7 +342,11 @@ const CreateWorkoutPage = () => {
               </div>
 
               <div className="input-group">
-                <button className="button" onClick={handleAddExercisesClick}>
+                <button
+                  type="button"
+                  className="button"
+                  onClick={handleAddExercisesClick}
+                >
                   Add Exercises
                 </button>
               </div>
@@ -337,9 +379,14 @@ const CreateWorkoutPage = () => {
                 </div>
               )}
               <div className="input-group">
-                <button className="button">Submit Workout Plan</button>
+                <button className="button">Submit Workout</button>
               </div>
             </form>
+            {loading && <Spinner />}
+
+            {completionMessage && (
+              <div className="completion-message">{completionMessage}</div>
+            )}
           </div>
           <div
             className={`exercise-filters-container ${
@@ -437,9 +484,7 @@ const CreateWorkoutPage = () => {
                             type="checkbox"
                             name="category"
                             value={category}
-                            checked={filters.categoryNames.includes(
-                              category
-                            )}
+                            checked={filters.categoryNames.includes(category)}
                             onChange={handleCategoryFilterChange}
                           />
                           {category}
@@ -511,9 +556,7 @@ const CreateWorkoutPage = () => {
                             type="checkbox"
                             name="equipment"
                             value={equipment}
-                            checked={filters.equipmentNames.includes(
-                              equipment
-                            )}
+                            checked={filters.equipmentNames.includes(equipment)}
                             onChange={handleEquipmentFilterChange}
                           />
                           {equipment}
@@ -570,5 +613,3 @@ const CreateWorkoutPage = () => {
     );
   }
 };
-
-export default CreateWorkoutPage;

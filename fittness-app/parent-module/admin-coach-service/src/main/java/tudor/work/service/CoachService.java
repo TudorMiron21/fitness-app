@@ -4,15 +4,11 @@ package tudor.work.service;
 import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.xmlunit.diff.Diff;
 import tudor.work.dto.*;
-import tudor.work.model.CoachDetails;
-import tudor.work.model.Exercise;
-import tudor.work.model.User;
-import tudor.work.repository.DifficultyRepository;
-import tudor.work.repository.EquipmentRepository;
+import tudor.work.model.*;
 import tudor.work.utils.MinioMultipartUploadUtils;
 
 import javax.transaction.Transactional;
@@ -37,6 +33,9 @@ public class CoachService {
     private final MuscleGroupService muscleGroupService;
     private final DifficultyService difficultyService;
     private final CategoryService categoryService;
+    private final WorkoutService workoutService;
+    private final ProgramService programService;
+
     @Value("${spring.servlet.multipart.max-request-size}")
     private String maxRequestSize;
 
@@ -170,12 +169,29 @@ public class CoachService {
     public Set<ExerciseResponseDto> getFilteredExercises(ExerciseFilteredRequestDto exerciseFilteredRequestDto) throws NotFoundException {
         Set<Exercise> exercises = exerciseService.getFilteredExercises(exerciseFilteredRequestDto);
 
+        if (exerciseFilteredRequestDto.getIsExercisePrivate()) {
+            exercises.stream().filter(exercise -> {
+                try {
+                    return exercise.getAdder().equals(authorityService.getUser());
+                } catch (NotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }).forEach(exercise -> {
+                try {
+                    exercise.setExerciseImageStartUrl(minioService.generatePreSignedUrl(exercise.getExerciseImageStartUrl()));
+                } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                         NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException |
+                         XmlParserException |
+                         InternalException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
         return exercises.stream().map(exercise ->
                 ExerciseResponseDto
                         .builder()
                         .exerciseId(exercise.getId())
                         .name(exercise.getName())
-                        //TODO: complete here for the case where the exercise is exclusive(it has a path saved, not the url)
                         .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
                         .muscleGroup(exercise.getMuscleGroup())
                         .equipment(exercise.getEquipment())
@@ -184,6 +200,90 @@ public class CoachService {
                         .isExerciseExclusive(exercise.isExerciseExclusive())
                         .build()
         ).collect(Collectors.toSet());
+    }
+
+    private Double calculateDifficultyLevel(Set<Exercise> exercises) {
+
+        return exercises.stream().mapToDouble(exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
+    }
+
+    public Workout createWorkout(CreateWorkoutDto createWorkoutDto) throws NotFoundException, IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+
+        String imgName = RandomString.make(45) + "." + this.getFileExtension(createWorkoutDto.getCoverPhoto().getOriginalFilename());
+
+        minioService.createBucket("workout-cover-photos");
+
+        minioService.uploadImageToObjectStorage(
+                createWorkoutDto.getCoverPhoto().getInputStream(),
+                imgName,
+                "workout-cover-photos"
+        );
+
+        String imgPath = "workout-cover-photos/" + imgName;
+
+        Set<Exercise> exercisesToAdd = createWorkoutDto
+                .getExerciseIds()
+                .stream()
+                .map(id -> {
+                    try {
+                        return exerciseService.findById(id);
+                    } catch (NotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).collect(Collectors.toSet());
+
+        return workoutService.saveWorkout(
+                Workout
+                        .builder()
+                        .name(createWorkoutDto.getName())
+                        .description(createWorkoutDto.getDescription())
+                        .adder(authorityService.getUser())
+                        .exercises(exercisesToAdd)
+                        .coverPhotoUrl(imgPath)
+                        .isGlobal(false)
+                        .isDeleted(false)
+                        .difficultyLevel(calculateDifficultyLevel(exercisesToAdd))
+                        .build()
+        );
+
+    }
+
+
+    public Program createProgram(CreateProgramDto createProgramDto) {
+
+        Program program = Program
+                .builder()
+                .name(createProgramDto.getName())
+                .description(createProgramDto.getDescription())
+                .durationInDays(createProgramDto.getDurationInDays())
+                .build();
+
+        program.setWorkoutPrograms(
+
+                createProgramDto
+                        .getIndexedWorkouts()
+                        .entrySet()
+                        .stream()
+                        .map(
+                                indexedWorkout ->
+                                {
+                                    try {
+                                        return WorkoutProgram
+                                                .builder()
+                                                .program(program)
+                                                .workout(workoutService.findById(indexedWorkout.getValue()))
+                                                .workoutIndex(indexedWorkout.getKey())
+                                                .build();
+
+                                    } catch (NotFoundException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                        ).collect(Collectors.toSet())
+        );
+
+        programService.saveProgram(program);
+        return program;
     }
 }
 

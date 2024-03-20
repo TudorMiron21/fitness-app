@@ -1,5 +1,6 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
@@ -44,6 +45,16 @@ public class Workout {
     @ManyToMany(mappedBy = "likedWorkouts" )
     @JsonIgnore
     private Set<User> likers;
+
+    @OneToMany(
+            mappedBy = "workout",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
+    Set<WorkoutProgram> workoutPrograms;
+
+
     private boolean isGlobal;
 
     private boolean isDeleted = false;

@@ -1,9 +1,10 @@
 package tudor.work.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
+import tudor.work.dto.desirializer.SetLongJsonDeserializer;
 
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Getter
@@ -19,6 +20,7 @@ public class CreateWorkoutDto {
 
     private MultipartFile coverPhoto;
 
+    @JsonDeserialize(using = SetLongJsonDeserializer.class)
     private Set<Long> exerciseIds;
 
 }

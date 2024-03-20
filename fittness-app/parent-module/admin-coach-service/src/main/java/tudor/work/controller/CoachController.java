@@ -93,12 +93,12 @@ public class CoachController {
 
     @GetMapping("/getFilteredExercises")
     public ResponseEntity<?> getFilteredExercises(
-            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "isExercisePrivate", required = false) Boolean isExercisePrivate,
-            @RequestParam(value = "muscleGroupNames",required = false) List<String> muscleGroupNames,
-            @RequestParam(value = "equipmentNames",required = false) List<String> equipmentNames,
-            @RequestParam(value = "difficultyNames",required = false) List<String> difficultyNames,
-            @RequestParam(value = "categoryNames",required = false) List<String> categoryNames
+            @RequestParam(value = "muscleGroupNames", required = false) List<String> muscleGroupNames,
+            @RequestParam(value = "equipmentNames", required = false) List<String> equipmentNames,
+            @RequestParam(value = "difficultyNames", required = false) List<String> difficultyNames,
+            @RequestParam(value = "categoryNames", required = false) List<String> categoryNames
     ) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
@@ -122,6 +122,17 @@ public class CoachController {
 
 
     @PostMapping("/createWorkout")
-    public ResponseEntity<?> createWorkout()
+    public ResponseEntity<?> createWorkout(@ModelAttribute CreateWorkoutDto createWorkoutDto) {
+
+
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.createWorkout(createWorkoutDto));
+        } catch (NotFoundException | IOException | ServerException | InsufficientDataException |
+                 ErrorResponseException | NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException |
+                 XmlParserException | InternalException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
 
 }
