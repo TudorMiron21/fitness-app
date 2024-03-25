@@ -147,7 +147,7 @@ export const CreateWorkoutPage = () => {
     };
 
     isTokenValid();
-  });
+  },[]);
   const handleFormInputChange = (e) => {
     const { name, value } = e.target;
     setWorkoutForm((prevForm) => ({
@@ -355,9 +355,9 @@ export const CreateWorkoutPage = () => {
                 {addedExercises.map((exercise) => (
                   <div
                     key={exercise.exerciseId}
-                    onClick={() => addOrRemoveExercise(exercise)}
+                    // onClick={() => addOrRemoveExercise(exercise)}
                   >
-                    <ExerciseCard exercise={exercise} />
+                    <ExerciseCard exercise={exercise} focusEnabled={false} />
                   </div>
                 ))}
               </div>
@@ -388,6 +388,7 @@ export const CreateWorkoutPage = () => {
               <div className="completion-message">{completionMessage}</div>
             )}
           </div>
+
           <div
             className={`exercise-filters-container ${
               isExerciseContainerVisible ? "visible" : ""
@@ -601,7 +602,7 @@ export const CreateWorkoutPage = () => {
                   key={exercise.exerciseId}
                   onClick={() => addOrRemoveExercise(exercise)}
                 >
-                  <ExerciseCard exercise={exercise} />
+                  <ExerciseCard exercise={exercise}  focusEnabled={true}  />
                 </div>
               ))}
             </div>

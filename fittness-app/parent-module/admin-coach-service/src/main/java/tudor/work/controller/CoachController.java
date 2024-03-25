@@ -3,6 +3,8 @@ package tudor.work.controller;
 import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import org.checkerframework.framework.qual.RequiresQualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -120,10 +122,36 @@ public class CoachController {
         }
     }
 
+    @GetMapping("/getFilteredWorkouts")
+    public ResponseEntity<?> getFilteredWorkouts(
+
+            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "isWorkoutPrivate", required = false) Boolean isWorkoutPrivate,
+            @RequestParam(value = "minDifficultyLevel") Double minDifficultyLevel,
+            @RequestParam(value = "maxDifficultyLevel") Double maxDifficultyLevel
+    )
+    {
+
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    coachService.getFilteredWorkouts(
+                            WorkoutFilteredRequestDto
+                                    .builder()
+                                    .name(name)
+                                    .isWorkoutPrivate(isWorkoutPrivate)
+                                    .minDifficulty(minDifficultyLevel)
+                                    .maxDifficulty(maxDifficultyLevel)
+                                    .build()
+                    )
+            );
+        } catch (NotFoundException e) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+
+    }
 
     @PostMapping("/createWorkout")
     public ResponseEntity<?> createWorkout(@ModelAttribute CreateWorkoutDto createWorkoutDto) {
-
 
         try {
             return ResponseEntity.status(HttpStatus.OK).body(coachService.createWorkout(createWorkoutDto));
@@ -133,6 +161,8 @@ public class CoachController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
     }
+
+
 
 
 }

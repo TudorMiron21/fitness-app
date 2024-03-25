@@ -7,6 +7,7 @@ import { CoachDetails } from "./CoachDetailsComponents/CoachDetailsPage.jsx";
 import { HomePage } from "./HomePageComponents/HomePage.jsx";
 import { CreateExercise } from "./CreateExerciseComponents/CreateExercisePage.jsx";
 import { CreateWorkoutPage } from "./CreateWorkoutComponents/CreateWorkoutPage.jsx";
+import { CreateProgramPage } from "./CreateProgramComponents/CreateProgramPage.jsx";
 function App() {
   return (
     <div>
@@ -24,6 +25,11 @@ function App() {
           <Route
             path="/create-workout-page"
             element={<CreateWorkoutPage />}
+          ></Route>
+
+<Route
+            path="/create-program-page"
+            element={<CreateProgramPage />}
           ></Route>
           <Route path="/" element={<GreetingsPage />}></Route>
         </Routes>

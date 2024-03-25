@@ -55,13 +55,19 @@ public class ExerciseService {
         if (exerciseFilteredRequestDto.getEquipmentNames() != null)
             spec = spec.and(ExerciseSpecification.equipmentNameIn(exerciseFilteredRequestDto.getEquipmentNames()));
 
-        if (exerciseFilteredRequestDto.getIsExercisePrivate() != null)
+        if (exerciseFilteredRequestDto.getIsExercisePrivate() != null) {
             if (exerciseFilteredRequestDto.getIsExercisePrivate())
                 spec = spec
                         .and(ExerciseSpecification.isExerciseAdderEqual(authorityService.getUserId()))
                         .and(ExerciseSpecification.isExercisePrivateEqual(true));
             else
                 spec = spec.and(ExerciseSpecification.isExercisePrivateEqual(false));
+        }
+        else
+        {
+            spec = spec.and(ExerciseSpecification.isExercisePrivateEqual(false));
+        }
+
 
         return new HashSet<>(exerciseRepository.findAll(spec));
     }

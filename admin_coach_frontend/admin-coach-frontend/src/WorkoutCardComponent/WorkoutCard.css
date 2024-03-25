@@ -1,0 +1,54 @@
+/* WorkoutCard.css */
+.workout-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Adjust the space distribution inside the card */
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    width: 80px; /* Adjust width as needed to achieve square or near-square */
+    height: 80px; /* Adjust height as needed to achieve square or near-square */
+  }
+  
+  .workout-day {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .workout-details {
+    flex-grow: 1; /* Allows the details to fill the space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically for aesthetics */
+    align-items: center; /* Center content horizontally */
+  }
+  
+  .workout-cover {
+    width: 80%; /* Adjust based on preference */
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .workout-name {
+    margin: 10px 0;
+  }
+  
+  .workout-difficulty {
+    margin: 5px 0;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .rest-day {
+    font-style: italic;
+    color: #888;
+    flex-grow: 1;
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+  }

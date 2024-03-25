@@ -285,7 +285,54 @@ public class CoachService {
         programService.saveProgram(program);
         return program;
     }
+
+
+    public Set<WorkoutDto> getFilteredWorkouts(WorkoutFilteredRequestDto workoutFilteredRequestDto) throws NotFoundException {
+
+
+
+
+
+        Set<Workout> workouts = workoutService.getFilteredWorkouts(workoutFilteredRequestDto);
+
+//        if(workoutFilteredRequestDto.getIsWorkoutPrivate().equals(true)) {
+//            workouts
+//                    .stream()
+//                    .filter(workout -> !workout.isGlobal())
+//                    .forEach(
+//                            workout -> {
+//                                try {
+//                                    workout.setCoverPhotoUrl(
+//                                            minioService.generatePreSignedUrl(
+//                                                    workout.getCoverPhotoUrl()
+//                                            )
+//                                    );
+//                                } catch (ServerException | InsufficientDataException | ErrorResponseException |
+//                                         IOException | NoSuchAlgorithmException | InvalidKeyException |
+//                                         InvalidResponseException | XmlParserException | InternalException e) {
+//                                    throw new RuntimeException(e);
+//                                }
+//                            }
+//                    );
+//        }
+
+        return workouts
+                .stream()
+                .map(workout ->
+
+                        WorkoutDto
+                                .builder()
+                                .Id(workout.getId())
+                                .coverPhotoUrl(workout.getCoverPhotoUrl())
+                                .difficultyLevel(workout.getDifficultyLevel())
+                                .name(workout.getName())
+                                .build()
+
+                ).collect(Collectors.toSet());
+    }
+
 }
+
 
 
 

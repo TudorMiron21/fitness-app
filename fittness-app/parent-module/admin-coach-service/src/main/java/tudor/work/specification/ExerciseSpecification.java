@@ -4,17 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import tudor.work.model.Exercise;
-import tudor.work.service.AuthorityService;
-
 import java.util.Set;
-import javax.persistence.criteria.Predicate;
 
 @Component
 @RequiredArgsConstructor
 public class ExerciseSpecification {
-
-    private final AuthorityService authorityService;
-
     public static Specification<Exercise> nameLike(String name) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("name"), "%" + name + "%");
     }
@@ -35,25 +29,9 @@ public class ExerciseSpecification {
         return (root, query, criteriaBuilder) -> root.get("equipment").get("name").in(equipmentNames);
     }
 
-
-//    public static Specification<Exercise> isExercisePublicEqual(Boolean isExercisePublic) {
-//        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isExerciseExclusive"), !isExercisePublic);
-//    }
-
     public static Specification<Exercise> isExercisePrivateEqual(Boolean isExercisePrivate) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isExerciseExclusive"), isExercisePrivate);
     }
-
-
-//    public static Specification<Exercise> isExercisePrivateEqual(Boolean isExercisePrivate)
-//    {
-//        return (root, query, criteriaBuilder) ->{
-//        Predicate isExerciseExclusive = criteriaBuilder.equal(root.get("isExerciseExclusive"),isExercisePrivate);
-//
-//        Predicate isExerciseCreatedByUser = criteriaBuilder.equal(root.get("adder"),authorityService.getUserId());
-//        }
-//
-//    }
 
     public static Specification<Exercise> isExerciseAdderEqual(Long exerciseAdderId) {
         return (root, query, criteriaBuilder) ->

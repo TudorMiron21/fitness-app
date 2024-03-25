@@ -52,7 +52,7 @@ export const CreateExercise = () => {
     };
 
     isTokenValid();
-  });
+  },[]);
   // Handlers for the form inputs
   const handleInputChange = (event) => {
     const { name, value } = event.target;

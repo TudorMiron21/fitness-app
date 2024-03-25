@@ -1,14 +1,14 @@
 .create-workout-page {
   display: grid;
-  grid-template-columns: 1fr; /* Start with a single column */
+  grid-template-columns: 1fr; 
   gap: 40px;
   padding: 40px;
   max-width: 1200px;
-  min-width: 300px; /* Minimum width for the grid container */
+  min-width: 300px;
   margin: 0 auto;
   transition: all 0.3s ease;
   justify-items: center;
-  align-content: start; /* Aligns grid content to the start, preventing stretching */
+  align-content: start; 
 }
 
 /* When the .with-filters class is added to .create-workout-page, use two columns */
@@ -18,15 +18,15 @@
 
 .exercise-filters-container {
   display: none; /* Start hidden by default */
-  background: #fff;
+  /* background: #fff; */
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); */
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  max-height: 90vh; /* Maximum height before scrolling */
-  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 90vh; 
+  overflow-y: auto;
 }
 
 .exercise-filters-container.visible {
@@ -45,6 +45,8 @@
   max-height: 100vh;
   overflow-y: auto;
 }
+
+
 
 h2 {
   color: #333;

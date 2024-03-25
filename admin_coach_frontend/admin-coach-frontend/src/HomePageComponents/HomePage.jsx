@@ -50,7 +50,7 @@ export const HomePage = () => {
   };
 
   const handleCreateProgram = () => {
-    // Implement the logic to navigate to the create program page or open a modal
+    navigate('/create-program-page');
   };
 
   const handleCreateChallenge = () => {

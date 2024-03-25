@@ -1,0 +1,137 @@
+.create-program-page {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 40px;
+    padding: 40px;
+    max-width: 1200px;
+    min-width: 300px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+    justify-items: center;
+    align-content: start; 
+  }
+
+
+  .create-program-page.workouts-visible{
+    grid-template-columns: 1fr 2fr;
+  }
+
+  .program-form-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 400px;
+    max-width: 600px;
+
+    max-height: 100vh;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .workout-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Spacing between cards */
+    justify-content: center; /* Center cards in the container */
+    width: 100%; /* Take full width of the parent container */
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px;
+  }
+  
+  .program-input-group {
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .program-input-group label,
+  .dropdown-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .program-input-group input[type="text"],
+  .program-input-group textarea,
+  .program-input-group input[type="file"],
+  .program-input-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .program-input-group textarea {
+    height: 120px;
+    resize: vertical;
+  }
+
+  .program-input-group input[type="number"] {
+    width: 100%;
+    padding: 12px 15px; /* Increase padding for better touch targets */
+    border-radius: 6px;
+    border: 1px solid #ddd; /* Lighter border color */
+    font-size: 16px; /* Increase font size for better readability */
+    box-sizing: border-box;
+    background-color: #f7f7f7; /* Slight background color for input */
+    transition: border-color 0.2s ease-in-out; /* Smoother transition for interactions */
+  }
+  
+  
+  .button {
+    width: auto;
+    max-width: 200px;
+    padding: 8px 15px;
+    background-color: #0056b3;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    align-self: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .button:hover,
+  .button:focus {
+    background-color: #003973;
+    transform: translateY(2px);
+  }
+
+  .program-image-preview-container img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 20px;
+    border-radius: 6px;
+  }
+
+
+
+  /* change this */
+  @media (max-width: 992px) {
+    .create-program-page,
+    .create-program-page.workouts-visible {
+      grid-template-columns: 1fr; /* Single column layout for smaller screens */
+      padding: 20px;
+    }
+  }
