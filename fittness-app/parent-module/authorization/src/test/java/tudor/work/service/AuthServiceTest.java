@@ -115,10 +115,8 @@ public class AuthServiceTest {
         String testEmail = "test.email@test.com";
         String token = "token";
 
-        when(jwtService.extractUsername(token)).thenReturn(testEmail);
         User user = User.builder().email(testEmail).build();
 
-        when(userRepository.findByEmail(testEmail)).thenReturn(Optional.of(user));
 
         when(jwtService.isTokenValid(token)).thenReturn(true);
 
