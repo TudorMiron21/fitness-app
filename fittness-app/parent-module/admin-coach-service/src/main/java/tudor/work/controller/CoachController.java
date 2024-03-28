@@ -8,6 +8,7 @@ import org.checkerframework.framework.qual.RequiresQualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.multipart.MultipartFile;
 import tudor.work.dto.*;
 import tudor.work.model.Category;
@@ -150,6 +151,7 @@ public class CoachController {
 
     }
 
+
     @PostMapping("/createWorkout")
     public ResponseEntity<?> createWorkout(@ModelAttribute CreateWorkoutDto createWorkoutDto) {
 
@@ -163,6 +165,28 @@ public class CoachController {
     }
 
 
+    @PostMapping("/createProgram")
+    public ResponseEntity<?> createProgram(@RequestBody CreateProgramDto createProgramDto)
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(coachService.createProgram(createProgramDto));
+    }
 
+
+    @PutMapping("/uploadProgramCoverPhoto/{programId}")
+    public ResponseEntity<?>  uploadProgramCoverPhoto(@PathVariable Long programId, MultipartFile coverPhoto){
+
+        try {
+            String imgPath = coachService.uploadProgramCoverPhoto(programId,coverPhoto);
+
+            return ResponseEntity.status(HttpStatus.OK).body(imgPath);
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.FOUND).body(e);
+        }
+    }
 
 }

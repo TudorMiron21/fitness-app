@@ -8,14 +8,13 @@
     border-radius: 5px;
     margin-bottom: 10px;
     background-color: #f9f9f9;
-    width: 80px; /* Adjust width as needed to achieve square or near-square */
-    height: 80px; /* Adjust height as needed to achieve square or near-square */
+    width: 100px; /* Adjust width as needed to achieve square or near-square */
+
   }
   
   .workout-day {
     font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 10px;
+    font-size: 14px;
     text-align: center;
   }
   
@@ -25,22 +24,25 @@
     flex-direction: column;
     justify-content: center; /* Center content vertically for aesthetics */
     align-items: center; /* Center content horizontally */
+    height: 100%;
   }
   
   .workout-cover {
-    width: 80%; /* Adjust based on preference */
+    width: 100%; /* Adjust based on preference */
     height: auto;
     border-radius: 5px;
     margin-bottom: 10px;
   }
   
   .workout-name {
-    margin: 10px 0;
+    margin: 2px 0;
+    font-size: 16px;
+    text-align: center;
   }
   
   .workout-difficulty {
-    margin: 5px 0;
-    font-weight: bold;
+    margin: 2px 0;
+    font-size: 13px;
     color: #555;
   }
   
@@ -49,6 +51,6 @@
     color: #888;
     flex-grow: 1;
     display: flex;
-    align-items: center; /* Center vertically */
-    justify-content: center; /* Center horizontally */
+    align-items: center; 
+    justify-content: center; 
   }

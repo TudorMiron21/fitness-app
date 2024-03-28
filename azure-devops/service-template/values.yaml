@@ -1,0 +1,10 @@
+appName: my-app
+deploymentName: my-deployment
+serviceName: my-service
+replicas: 3
+port: 8080
+targetPort: 8080
+namespace: default
+image:
+  name: tudormiron/default-iamge
+  tag: latest

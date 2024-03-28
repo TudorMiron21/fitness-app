@@ -26,16 +26,15 @@
     align-items: stretch;
     min-width: 400px;
     max-width: 600px;
-
     max-height: 100vh;
     overflow-y: auto;
-
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
   .workout-cards-container {
+
     display: flex;
     flex-wrap: wrap;
     gap: 20px; /* Spacing between cards */
@@ -43,6 +42,27 @@
     width: 100%; /* Take full width of the parent container */
   }
 
+.workout-draggable-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px; /* No space between items due to gap */
+}
+
+/* Ensure that child items have no margin or padding that could create space */
+.workout-draggable-container > * {
+    margin: 0; 
+    padding: 0; 
+}
+
+
+.workouts-container{
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+  
   h2 {
     color: #333;
     margin-bottom: 20px;
@@ -135,3 +155,53 @@
       padding: 20px;
     }
   }
+
+
+
+
+  /* Filter styles */
+.filters {
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 100%;
+  margin: auto;
+}
+
+.filters input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.filters label {
+  display: block;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.filters input[type="range"] {
+  width: 100%;
+  margin: 5px 0 20px 0;
+}
+
+.filters input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+/* Utility class for displaying block-level elements */
+.block {
+  display: block;
+}
+
+/* Difficulty level indicators */
+.difficulty-level {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 0.8em;
+  color: #666;
+}
+

@@ -1,0 +1,47 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:postgresql://my-postgres-postgresql.default.svc.cluster.local:5432/authorization
+
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      #      ddl-auto: create-drop
+      ddl-auto: update
+
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  application:
+    name: adminCoachService
+
+
+security:
+  basic:
+    enabled: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://fitness-eureka-service:8761/eureka
+
+minio:
+  accessKey: dAh2wTxgKQK3B6TPi20p
+  secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
+  endpoint: http://192.168.147.140:9000
+
+app:
+  firebase-configuration-file: fitness-app-firebase-adminsdk.json
+  firebase-app-name: fitness-app
+

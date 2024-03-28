@@ -11,7 +11,6 @@ tudor\work\dto\RegisterRequest.class
 tudor\work\AuthorizationApplication.class
 tudor\work\service\EmailSenderService.class
 tudor\work\dto\RegisterRequest$RegisterRequestBuilder.class
-tudor\work\jwt\JwtAuthenticationFilter.class
 tudor\work\auth\ResetPasswdController.class
 tudor\work\service\AuthService.class
 tudor\work\config\ApplicationConfig.class

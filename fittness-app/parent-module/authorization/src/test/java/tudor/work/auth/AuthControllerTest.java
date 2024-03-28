@@ -175,7 +175,7 @@ public class AuthControllerTest {
 
         when(authService.resetPassword(email)).thenReturn(token);
 
-        String resetPasswordLink = "http://localhost:8080/resetPassword?token=" + token;
+        String resetPasswordLink = "http://localhost:8080/api/v1/auth/resetPassword?token=" + token;
 
 
         authService.sendResetPasswdLink(email, resetPasswordLink);

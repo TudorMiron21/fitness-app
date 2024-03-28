@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tudor.work.dto.*;
 import tudor.work.model.*;
 import tudor.work.utils.MinioMultipartUploadUtils;
@@ -264,6 +265,7 @@ public class CoachService {
                         .getIndexedWorkouts()
                         .entrySet()
                         .stream()
+                        .filter(indexedWorkouts -> indexedWorkouts.getValue()!=null)
                         .map(
                                 indexedWorkout ->
                                 {
@@ -286,35 +288,31 @@ public class CoachService {
         return program;
     }
 
-
     public Set<WorkoutDto> getFilteredWorkouts(WorkoutFilteredRequestDto workoutFilteredRequestDto) throws NotFoundException {
-
-
-
 
 
         Set<Workout> workouts = workoutService.getFilteredWorkouts(workoutFilteredRequestDto);
 
-//        if(workoutFilteredRequestDto.getIsWorkoutPrivate().equals(true)) {
-//            workouts
-//                    .stream()
-//                    .filter(workout -> !workout.isGlobal())
-//                    .forEach(
-//                            workout -> {
-//                                try {
-//                                    workout.setCoverPhotoUrl(
-//                                            minioService.generatePreSignedUrl(
-//                                                    workout.getCoverPhotoUrl()
-//                                            )
-//                                    );
-//                                } catch (ServerException | InsufficientDataException | ErrorResponseException |
-//                                         IOException | NoSuchAlgorithmException | InvalidKeyException |
-//                                         InvalidResponseException | XmlParserException | InternalException e) {
-//                                    throw new RuntimeException(e);
-//                                }
-//                            }
-//                    );
-//        }
+        if(workoutFilteredRequestDto.getIsWorkoutPrivate().equals(true)) {
+            workouts
+                    .stream()
+                    .filter(workout -> !workout.isGlobal())
+                    .forEach(
+                            workout -> {
+                                try {
+                                    workout.setCoverPhotoUrl(
+                                            minioService.generatePreSignedUrl(
+                                                    workout.getCoverPhotoUrl()
+                                            )
+                                    );
+                                } catch (ServerException | InsufficientDataException | ErrorResponseException |
+                                         IOException | NoSuchAlgorithmException | InvalidKeyException |
+                                         InvalidResponseException | XmlParserException | InternalException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                    );
+        }
 
         return workouts
                 .stream()
@@ -331,6 +329,28 @@ public class CoachService {
                 ).collect(Collectors.toSet());
     }
 
+
+    @Transactional
+    public String uploadProgramCoverPhoto(Long programId, MultipartFile coverPhoto) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException, NotFoundException {
+
+        String imgName = RandomString.make(45) + "." + this.getFileExtension(coverPhoto.getOriginalFilename());
+
+        minioService.createBucket("program-cover-photos");
+
+        minioService.uploadImageToObjectStorage(
+                coverPhoto.getInputStream(),
+                imgName,
+                "program-cover-photos"
+        );
+
+        String imgPath = "workout-cover-photos/" + imgName;
+
+        Program programToEdit = programService.getProgramById(programId);
+
+        programToEdit.setCoverPhotoUrl(imgPath);
+
+        return imgPath;
+    }
 }
 
 

@@ -2,6 +2,7 @@ C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-co
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\service\ExerciseService.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\model\CoachDetails.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\desirializer\SetLongJsonDeserializer.java
+C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\specification\WorkoutSpecification.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\service\UserService.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\model\Exercise.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\service\AuthorityService.java
@@ -26,6 +27,7 @@ C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-co
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\desirializer\DifficultyDeserializer.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\desirializer\MuscleGroupDesirializer.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\config\MinioConfig.java
+C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\WorkoutFilteredRequestDto.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\repository\CoachDetailsRepository.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\model\Workout.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\UploadExerciseDetailsDto.java
@@ -54,6 +56,7 @@ C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-co
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\service\CoachDetailsService.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\desirializer\CategoryDeserializer.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\CompleteMultipartUploadDto.java
+C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\WorkoutDto.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\UploadCoachDetailsRequestDto.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\model\Permissions.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\CoachDetailsResponseDto.java

@@ -7,15 +7,15 @@ export const WorkoutCard = ({ dayIndex, workout }) => {
       <div className="workout-day">Day {dayIndex}</div>
       {workout ? (
         <div className="workout-details">
-          {workout.coverPhoto && (
+          {workout.coverPhotoUrl && (
             <img
-              src={workout.coverPhoto}
+              src={workout.coverPhotoUrl}
               alt={`Cover for ${workout.name}`}
               className="workout-cover"
             />
           )}
           <h3 className="workout-name">{workout.name}</h3>
-          <p className="workout-difficulty">Difficulty: {workout.difficulty}</p>
+          <p className="workout-difficulty">Difficulty: {workout.difficultyLevel}</p>
           {/* Additional workout details can be added here */}
         </div>
       ) : (

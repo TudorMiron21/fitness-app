@@ -1,0 +1,54 @@
+.workout-draggable-box {
+    border: 1px solid #ddd;
+    padding: 16px;
+    margin: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    cursor: grab;
+    max-width: 200px;
+  }
+  
+  .workout-draggable-box:active {
+    cursor: grabbing;
+  }
+  
+  .draggable-workout-day {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .draggable-workout-details {
+    text-align: center;
+  }
+  
+  .draggable-workout-cover {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .draggable-workout-name {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .draggable-workout-difficulty {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+  
+  /* Add additional styles for hover effects, transitions, etc. */
+  .workout-draggable-box:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  /* Style to apply when the item is being dragged */
+  .workout-draggable-box.dragging {
+    opacity: 0.5;
+  }

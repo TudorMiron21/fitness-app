@@ -22,12 +22,13 @@ function App() {
             path="/create-exercise-page"
             element={<CreateExercise />}
           ></Route>
+
           <Route
             path="/create-workout-page"
             element={<CreateWorkoutPage />}
           ></Route>
 
-<Route
+          <Route
             path="/create-program-page"
             element={<CreateProgramPage />}
           ></Route>

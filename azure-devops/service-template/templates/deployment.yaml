@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploymentName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        tier: backend
+    spec: # Pod spec
+      containers:
+      - name: fitness-app-auth-container
+        image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.port }}
+        resources:
+          requests:
+            memory: "16Mi" 
+            cpu: "50m"    
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      restartPolicy: Always

@@ -21,3 +21,5 @@ public class CreateProgramDto {
 
     private Map<Integer, Long> indexedWorkouts;
 }
+
+

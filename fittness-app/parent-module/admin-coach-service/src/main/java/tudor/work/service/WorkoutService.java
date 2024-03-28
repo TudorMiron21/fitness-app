@@ -39,13 +39,11 @@ public class WorkoutService {
             if (workoutFilteredRequest.getIsWorkoutPrivate())
                 spec = spec.and(WorkoutSpecification.isWorkoutAdderEqual(authorityService.getUserId())).and(WorkoutSpecification.isWorkoutPrivateEqual(true));
             else
-
-                spec.and(WorkoutSpecification.isWorkoutPrivateEqual(false));
-
+                spec = spec.and(WorkoutSpecification.isWorkoutPrivateEqual(false));
         }
         else
         {
-            spec.and(WorkoutSpecification.isWorkoutPrivateEqual(false));
+            spec =  spec.and(WorkoutSpecification.isWorkoutPrivateEqual(false));
         }
 
         if (workoutFilteredRequest.getMaxDifficulty() != null
