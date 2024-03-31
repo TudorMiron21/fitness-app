@@ -1,0 +1,12 @@
+# host: fitness-app.apps.fsisc.ro
+appName: fitness-api-gateway-app
+deploymentName: fitness-api-gateway-deployment
+serviceName: fitness-api-gateway-service
+ingressName: fitness-api-gateway-ingress
+replicas: 3
+port: 8080
+targetPort: 8080
+namespace: default
+image:
+  name: tudormiron/fitness-app-api-gateway
+  tag: latest

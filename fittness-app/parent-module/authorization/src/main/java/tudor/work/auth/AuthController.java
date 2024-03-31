@@ -35,6 +35,11 @@ public class AuthController {
         this.userService = userService;
     }
 
+    @GetMapping("/testController")
+    public ResponseEntity<?> testController() {
+        return ResponseEntity.ok("test controller");
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
