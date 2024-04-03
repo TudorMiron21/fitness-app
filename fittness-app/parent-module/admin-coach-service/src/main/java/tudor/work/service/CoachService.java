@@ -351,6 +351,11 @@ public class CoachService {
 
         return imgPath;
     }
+
+    public Set<SubscribersDto> getSubscribers() {
+
+        Set<User> subscribers =
+    }
 }
 
 

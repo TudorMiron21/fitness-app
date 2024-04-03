@@ -16,7 +16,8 @@ spec:
       labels:
         app: {{ .Values.appName }}
         tier: backend
-    spec: # Pod spec
+
+    spec: 
       containers:
       - name: fitness-app-auth-container
         image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"

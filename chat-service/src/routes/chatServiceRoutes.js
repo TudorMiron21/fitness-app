@@ -8,7 +8,7 @@ router.get('/info', (req, res) => res.status(200).json({ info: 'Node.js service 
 router.get('/api/v1/chatService/',testController);
 
 
-router.post(`/api/v1/chatService/postMessage/:senderId/:receiverId`, sendMessage);
+router.post(`/api/v1/chatService/postMessage/:senderEmail/:receiverEmail`, sendMessage);
 
 
 module.exports = router;

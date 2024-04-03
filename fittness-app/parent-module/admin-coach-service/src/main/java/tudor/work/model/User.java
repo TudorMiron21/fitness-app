@@ -51,6 +51,27 @@ public class User implements UserDetails {
     private Set<Workout> likedWorkouts;
 
 
+    //set of paying users that a coach owns
+    @OneToMany(
+            mappedBy = "subscriber",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+
+    )
+    @JsonManagedReference
+    private Set<CoachSubscribers> subscribers;
+
+
+    //set of coaches that a paying user is subscribed to
+    @OneToMany(
+            mappedBy = "subscribeTo",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
+    private Set<PayingUserSubscription> subscribeToSet;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

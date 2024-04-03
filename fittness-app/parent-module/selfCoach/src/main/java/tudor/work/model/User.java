@@ -1,5 +1,6 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javassist.NotFoundException;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,10 +38,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "User_Workouts",
-    joinColumns = @JoinColumn(name = "id_user"),
-    inverseJoinColumns = @JoinColumn(name = "id_workout"))
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_workout"))
     private Set<Workout> likedWorkouts;
 
 
@@ -52,8 +53,28 @@ public class User implements UserDetails {
     )
     private Set<Achievement> achievements;
 
-    public void likeWorkout(Workout workout)
-    {
+    //set of paying users that a coach owns
+    @OneToMany(
+            mappedBy = "subscriber",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+
+    )
+    @JsonManagedReference
+    private Set<CoachSubscribers> subscribers;
+
+
+    //set of coaches that a paying user is subscribed to
+    @OneToMany(
+            mappedBy = "subscribeTo",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
+    private Set<PayingUserSubscription> subscribeToSet;
+
+
+    public void likeWorkout(Workout workout) {
         this.likedWorkouts.add(workout);
     }
 
@@ -64,6 +85,7 @@ public class User implements UserDetails {
             throw new NotFoundException("workout not found");
         }
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

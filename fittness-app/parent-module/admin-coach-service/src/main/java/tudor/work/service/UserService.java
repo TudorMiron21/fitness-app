@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tudor.work.model.User;
 import tudor.work.repository.UserRepository;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -15,4 +16,7 @@ public class UserService {
     public User getUserByEmail(String email) throws NotFoundException {
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user " + email + " not found"));
     }
+
+
+
 }

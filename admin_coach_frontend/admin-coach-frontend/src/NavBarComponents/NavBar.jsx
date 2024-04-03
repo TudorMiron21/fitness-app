@@ -17,9 +17,9 @@ export const NavBar = () => {
       <div className={isNavExpanded ? "nav-menu expanded" : "nav-menu"}>
         <ul>
           <li><a href="/home-page">Home Page</a></li>
-          <li><a href="/chat">Chat</a></li>
-          <li><a href="/profile">Profile</a></li>
-          <li><a href="/forum">Forum</a></li>
+          <li><a href="/chat-page">Chat</a></li>
+          <li><a href="/profile-page">Profile</a></li>
+          <li><a href="/forum-page">Forum</a></li>
         </ul>
       </div>
     </nav>

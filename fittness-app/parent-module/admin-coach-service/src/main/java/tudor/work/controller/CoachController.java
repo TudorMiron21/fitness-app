@@ -189,4 +189,12 @@ public class CoachController {
         }
     }
 
+    @GetMapping("/getSubscribers")
+    public ResponseEntity<?> getSubscribers()
+    {
+
+        coachService.getSubscribers();
+    }
+
+
 }

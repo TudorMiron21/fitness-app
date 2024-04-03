@@ -1,5 +1,5 @@
 const sendMessage = (req, res) => {
-  const { senderId, receiverId } = req.params;
+  const { senderEmail, receiverEmail } = req.params;
   const { message } = req.body;
 
   // Your logic to handle the message sending goes here

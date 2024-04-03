@@ -36,11 +36,12 @@ spring:
             - JwtAuthenticationFilter
 
         - id: nodejs-service
-          uri: http://localhost:8084
+          uri: lb://localhost:8084
           predicates:
-            - Path=/api/v1/chatService/**
+            - Path=/socket.io/**
           filters:
             - JwtAuthenticationFilter
+            - RewritePath=/socket.io/(?<remaining>.*), /$\{remaining}
 
 
         - id: authorization
