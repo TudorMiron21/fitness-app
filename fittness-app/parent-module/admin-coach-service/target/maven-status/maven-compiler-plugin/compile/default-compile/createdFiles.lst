@@ -1,5 +1,6 @@
 tudor\work\dto\ExerciseResponseDto.class
 tudor\work\repository\CategoryRepository.class
+tudor\work\dto\SubscribersDto.class
 tudor\work\model\Roles.class
 tudor\work\service\MuscleGroupService.class
 tudor\work\service\MinioService.class
@@ -66,6 +67,7 @@ tudor\work\config\FirebaseNotificationConfig.class
 tudor\work\model\Category.class
 tudor\work\model\Program.class
 tudor\work\model\Equipment.class
+tudor\work\dto\SubscribersDto$SubscribersDtoBuilder.class
 tudor\work\model\Difficulty.class
 tudor\work\config\ApplicationConfig.class
 tudor\work\dto\WorkoutFilteredRequestDto.class

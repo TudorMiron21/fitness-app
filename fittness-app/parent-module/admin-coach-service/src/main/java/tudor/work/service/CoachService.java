@@ -36,6 +36,7 @@ public class CoachService {
     private final CategoryService categoryService;
     private final WorkoutService workoutService;
     private final ProgramService programService;
+    private final UserService userService;
 
     @Value("${spring.servlet.multipart.max-request-size}")
     private String maxRequestSize;
@@ -265,7 +266,7 @@ public class CoachService {
                         .getIndexedWorkouts()
                         .entrySet()
                         .stream()
-                        .filter(indexedWorkouts -> indexedWorkouts.getValue()!=null)
+                        .filter(indexedWorkouts -> indexedWorkouts.getValue() != null)
                         .map(
                                 indexedWorkout ->
                                 {
@@ -293,7 +294,7 @@ public class CoachService {
 
         Set<Workout> workouts = workoutService.getFilteredWorkouts(workoutFilteredRequestDto);
 
-        if(workoutFilteredRequestDto.getIsWorkoutPrivate().equals(true)) {
+        if (workoutFilteredRequestDto.getIsWorkoutPrivate().equals(true)) {
             workouts
                     .stream()
                     .filter(workout -> !workout.isGlobal())
@@ -352,9 +353,24 @@ public class CoachService {
         return imgPath;
     }
 
-    public Set<SubscribersDto> getSubscribers() {
+    public Set<SubscribersDto> getSubscribers() throws NotFoundException {
 
-        Set<User> subscribers =
+        return
+                userService
+                        .findById(authorityService.getUserId())
+                        .getFollowers()
+                        .stream()
+                        .map(
+                                follower ->
+                                        SubscribersDto
+                                                .builder()
+                                                .id(follower.getId())
+                                                .email(follower.getEmail())
+                                                .firstName(follower.getFirstname())
+                                                .lastName(follower.getLastname())
+                                                .role(follower.getRole())
+                                                .build()
+                        ).collect(Collectors.toSet());
     }
 }
 

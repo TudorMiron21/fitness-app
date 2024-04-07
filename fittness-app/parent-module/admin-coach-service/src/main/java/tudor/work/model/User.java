@@ -1,24 +1,28 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javassist.NotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
-@Data
+
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "_user")
 @Table(name = "_user")
-@EqualsAndHashCode
+//@EqualsAndHashCode
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,32 +48,24 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "User_Workouts",
             joinColumns = @JoinColumn(name = "id_user"),
             inverseJoinColumns = @JoinColumn(name = "id_workout"))
     private Set<Workout> likedWorkouts;
 
 
-    //set of paying users that a coach owns
-    @OneToMany(
-            mappedBy = "subscriber",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+    @ManyToMany(mappedBy = "followers", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<User> following = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "UserRel",
+            joinColumns = @JoinColumn(name = "UserId"),
+            inverseJoinColumns = @JoinColumn(name = "ParentId")
     )
-    @JsonManagedReference
-    private Set<CoachSubscribers> subscribers;
-
-
-    //set of coaches that a paying user is subscribed to
-    @OneToMany(
-            mappedBy = "subscribeTo",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @JsonManagedReference
-    private Set<PayingUserSubscription> subscribeToSet;
+    private Set<User> followers = new HashSet<>();
 
 
     @Override

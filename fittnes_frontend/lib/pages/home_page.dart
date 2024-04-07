@@ -48,14 +48,14 @@ class _HomePageState extends State<HomePage> {
                   exerciseImageEndUrl:
                       exerciseJson['exerciseImageEndUrl'] ?? "",
                   exerciseVideoUrl: exerciseJson['exerciseVideoUrl'] ?? "",
-                  difficulty: exerciseJson['difficulty']['dificultyLevel'],
-                  category: exerciseJson['category']['name'],
-                  exerciseExclusive: exerciseJson['exerciseExclusive'],
-                  equipment: exerciseJson['equipment']['name'],
-                  muscleGroup: exerciseJson['muscleGroup']['name'],
-                  rating: exerciseJson['rating'],
-                  hasNoReps: exerciseJson['hasNoReps'],
-                  hasWeight: exerciseJson['hasWeight'],
+                  difficulty: exerciseJson['difficulty']['dificultyLevel'] ?? 0.0,
+                  category: exerciseJson['category']['name'] ?? "",
+                  exerciseExclusive: exerciseJson['exerciseExclusive'] ?? false,
+                  equipment: exerciseJson['equipment']['name'] ?? "",
+                  muscleGroup: exerciseJson['muscleGroup']['name'] ?? "",
+                  rating: exerciseJson['rating'] ?? 0.0,
+                  hasNoReps: exerciseJson['hasNoReps'] ?? false,
+                  hasWeight: exerciseJson['hasWeight'] ?? false,
                 ))
             .toList() as List<Exercise>;
 

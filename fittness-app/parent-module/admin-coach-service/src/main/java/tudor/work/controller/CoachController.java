@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -193,7 +194,13 @@ public class CoachController {
     public ResponseEntity<?> getSubscribers()
     {
 
-        coachService.getSubscribers();
+        try {
+            Set<SubscribersDto> subscribers = coachService.getSubscribers();
+            return ResponseEntity.status(HttpStatus.OK).body(subscribers);
+        } catch (NotFoundException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
     }
 
 

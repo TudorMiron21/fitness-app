@@ -1,0 +1,73 @@
+/* chat-page.css */
+
+/* Container for the whole page */
+.chat-page-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Style for the left side containing the subscribers list */
+.members-list {
+  flex: 1;
+  background-color: #4a4e69;
+  padding: 20px;
+}
+
+.members-list h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: black;
+}
+
+.members-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* .members-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+} */
+
+.subscriber-container {
+  align-items: center;
+  display: flex;
+  padding: 10px;
+  background-color: #b0b3c7;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.subscriber-container:hover {
+  transform: translateY(-3px);
+}
+/* Style for the right side containing the chat content */
+.chat-room {
+  flex: 3;
+  background-color: #fefbf1;
+  padding: 20px;
+}
+
+.chat-room h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Custom scrollbar style */
+.members-list ul::-webkit-scrollbar,
+.chat-room::-webkit-scrollbar {
+  width: 10px;
+}
+
+.members-list ul::-webkit-scrollbar-thumb,
+.chat-room::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+}
+
+.members-list ul::-webkit-scrollbar-track,
+.chat-room::-webkit-scrollbar-track {
+  background-color: #4a4e69;
+}

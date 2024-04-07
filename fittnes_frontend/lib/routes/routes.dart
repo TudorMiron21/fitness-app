@@ -8,6 +8,7 @@ import 'package:fittnes_frontend/pages/profile_page.dart';
 import 'package:fittnes_frontend/pages/register_page.dart';
 import 'package:fittnes_frontend/pages/search_page.dart';
 import 'package:fittnes_frontend/pages/start_exercise_page.dart';
+import 'package:fittnes_frontend/pages/chat_page.dart';
 import 'package:get/get.dart';
 
 class AppPage {
@@ -20,6 +21,8 @@ class AppPage {
         GetPage(name: discover, page: () => const DiscoverPage()),
         GetPage(name: search, page: () => const SearchPage()),
         GetPage(name: profile, page: () => const ProfilePage()),
+        GetPage(name: chat, page: () => const ChatPage())
+
       ],
     ),
     GetPage(name: login, page: () => LoginPage()),
@@ -34,6 +37,7 @@ class AppPage {
   static getProfile() => profile;
   static getLogin() => login;
   static getRegister() => register;
+  static getChat() => chat;
 
   static GetPage getExercisePage(List<Exercise> exercises, String workoutName, int workoutId){
     return GetPage(
@@ -60,4 +64,5 @@ class AppPage {
   static String register = "/register";
   static String exercisePage = "/exercise_page";
   static String startExercisePage = "/start_exercise_page";
+  static String chat = "/chat_page";
 }

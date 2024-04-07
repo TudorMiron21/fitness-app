@@ -1,10 +1,11 @@
 const { mongoose } = require("mongoose");
 
 const MessageSchema = new mongoose.Schema({
-  senderEmail: { type: String, required: true },
-  receiverEmail: { type: String, required: true },
-  textContent: { type: String },
-  imageContent: { type: String },
+  source_email: { type: String, required: true },
+  destination_email: { type: String, required: true },
+  text_content: { type: String },
+  image_content: { type: String },
+  time: { type: String, required: true },
 });
 
 const MessageModel = mongoose.model("message", MessageSchema);

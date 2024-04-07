@@ -19,7 +19,7 @@ import tudor.work.service.UserService;
 public class SelfCoachApplication
 {
 
-    static private UserService userService;
+//    static private UserService userService;
     public static void main( String[] args )
     {
         SpringApplication.run(SelfCoachApplication.class,args);

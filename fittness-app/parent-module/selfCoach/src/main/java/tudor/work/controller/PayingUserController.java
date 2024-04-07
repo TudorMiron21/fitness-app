@@ -1,28 +1,36 @@
 package tudor.work.controller;
 
+import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import tudor.work.exceptions.DuplicateCoachSubscription;
+import tudor.work.exceptions.DuplicatesException;
+import tudor.work.service.PayingUserService;
+import tudor.work.service.UserService;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/selfCoach/payingUser")
 @PreAuthorize("not hasRole('USER')")
 public class PayingUserController {
-    @GetMapping
-    public String get() {
-        return "GET:: paying user controller";
+
+    private final PayingUserService payingUserService;
+    private final UserService userService;
+
+    @PutMapping("/subscribeToCoach/{coachId}")
+    public ResponseEntity<?> subscribeToCoach(@PathVariable(name = "coachId") Long coachId) {
+
+        try {
+            payingUserService.subscribeToCoach(coachId);
+            return ResponseEntity.status(HttpStatus.OK).body("subscribed");
+        } catch (NotFoundException | DuplicateCoachSubscription e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
+        }
     }
-    @PostMapping
-    public String post() {
-        return "POST:: paying user controller";
-    }
-    @PutMapping
-    public String put() {
-        return "PUT:: paying user controller";
-    }
-    @DeleteMapping
-    public String delete() {
-        return "DELETE:: paying user controller";
-    }
+
 }
 

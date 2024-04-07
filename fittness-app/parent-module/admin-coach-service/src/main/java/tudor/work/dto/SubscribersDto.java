@@ -4,6 +4,7 @@ package tudor.work.dto;
 import lombok.*;
 import tudor.work.model.Roles;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -22,5 +23,7 @@ public class SubscribersDto {
     private String firstName;
 
     private Roles role;
+
+    private LocalDateTime subscriptionTime;
 
 }

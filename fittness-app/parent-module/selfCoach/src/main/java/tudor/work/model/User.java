@@ -1,5 +1,7 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javassist.NotFoundException;
 import lombok.*;
@@ -8,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -17,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity(name = "_user")
 @Table(name = "_user")
-@EqualsAndHashCode
+//@EqualsAndHashCode
 public class User implements UserDetails {
 
     @Id
@@ -53,26 +56,18 @@ public class User implements UserDetails {
     )
     private Set<Achievement> achievements;
 
-    //set of paying users that a coach owns
-    @OneToMany(
-            mappedBy = "subscriber",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
 
+    @ManyToMany(mappedBy = "followers", cascade = CascadeType.ALL)
+    private Set<User> following = new HashSet<>();
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "UserRel",
+            joinColumns = @JoinColumn(name = "UserId"), // user id is the id of the paying user
+            inverseJoinColumns = @JoinColumn(name = "ParentId") // parent id is the id of the coach
     )
-    @JsonManagedReference
-    private Set<CoachSubscribers> subscribers;
-
-
-    //set of coaches that a paying user is subscribed to
-    @OneToMany(
-            mappedBy = "subscribeTo",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @JsonManagedReference
-    private Set<PayingUserSubscription> subscribeToSet;
-
+    private Set<User> followers = new HashSet<>();
 
     public void likeWorkout(Workout workout) {
         this.likedWorkouts.add(workout);
@@ -85,6 +80,7 @@ public class User implements UserDetails {
             throw new NotFoundException("workout not found");
         }
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

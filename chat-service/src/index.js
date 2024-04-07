@@ -26,7 +26,7 @@ server.listen(PORT, () => {
   // });
 });
 
-// app.use("/", chatServiceRoutes);
+app.use("/", chatServiceRoutes);
 
 // Capture SIGINT signal and deregister the service from Eureka before shutting down
 // process.on("SIGINT", () => {

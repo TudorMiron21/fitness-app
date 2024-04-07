@@ -35,13 +35,13 @@ spring:
           filters:
             - JwtAuthenticationFilter
 
-        - id: nodejs-service
-          uri: lb://localhost:8084
-          predicates:
-            - Path=/socket.io/**
-          filters:
-            - JwtAuthenticationFilter
-            - RewritePath=/socket.io/(?<remaining>.*), /$\{remaining}
+#        - id: nodejs-service
+#          uri: lb://localhost:8084
+#          predicates:
+#            - Path=/socket.io/**
+#          filters:
+#            - JwtAuthenticationFilter
+#            - RewritePath=/socket.io/(?<remaining>.*), /$\{remaining}
 
 
         - id: authorization

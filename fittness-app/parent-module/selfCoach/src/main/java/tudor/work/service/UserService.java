@@ -45,6 +45,11 @@ public class UserService {
 
     private final StatisticsService statisticsService;
 
+
+    public User findById(Long id) throws NotFoundException {
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with id:" + id + " not found"));
+    }
+
     public List<ExerciseDto> getAllExercises() {
 
         List<? extends GrantedAuthority> authorities = authorityService.getUserAuthorities().stream().toList();
@@ -389,7 +394,7 @@ public class UserService {
 
         User user = authorityService.getUser();
         //TODO: async generate the stats for the newly added workout history entry
-        CompletableFuture<WorkoutResult> result = statisticsService.getStatistics(userHistoryWorkoutId,workoutResult.getId(),user);
+        CompletableFuture<WorkoutResult> result = statisticsService.getStatistics(userHistoryWorkoutId, workoutResult.getId(), user);
 
         WorkoutResult completedWorkoutResult = result.get();
 
@@ -626,10 +631,10 @@ public class UserService {
 
     }
 
-    public LastWorkoutResultDto getLastWorkoutStatistics(){
+    public LastWorkoutResultDto getLastWorkoutStatistics() {
 
-        WorkoutResult workoutResult =workoutResultService.findLastByUser(authorityService.getEmail());
-        if(workoutResult == null)
+        WorkoutResult workoutResult = workoutResultService.findLastByUser(authorityService.getEmail());
+        if (workoutResult == null)
             throw new LastWorkoutResultEmpty("there is no last workout result entry for this user");
 
         return LastWorkoutResultDto
@@ -645,10 +650,9 @@ public class UserService {
     }
 
 
-    public List<LastWorkoutResultDto> getGeneralWorkoutInformation(Integer noWorkoutResults)
-    {
+    public List<LastWorkoutResultDto> getGeneralWorkoutInformation(Integer noWorkoutResults) {
         return workoutResultService.
-                findLastEntriesByUser(authorityService.getEmail(),noWorkoutResults)
+                findLastEntriesByUser(authorityService.getEmail(), noWorkoutResults)
                 .stream()
                 .map(
                         workoutResult ->
