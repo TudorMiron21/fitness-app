@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 class TokenChecker {
   static Future<bool> checkTokenValidity() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
+    
     String? authToken = await storage.read(key: 'accessToken');
     if (authToken == null || authToken.isEmpty) {
       print("empty storage or null token");

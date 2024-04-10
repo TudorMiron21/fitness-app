@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                   exerciseExclusive: exerciseJson['exerciseExclusive'],
                   equipment: exerciseJson['equipment']['name'],
                   muscleGroup: exerciseJson['muscleGroup']['name'],
-                  rating: exerciseJson['rating'],
+                  rating: exerciseJson['rating'] ?? 0.0,
                   hasNoReps: exerciseJson['hasNoReps'],
                   hasWeight: exerciseJson['hasWeight'],
                 ))

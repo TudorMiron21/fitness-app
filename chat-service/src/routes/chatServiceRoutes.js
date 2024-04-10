@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { testController,getMessages } = require('../controller/messageController');
+const { testController,getMessages, getLastMessage} = require('../controller/messageController');
 
 
 router.get('/health', (req, res) => res.status(200).json({ status: 'UP' }));
@@ -9,6 +9,6 @@ router.get('/api/v1/chatService/',testController);
 
 
 router.get(`/chatService/getMessages/:email1/:email2`, getMessages);
-
+router.get(`/chatService/getLastMessage/:email1/:email2`, getLastMessage);
 
 module.exports = router;

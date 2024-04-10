@@ -9,17 +9,17 @@ export const Chat = ({ socket, source_email, destination_email, room }) => {
 
   const sendMessage = async () => {
     if (currentMessage !== "") {
-      const currentTime = new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+      // const currentTime = new Date().toLocaleTimeString([], {
+      //   hour: "2-digit",
+      //   minute: "2-digit",
+      // });
 
       const messageData = {
         room: room,
         source_email: source_email,
         destination_email: destination_email,
         text_content: currentMessage,
-        time: currentTime,
+        timeStamp: new Date(),
       };
 
       await socket.emit("send_message", messageData);

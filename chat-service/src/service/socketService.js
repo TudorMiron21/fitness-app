@@ -51,7 +51,7 @@ function initializeSocket(server) {
         destination_email: data.destination_email,
         text_content: data.text_content,
         image_content:"",
-        time: data.time,
+        timeStamp: data.timeStamp,
       });
     
       try {

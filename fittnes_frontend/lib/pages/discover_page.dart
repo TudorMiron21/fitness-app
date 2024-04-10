@@ -94,8 +94,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     String email = JwtUtils.extractSubject(accessToken);
 
     final response = await http.get(
-      Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getPersonalWorkouts'),
+      Uri.parse('http://localhost:8080/api/selfCoach/user/getPersonalWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -206,20 +205,15 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(
-        title: Text(
-          'Your Workouts',
-          style: TextStyle(
-            fontSize: 20, 
-            fontWeight: FontWeight.w500,
+      appBar: AppBar(
+          title: Text(
+            'Your Workouts',
           ),
-        ),
-        centerTitle: true,
-        toolbarHeight: 30, 
-        backgroundColor: Colors.blue,
-        elevation: 4
-    
-      ),
+          centerTitle: true,
+          toolbarHeight: 30,
+          backgroundColor: Colors.blue,
+          elevation: 4,
+          automaticallyImplyLeading: false),
       body: Column(
         children: [
           // SizedBox(
@@ -262,8 +256,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   return Center(
                       child: Text('Error: ${startedWorkoutsSnapshot.error}'));
                 } else {
-                  List<Workout> savedWorkouts =
-                      startedWorkoutsSnapshot.data!;
+                  List<Workout> savedWorkouts = startedWorkoutsSnapshot.data!;
 
                   return PageView.builder(
                     itemCount: savedWorkouts.length,

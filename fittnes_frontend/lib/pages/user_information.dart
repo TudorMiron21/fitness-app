@@ -53,14 +53,15 @@ class _UserInformationState extends State<UserInformation> {
           title: Text(
             'User Information',
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
             ),
           ),
           centerTitle: true,
           toolbarHeight: 30,
           backgroundColor: Colors.blue,
-          elevation: 4),
+          elevation: 4,
+          automaticallyImplyLeading: false
+          )
+          ,
       body: Stack(
         fit: StackFit.expand, // Ensure the stack fills the screen
         children: <Widget>[
@@ -131,7 +132,7 @@ class _UserInformationState extends State<UserInformation> {
                   ),
                   onPressed: () async {
                     const url =
-                        'http://192.168.199.182:8080/api/selfCoach/paypal/getPayPalSubscriptionButton';
+                        'http://localhost:8080/api/selfCoach/paypal/getPayPalSubscriptionButton';
                     await _launchAsInAppWebViewWithCustomHeaders(
                         Uri.parse(url));
                   },

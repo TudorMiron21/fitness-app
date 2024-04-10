@@ -26,6 +26,52 @@ class JwtUtils {
     }
   }
 
+  static bool isUser(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        throw FormatException('Invalid token');
+      }
+      final payload = _decodeBase64(parts[1]);
+      final payloadMap = json.decode(payload);
+      if (payloadMap is! Map<String, dynamic>) {
+        throw FormatException('Invalid payload');
+      }
+      final authorities = payloadMap['authorities'];
+
+      if (authorities != null && authorities.contains('ROLE_USER')) {
+        return true;
+      }
+      return false;
+    } catch (ex) {
+      print('An error occurred while processing the JWT: ${ex.toString()}');
+      return false;
+    }
+  }
+
+  static bool isPayingUser(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        throw FormatException('Invalid token');
+      }
+      final payload = _decodeBase64(parts[1]);
+      final payloadMap = json.decode(payload);
+      if (payloadMap is! Map<String, dynamic>) {
+        throw FormatException('Invalid payload');
+      }
+      final authorities = payloadMap['authorities'];
+
+      if (authorities != null && authorities.contains('ROLE_PAYING_USER')) {
+        return true;
+      }
+      return false;
+    } catch (ex) {
+      print('An error occurred while processing the JWT: ${ex.toString()}');
+      return false;
+    }
+  }
+
   static String _decodeBase64(String str) {
     // Normalize the string to ensure padding exists
     String output = str.replaceAll('-', '+').replaceAll('_', '/');

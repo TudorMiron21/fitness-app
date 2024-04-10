@@ -6,10 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import tudor.work.dto.UserDto;
 import tudor.work.exceptions.DuplicateCoachSubscription;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.service.PayingUserService;
 import tudor.work.service.UserService;
+
+import java.util.Set;
 
 
 @RestController
@@ -29,6 +32,18 @@ public class PayingUserController {
             return ResponseEntity.status(HttpStatus.OK).body("subscribed");
         } catch (NotFoundException | DuplicateCoachSubscription e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
+        }
+    }
+
+    @GetMapping("/getFollowingCoaches")
+    public ResponseEntity<?> getFollowingCoaches()
+    {
+        try {
+            Set<UserDto> followingCoaches =payingUserService.getFollowingCoaches();
+            return ResponseEntity.status(HttpStatus.OK).body(followingCoaches);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+
         }
     }
 

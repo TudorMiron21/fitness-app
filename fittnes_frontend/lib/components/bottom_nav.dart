@@ -3,7 +3,7 @@ import 'package:fittnes_frontend/pages/discover_page.dart';
 import 'package:fittnes_frontend/pages/home_page.dart';
 import 'package:fittnes_frontend/pages/profile_page.dart';
 import 'package:fittnes_frontend/pages/search_page.dart';
-import 'package:fittnes_frontend/pages/stats_page.dart';
+import 'package:fittnes_frontend/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,6 +26,7 @@ class _NavBarState extends State<NavBar> {
             HomePage(),
             DiscoverPage(),
             SearchPage(),
+            ChatPage(),
             ProfilePage(),
           ],
         ),
@@ -42,6 +43,8 @@ class _NavBarState extends State<NavBar> {
                   icon: Icon(Icons.favorite), label: 'Your Library'),
               const BottomNavigationBarItem(
                   icon: Icon(Icons.search), label: 'Search'),
+              const BottomNavigationBarItem(
+                  icon: Icon(Icons.message), label: 'Chat'),
               const BottomNavigationBarItem(
                   icon: Icon(Icons.face), label: 'Profile'),
             ]),
