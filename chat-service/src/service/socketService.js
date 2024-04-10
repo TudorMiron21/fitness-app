@@ -52,6 +52,7 @@ function initializeSocket(server) {
         text_content: data.text_content,
         image_content:"",
         timeStamp: data.timeStamp,
+        read:false,
       });
     
       try {

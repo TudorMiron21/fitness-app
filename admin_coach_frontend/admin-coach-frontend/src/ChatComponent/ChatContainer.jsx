@@ -57,19 +57,40 @@ export const Chat = ({ socket, source_email, destination_email, room }) => {
       <div className="chat-body">
         <ScrollToBottom className="message-container">
           {messageList.map((messageContent) => {
+            const messageDate = new Date(messageContent.timestamp);
+            const today = new Date();
+            const isToday = messageDate.toDateString() === today.toDateString();
+
+            // Format time
+            const timeString = messageDate.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            });
+
+            // Construct the date string: if the message was sent today, display "Today"
+            const dateString = isToday
+              ? "Today"
+              : messageDate.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
+
             return (
               <div
                 className="message"
                 id={
                   source_email === messageContent.source_email ? "you" : "other"
                 }
+                key={messageContent._id} // Assuming each message has a unique `_id`
               >
                 <div>
                   <div className="message-content">
                     <p>{messageContent.text_content}</p>
                   </div>
                   <div className="message-meta">
-                    <p id="time">{messageContent.time}</p>
+                    <p id="time">{`${dateString} at ${timeString}`}</p>
                     <p id="author">{messageContent.source_email}</p>
                   </div>
                 </div>

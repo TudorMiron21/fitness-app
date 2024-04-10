@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:fittnes_frontend/components/conversation_list.dart';
 import 'package:fittnes_frontend/models/coach.dart';
+import 'package:fittnes_frontend/models/message.dart';
 import 'package:fittnes_frontend/pages/private_chat.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
+import 'package:fittnes_frontend/utils/DateFormater.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -21,6 +23,7 @@ class ChatMembersWidget extends StatefulWidget {
 
 class _ChatMembersWidgetState extends State<ChatMembersWidget> {
   List<Coach> followingCoaches = [];
+  List<Message> lastMessages = [];
   late IO.Socket socket;
   late String sourceEmail;
 
@@ -93,11 +96,59 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
     // });
   }
 
+  Future<void> getLastMessages() async {
+    final List<Future> fetchTasks = [];
+
+    // Assuming each coach has an 'email' property
+    for (final coach in followingCoaches) {
+      final String coachEmail = coach.email;
+      final Uri url = Uri.parse(
+          'http://localhost:8084/chatService/getLastMessage/$sourceEmail/$coachEmail');
+
+      fetchTasks.add(http.get(url).then((response) {
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = json.decode(response.body);
+          if (data['success']) {
+            if (data['lastMessage'] != null) {
+              final Message lastMessage = Message.fromJson(data['lastMessage']);
+              return lastMessage;
+            } else {
+              return Message(
+                  id: '',
+                  source_email: '',
+                  destination_email: '',
+                  text_content: 'no messages yet',
+                  time: '',
+                  read: true);
+            }
+          } else {
+            throw Exception('Failed to load last message');
+          }
+        } else {
+          // Handle the case where the response status is not 200 OK
+          throw Exception('Failed to load last message');
+        }
+      }).catchError((error) {
+        // Handle any errors here
+        print('Error fetching last message: $error');
+      }));
+    }
+
+    final results = await Future.wait(fetchTasks);
+    lastMessages = results.whereType<Message>().toList();
+  }
+
   @override
   void initState() {
     super.initState();
     initializeSocket();
-    fetchFollowingCoaches(); // Fetch coaches when the widget initializes
+    fetchFollowingCoaches().then((_) {
+      // Only after fetchFollowingCoaches completes, call getLastMessages.
+      getLastMessages();
+    }).catchError((error) {
+      // Handle errors if fetchFollowingCoaches fails
+      print('Error fetching following coaches: $error');
+    });
   }
 
   @override
@@ -118,32 +169,6 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
-                    Container(
-                      padding:
-                          EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
-                      height: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Colors.pink[50],
-                      ),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.add,
-                            color: Colors.pink,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                          Text(
-                            "Add New",
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    )
                   ],
                 ),
               ),
@@ -171,36 +196,7 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(8.0),
-                child:
-                    // ListView.builder(
-                    //   physics: BouncingScrollPhysics(),
-                    //   itemCount: followingCoaches.length,
-                    //   itemBuilder: (context, index) {
-                    //     final coach = followingCoaches[index];
-                    //     // Build UI for each coach
-                    //     return ListTile(
-                    //       leading: CircleAvatar(
-                    //         backgroundImage: AssetImage(coach.profilePictureUrl),
-                    //       ),
-                    //       title: Text(coach.firstName + ' ' + coach.lastName),
-                    //       subtitle: Text(coach.email),
-                    //       onTap: () {
-                    //         Navigator.push(
-                    //           context,
-                    //           MaterialPageRoute(
-                    //             builder: (context) => PrivateChat(
-                    //               socket: socket,
-                    //               roomName: '',
-                    //               sourceEmail: sourceEmail,
-                    //               destinationEmail: coach.email,
-                    //             ),
-                    //           ),
-                    //         );
-                    //       },
-                    //     );
-                    //   },
-                    // ),
-                    ListView.builder(
+                child: ListView.builder(
                   itemCount: followingCoaches.length,
                   shrinkWrap: true,
                   padding: EdgeInsets.only(top: 16),
@@ -210,10 +206,16 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
                       name: followingCoaches[index].firstName +
                           " " +
                           followingCoaches[index].lastName,
-                      messageText: '',
+                      messageText: lastMessages[index].text_content,
                       imageUrl: followingCoaches[index].profilePictureUrl,
-                      time: "",
-                      isMessageRead: true,
+                      time: lastMessages[index].time != ''
+                          ? getFormatedDate(
+                              DateTime.parse(lastMessages[index].time))
+                          : '',
+                      isMessageRead: lastMessages[index].read,
+                      socket: socket,
+                      sourceEmail: sourceEmail,
+                      destinationEmail: followingCoaches[index].email,
                     );
                   },
                 ),

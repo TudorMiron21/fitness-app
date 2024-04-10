@@ -12,6 +12,7 @@ tudor\work\service\DifficultyService.class
 tudor\work\controller\AdminController.class
 tudor\work\dto\FireBaseNotificationResponseDto$FireBaseNotificationResponseDtoBuilder.class
 tudor\work\service\CoachDetailsService.class
+tudor\work\model\User$UserBuilder.class
 tudor\work\dto\desirializer\DifficultyDeserializer.class
 tudor\work\dto\FireBaseNotificationRequestDto$FireBaseNotificationRequestDtoBuilder.class
 tudor\work\dto\CompleteMultipartUploadDto.class
