@@ -2,8 +2,11 @@ package tudor.work.controller;
 
 import com.ctc.wstx.io.ReaderSource;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +16,17 @@ import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
 import tudor.work.service.AuthorityService;
 import tudor.work.service.UserService;
+import tudor.work.service.VideoStreamingService;
+import tudor.work.utils.Range;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import static org.springframework.http.HttpHeaders.*;
 
 @RestController
 @RequestMapping(path = "/api/selfCoach/user")
@@ -25,7 +35,11 @@ public class UserController {
 
     private final UserService userService;
     private final AuthorityService authorityService;
+    private final VideoStreamingService videoService;
 
+
+    @Value("${app.streaming.default-chunk-size}")
+    public Integer defaultChunkSize;
     //this controller gets all the exercises available from the database depending on the authorities of the user
 
     @GetMapping("/testController")
@@ -297,21 +311,48 @@ public class UserController {
     }
 
     @GetMapping("/getPersonalWorkouts")
-    public ResponseEntity<?> getPersonalWorkouts(){
+    public ResponseEntity<?> getPersonalWorkouts() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getPersonalWorkouts());
     }
 
     @GetMapping("/getLastWorkoutStatistics")
-    public ResponseEntity<?> getLastWorkoutStatistics()
-    {
+    public ResponseEntity<?> getLastWorkoutStatistics() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLastWorkoutStatistics());
     }
 
     @GetMapping("/getGeneralWorkoutInformation/{noWorkoutResults}")
-    public ResponseEntity<?> getGeneralWorkoutInformation(@PathVariable("noWorkoutResults") Integer noWorkoutResults){
-            return ResponseEntity.status(HttpStatus.OK).body(userService.getGeneralWorkoutInformation(noWorkoutResults));
+    public ResponseEntity<?> getGeneralWorkoutInformation(@PathVariable("noWorkoutResults") Integer noWorkoutResults) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getGeneralWorkoutInformation(noWorkoutResults));
     }
 
+    @GetMapping("/videoStreaming/{exerciseId}")
+    public ResponseEntity<?> readChunk(
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range,
+            @PathVariable Long exerciseId
+    ) {
+        try {
+            Range parsedRange = Range.parseHttpRangeString(range, defaultChunkSize);
+            VideoStreamingService.ChunkWithMetadata chunkWithMetadata = videoService.fetchChunk(exerciseId, parsedRange);
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                    .header(CONTENT_TYPE, "video/mp4")
+                    .header(ACCEPT_RANGES, "bytes")
+                    .header(CONTENT_LENGTH, calculateContentLengthHeader(parsedRange, chunkWithMetadata.fileSize()))
+                    .header(CONTENT_RANGE, constructContentRangeHeader(parsedRange, chunkWithMetadata.fileSize()))
+                    .body(chunkWithMetadata.chunk());
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+          return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+    private String calculateContentLengthHeader(Range range, long fileSize) {
+        return String.valueOf(range.getRangeEnd(fileSize) - range.getRangeStart() + 1);
+    }
+
+    private String constructContentRangeHeader(Range range, long fileSize) {
+        return  "bytes " + range.getRangeStart() + "-" + range.getRangeEnd(fileSize) + "/" + fileSize;
+    }
 
 }
 

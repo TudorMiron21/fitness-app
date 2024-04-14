@@ -34,6 +34,7 @@ class PrivateChat extends StatefulWidget {
 class _PrivateChatState extends State<PrivateChat> {
   List<Message> messageList = [];
   final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   Future<void> fetchMessages() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
@@ -59,6 +60,7 @@ class _PrivateChatState extends State<PrivateChat> {
         messageList = data.map((json) => Message.fromJson(json)).toList();
         messageList.sort((a, b) => a.time.compareTo(b.time));
       });
+      _scrollToBottom();
     } else {
       throw Exception(
           'Failed to fetch messages. Status code: ${response.statusCode}');
@@ -76,7 +78,7 @@ class _PrivateChatState extends State<PrivateChat> {
       'source_email': widget.sourceEmail,
       'destination_email': widget.destinationEmail,
       'text_content': _textController.text,
-      'timeStamp': currentTimeStamp.toIso8601String(),
+      'timestamp': currentTimeStamp.toIso8601String()
     };
 
     widget.socket.emit("send_message", messageData);
@@ -91,6 +93,7 @@ class _PrivateChatState extends State<PrivateChat> {
     });
 
     _textController.clear();
+    _scrollToBottom();
   }
 
   void receiveTextMessage() {
@@ -107,10 +110,11 @@ class _PrivateChatState extends State<PrivateChat> {
               // Use bracket notation to access values from the map
               text_content: data['text_content'],
               // Assuming you want to store the time as a String
-              time: data['timeStamp'],
+              time: data['timestamp'],
               read: true,
             ));
           });
+          _scrollToBottom();
         } else {
           // If data is not a Map, handle the case appropriately
           print('Error: received data is not a Map');
@@ -122,17 +126,37 @@ class _PrivateChatState extends State<PrivateChat> {
     );
   }
 
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     connectToPrivateRoom();
     fetchMessages(); // Fetch messages when the widget initializes
     receiveTextMessage();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -195,6 +219,7 @@ class _PrivateChatState extends State<PrivateChat> {
       body: Stack(
         children: <Widget>[
           ListView.builder(
+            controller: _scrollController, // Use the ScrollController here
             itemCount: messageList.length,
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10, bottom: 60),
@@ -209,7 +234,6 @@ class _PrivateChatState extends State<PrivateChat> {
                           ? Alignment.topLeft
                           : Alignment.topRight),
                   child: Container(
-                    
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: (messageList[index].destination_email ==

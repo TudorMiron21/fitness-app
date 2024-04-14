@@ -33,4 +33,6 @@ public class RequestUserHistoryExercise {
     private Double weight;//in kg
 
     private Double distance;// in meters
+
+    private Double caloriesBurned;
 }

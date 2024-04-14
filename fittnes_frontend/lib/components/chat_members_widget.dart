@@ -152,6 +152,13 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
   }
 
   @override
+  void dispose() {
+    print('socket ${socket.id} disposed');
+    socket.disconnect();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(

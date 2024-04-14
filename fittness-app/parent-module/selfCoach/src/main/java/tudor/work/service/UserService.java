@@ -4,6 +4,7 @@ import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
@@ -42,8 +43,8 @@ public class UserService {
     private final UserHistoryModuleService userHistoryModuleService;
     private final UserHistoryExerciseService userHistoryExerciseService;
     private final WorkoutResultService workoutResultService;
-
     private final StatisticsService statisticsService;
+    private final PersonalRecordService personalRecordService;
 
 
     public User findById(Long id) throws NotFoundException {
@@ -332,12 +333,89 @@ public class UserService {
                 .isDone(requestUserHistoryExercise.isDone())
                 .build();
 
-        if (requestUserHistoryExercise.getExercise().isHasNoReps()) {
-            userHistoryExercise.setNoReps(requestUserHistoryExercise.getNoReps());
-        }
 
-        if (requestUserHistoryExercise.getExercise().isHasWeight()) {
-            userHistoryExercise.setWeight(requestUserHistoryExercise.getWeight());
+        if (requestUserHistoryExercise.getExercise().isHasNoReps() || requestUserHistoryExercise.getExercise().isHasWeight()) {
+
+            if (requestUserHistoryExercise.getExercise().isHasNoReps()) {
+                userHistoryExercise.setNoReps(requestUserHistoryExercise.getNoReps());
+
+                Optional<PersonalRecord> personalRecord = personalRecordService.findByUserIdAndExerciseId(authorityService.getUserId(), requestUserHistoryExercise.getExercise().getId());
+
+                //if the exercise is already present in the personal record table for this user
+                if (personalRecord.isPresent()) {
+                    PersonalRecord personalRecordValue = personalRecord.get();
+
+                    if (personalRecordValue.getMaxNoReps() < requestUserHistoryExercise.getNoReps()) {
+                        personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
+                        personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                    }
+                } else {
+
+                    personalRecordService.save(
+                            PersonalRecord
+                                    .builder()
+                                    .exercise(requestUserHistoryExercise.getExercise())
+                                    .user(authorityService.getUser())
+                                    .maxNoReps(requestUserHistoryExercise.getNoReps())
+                                    .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
+                                    .build()
+                    );
+                }
+
+            }
+
+            if (requestUserHistoryExercise.getExercise().isHasWeight()) {
+                userHistoryExercise.setWeight(requestUserHistoryExercise.getWeight());
+
+                Optional<PersonalRecord> personalRecord = personalRecordService.findByUserIdAndExerciseId(authorityService.getUserId(), requestUserHistoryExercise.getExercise().getId());
+
+                if (personalRecord.isPresent()) {
+                    PersonalRecord personalRecordValue = personalRecord.get();
+
+                    if (personalRecordValue.getMaxWeight() < requestUserHistoryExercise.getWeight()) {
+                        personalRecordValue.setMaxWeight(requestUserHistoryExercise.getWeight());
+                        personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+
+                    }
+                } else {
+
+                    personalRecordService.save(
+                            PersonalRecord
+                                    .builder()
+                                    .exercise(requestUserHistoryExercise.getExercise())
+                                    .user(authorityService.getUser())
+                                    .maxWeight(requestUserHistoryExercise.getWeight())
+                                    .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
+                                    .build()
+                    );
+                }
+            }
+        } else {
+            userHistoryExercise.setCaloriesBurned(requestUserHistoryExercise.getCaloriesBurned());
+
+
+            Optional<PersonalRecord> personalRecord = personalRecordService.findByUserIdAndExerciseId(authorityService.getUserId(), requestUserHistoryExercise.getExercise().getId());
+
+            if (personalRecord.isPresent()) {
+                PersonalRecord personalRecordValue = personalRecord.get();
+
+                if (personalRecordValue.getMaxCalories() < requestUserHistoryExercise.getCaloriesBurned()) {
+                    personalRecordValue.setMaxCalories(requestUserHistoryExercise.getCaloriesBurned());
+                    personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                }
+            } else {
+
+                personalRecordService.save(
+                        PersonalRecord
+                                .builder()
+                                .exercise(requestUserHistoryExercise.getExercise())
+                                .user(authorityService.getUser())
+                                .maxCalories(requestUserHistoryExercise.getCaloriesBurned())
+                                .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
+                                .build()
+                );
+            }
+
         }
 
         userHistoryModule.addExerciseToUserHistoryExercises(

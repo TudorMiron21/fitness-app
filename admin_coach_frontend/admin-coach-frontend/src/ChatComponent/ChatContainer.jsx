@@ -13,14 +13,16 @@ export const Chat = ({ socket, source_email, destination_email, room }) => {
       //   hour: "2-digit",
       //   minute: "2-digit",
       // });
-
+      const currentTime = new Date().toISOString();
       const messageData = {
         room: room,
         source_email: source_email,
         destination_email: destination_email,
         text_content: currentMessage,
-        timeStamp: new Date(),
+        timestamp: currentTime,
       };
+
+      console.log(messageData);
 
       await socket.emit("send_message", messageData);
       setMessageList((list) => [...list, messageData]);
@@ -34,9 +36,13 @@ export const Chat = ({ socket, source_email, destination_email, room }) => {
         const response = await axios.get(
           `http://localhost:8084/chatService/getMessages/${source_email}/${destination_email}`
         );
-        // const data = await response.json();
+        const sortedMessages = response.data.messages.sort((a, b) => {
+          const dateA = new Date(a.timestamp);
+          const dateB = new Date(b.timestamp);
+          return dateA - dateB;
+        });
         console.log(response.data);
-        setMessageList(response.data.messages);
+        setMessageList(sortedMessages);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -45,6 +51,7 @@ export const Chat = ({ socket, source_email, destination_email, room }) => {
     fetchMessages();
 
     socket.on("receive_message", (data) => {
+      console.log(data);
       setMessageList((list) => [...list, data]);
     });
   }, [socket]);
@@ -76,6 +83,8 @@ export const Chat = ({ socket, source_email, destination_email, room }) => {
                   month: "long",
                   day: "numeric",
                 });
+
+            console.log(`${dateString} at ${timeString}`);
 
             return (
               <div

@@ -30,6 +30,16 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
 
+minio:
+  accessKey: dAh2wTxgKQK3B6TPi20p
+  secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
+  endpoint: http://192.168.147.140:9000
+  put-object-part-size: 5242880
+
+app:
+  streaming:
+    default-chunk-size: 3145728
+
 eureka:
   client:
     service-url:
@@ -37,6 +47,7 @@ eureka:
 security:
   basic:
     enabled: false
+
 
 paypal:
   mode: sandbox
