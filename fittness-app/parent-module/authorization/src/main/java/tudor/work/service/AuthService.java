@@ -57,6 +57,26 @@ public class AuthService {
 
     }
 
+    public AuthResponse registerGoogle(RegisterRequest request) throws RegisterException {
+
+        if (userRepository.findByEmail(request.getEmail()).isEmpty()) {
+            var user = User.builder()
+                    .firstname(request.getFirstname())
+                    .lastname(request.getLastname())
+                    .email(request.getEmail())
+                    .role(request.getRole())
+                    .build();
+
+            var jwtToken = jwtService.generateToken(user);
+            var savedUser = userRepository.save(user);
+
+            return AuthResponse.builder().accessToken(jwtToken).build();
+        } else {
+            throw new RegisterException("username/email already present");
+        }
+
+    }
+
 
     public AuthResponse login(LoginRequest request) throws AuthenticationException, NotFoundException {
         authenticationManager.authenticate(
@@ -66,13 +86,22 @@ public class AuthService {
                 )
         );
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(()-> new NotFoundException("user" + request.getEmail()+" not found"));
+                .orElseThrow(() -> new NotFoundException("user" + request.getEmail() + " not found"));
         var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .build();
     }
 
+    public AuthResponse loginGoogle(LoginRequest request) throws AuthenticationException, NotFoundException {
+
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new NotFoundException("user" + request.getEmail() + " not found"));
+        var jwtToken = jwtService.generateToken(user);
+        return AuthResponse.builder()
+                .accessToken(jwtToken)
+                .build();
+    }
 
 //    public Boolean isTokenValid(String token) {
 //
@@ -129,9 +158,9 @@ public class AuthService {
         String Subject = "Here is the link to reset the password";
 
         String Content = "Hello, \n" +
-                "You have requested to reset the password.\n"+
+                "You have requested to reset the password.\n" +
                 "Click the link below to change your password\n"
-                + resetPasswdLink+ "\n"+
+                + resetPasswdLink + "\n" +
                 "Ignore this email if you do remember your password, or you have not made the request";
 
         emailSenderService.sendEmail(email, Subject, Content);

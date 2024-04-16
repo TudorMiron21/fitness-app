@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fittnes_frontend/components/auth_button_tile.dart';
 import 'package:fittnes_frontend/components/bottom_nav.dart';
 import 'package:fittnes_frontend/components/my_button.dart';
 import 'package:fittnes_frontend/components/my_textfield.dart';
 import 'package:fittnes_frontend/components/square_tile.dart';
+import 'package:fittnes_frontend/controller/user_controller.dart';
+import 'package:fittnes_frontend/models/user_details.dart';
 import 'package:fittnes_frontend/pages/home_page.dart';
 import 'package:fittnes_frontend/pages/login_page.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +32,78 @@ class _RegisterState extends State<Register> {
 
   bool passwordsMatch = true;
 
-  Future<void> register(String  firstName, lastName, email, password,
-      BuildContext context) async {
+  Future<void> registerWithGoogle() async {
+    try {
+      final UserDetails? user = await retrieveGoogleUser();
+      if (user != null && mounted) {
+        try {
+          Map<String, String> headers = {
+            'Content-Type': 'application/json',
+          };
+          Map<String, String> registerData = {
+            'firstname':
+                user.firstName ?? "", // Safe access using null-aware operator
+            'lastname':
+                user.lastName ?? "", // Safe access using null-aware operator
+            'email': user.email ?? "", // Safe access using null-aware operator
+            'role': "USER"
+          };
+
+          String loginDataJson = json.encode(registerData);
+
+          Uri url =
+              Uri.parse('http://192.168.54.182:8080/api/v1/auth/registerGoogle');
+
+          Response response =
+              await post(url, headers: headers, body: loginDataJson);
+
+          if (response.statusCode == 200) {
+            final storage = FlutterSecureStorage();
+            var data = jsonDecode(response.body);
+            print('Login successfully');
+
+            await storage.write(
+                key: 'accessToken', value: data['access_token']);
+
+            String? accessToken = await storage.read(key: 'accessToken');
+            print(accessToken);
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    NavBar(), // Ensure NavBar is properly imported
+              ),
+            );
+          } else if (response.statusCode == 400) {
+            print('Failed');
+            final snackBar = SnackBar(
+              content: Text('Email is already in use'),
+              backgroundColor: Colors.red,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        } catch (e) {
+          print(e.toString());
+        }
+      }
+    } on FirebaseAuthException catch (error) {
+      print(error.message);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        error.message ?? "Something went wrong",
+      )));
+    } catch (error) {
+      print(error);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        error.toString(),
+      )));
+    }
+  }
+
+  Future<void> register(
+      String firstName, lastName, email, password, BuildContext context) async {
     // Email validation regex
     final emailRegex = RegExp(
       r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
@@ -170,7 +244,8 @@ class _RegisterState extends State<Register> {
                 ),
                 if (!passwordsMatch)
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     onPressed: () {
                       _showPasswordMismatchSnackBar();
                     },
@@ -223,12 +298,26 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SquareTile(imagePath: 'lib/images/google_logo.png'),
+                    InkWell(
+                      onTap: () async {
+                        // Handle Google login
+                        await registerWithGoogle();
+                      },
+                      child: AuthButtonTile(
+                          imagePath: 'lib/images/google_logo.png'),
+                    ),
                     const SizedBox(width: 10),
-                    SquareTile(imagePath: 'lib/images/apple_logo.png'),
+                    InkWell(
+                      onTap: () {
+                        // Handle Apple login
+                        print("Apple login tapped");
+                      },
+                      child: AuthButtonTile(
+                          imagePath: 'lib/images/apple_logo.png'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10),

@@ -60,6 +60,27 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/registerGoogle")
+    public ResponseEntity<?> registerGoogle(@RequestBody RegisterRequest request) {
+        try {
+            AuthResponse response = userService.registerGoogle(request);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (RegisterException re) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(re.getMessage());
+        }
+    }
+
+    @PostMapping("/loginGoogle")
+    public ResponseEntity<?> loginGoogle(@RequestBody LoginRequest request) {
+        try {
+            AuthResponse authResponse = userService.loginGoogle(request);
+            return ResponseEntity.status(HttpStatus.OK).body(authResponse);
+        } catch (NotFoundException ae) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ae.getMessage());
+        }
+    }
+
+
     @GetMapping("/validateToken")
     public Boolean isTokenValid(@RequestParam("token") String token) {
 
