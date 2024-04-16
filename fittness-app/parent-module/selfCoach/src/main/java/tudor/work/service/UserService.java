@@ -450,7 +450,7 @@ public class UserService {
 
         UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService
                 .getUserHistoryWorkout(userHistoryWorkoutId)
-                .orElseThrow(() -> new NotFoundException("user histtory workout" + userHistoryWorkoutId + " not found"));
+                .orElseThrow(() -> new NotFoundException("user history workout" + userHistoryWorkoutId + " not found"));
 
         userHistoryWorkout.setIsWorkoutDone(true);
         userHistoryWorkout.setFinishedWorkoutDateAndTime(LocalDateTime.now());
@@ -470,6 +470,7 @@ public class UserService {
 
         WorkoutResult workoutResult = saveUserHistoryWorkoutAndGetWorkoutResult(userHistoryWorkoutId);
 
+
         User user = authorityService.getUser();
         //TODO: async generate the stats for the newly added workout history entry
         CompletableFuture<WorkoutResult> result = statisticsService.getStatistics(userHistoryWorkoutId, workoutResult.getId(), user);
@@ -485,8 +486,9 @@ public class UserService {
 
 
         workoutResultService.save(workoutResult);
-
     }
+
+
 
     public Boolean userExists(String emailUser) {
         return userRepository.findByEmail(emailUser).isPresent();

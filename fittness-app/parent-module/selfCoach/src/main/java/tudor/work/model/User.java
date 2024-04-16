@@ -54,6 +54,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_user"),
             inverseJoinColumns = @JoinColumn(name = "id_achievement")
     )
+    @JsonManagedReference
     private Set<Achievement> achievements;
 
 

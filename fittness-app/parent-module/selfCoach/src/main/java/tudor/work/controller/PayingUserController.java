@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import tudor.work.dto.ProgramDto;
 import tudor.work.dto.UserDto;
 import tudor.work.exceptions.DuplicateCoachSubscription;
 import tudor.work.exceptions.DuplicatesException;
@@ -45,6 +46,13 @@ public class PayingUserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
 
         }
+    }
+
+    @GetMapping("/getAllPrograms")
+    public ResponseEntity<?> getAllPrograms()
+    {
+        Set<ProgramDto> programs = payingUserService.getTopPrograms();
+        return ResponseEntity.status(HttpStatus.OK).body(programs);
     }
 
 }

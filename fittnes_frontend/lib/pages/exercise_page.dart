@@ -204,7 +204,7 @@ class _ExercisePageState extends State<ExercisePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          Colors.blue.withOpacity(0.6), // Use any color from the Colors class
+          Colors.blue.shade800, // Use any color from the Colors class
       appBar: AppBar(
         title: Text(this.widget.workoutName),
         elevation: 0, // Set elevation to 0 for a flatter look, if preferred

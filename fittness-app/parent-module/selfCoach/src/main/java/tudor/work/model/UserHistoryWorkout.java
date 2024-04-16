@@ -1,5 +1,6 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
@@ -39,9 +40,13 @@ public class UserHistoryWorkout {
     private User user;
 
 
+    @ManyToOne
+    @JoinColumn(name = "id_userHistoryProgram")
+    @JsonBackReference
+    private UserHistoryProgram userHistoryProgram;
+
     private Boolean isWorkoutDone;
 
-    //these members are not integrated in the workflow
     private LocalDateTime startedWorkoutDateAndTime;
     private LocalDateTime finishedWorkoutDateAndTime;
 

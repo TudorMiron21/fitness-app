@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:fittnes_frontend/models/coach.dart';
+import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
@@ -15,6 +18,65 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Workout> mostLikedWorkouts = [];
+
+  List<Coach> followingCoaches = [];
+
+  late String accessToken = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAccessToken();
+  }
+
+  Future<void> _fetchAccessToken() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    accessToken = await storage.read(key: 'accessToken') ?? '';
+    if (accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+    setState(() {});
+  }
+
+  Future<void> fetchFollowingCoaches() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.get(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/payingUser/getFollowingCoaches'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+
+      followingCoaches = data
+          .map((json) => Coach(
+                id: json['id'] ??
+                    0, // Provide a default value for id if it's null
+                email: json['email'] ??
+                    '', // Provide a default value for email if it's null
+                profilePictureUrl: json['profilePictureUrl'] as String? ??
+                    "https://i.stack.imgur.com/l60Hf.png",
+                firstName: json['firstName'] ??
+                    '', // Provide a default value for firstName if it's null
+                lastName: json['lastName'] ??
+                    '', // Provide a default value for lastName if it's null
+              ))
+          .toList();
+    } else {
+      throw Exception(
+          'Failed to load following coaches. Status code: ${response.statusCode}');
+    }
+  }
 
   Future<void> fetchirstSixMostLikedWorkouts() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
@@ -48,7 +110,8 @@ class _HomePageState extends State<HomePage> {
                   exerciseImageEndUrl:
                       exerciseJson['exerciseImageEndUrl'] ?? "",
                   exerciseVideoUrl: exerciseJson['exerciseVideoUrl'] ?? "",
-                  difficulty: exerciseJson['difficulty']['dificultyLevel'] ?? 0.0,
+                  difficulty:
+                      exerciseJson['difficulty']['dificultyLevel'] ?? 0.0,
                   category: exerciseJson['category']['name'] ?? "",
                   exerciseExclusive: exerciseJson['exerciseExclusive'] ?? false,
                   equipment: exerciseJson['equipment']['name'] ?? "",
@@ -210,14 +273,68 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue.shade800,
       body: SingleChildScrollView(
         child: Column(
           children: [
+            if (JwtUtils.isPayingUser(accessToken))
+              SizedBox(
+                height: 300,
+                child: FutureBuilder<void>(
+                  future: fetchFollowingCoaches(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    } else {
+                      int pageCount = (followingCoaches.length / 3).ceil();
+                      return PageView.builder(
+                        itemCount: pageCount +
+                            2, // +1 for the background page, +1 for the button
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return buildPageBackground(
+                                'lib/images/background_top_workouts.jpg',
+                                'Followed Coaches');
+                          } else if (index == pageCount + 1) {
+                            // Button page
+                            return Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // Implement the functionality to add more coaches
+                                  print("Follow more coaches");
+                                },
+                                child: Text("Follow More Coaches"),
+                              ),
+                            );
+                          }
+                          int startIndex = (index - 1) * 3;
+                          int endIndex =
+                              min(startIndex + 3, followingCoaches.length);
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(endIndex - startIndex, (i) {
+                              Coach coach = followingCoaches[startIndex + i];
+                              return Expanded(
+                                child: buildCoachCard(coach),
+                              );
+                            }),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
             SizedBox(
-              height: 300,
+              height: 200,
               child: FutureBuilder<void>(
                 future: fetchirstSixMostLikedWorkouts(),
                 builder: (context, mostLikedWorkoutsSnapshot) {
@@ -521,6 +638,39 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
+    );
+  }
+
+  Widget buildCoachCard(Coach coach) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        const SizedBox(height: 20),
+        InkWell(
+          onTap: () {
+            // Action when the image is tapped
+            print('View profile of ${coach.firstName}');
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              radius: 50,
+              backgroundImage: NetworkImage(coach.profilePictureUrl),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Text(
+            '${coach.firstName} ${coach.lastName}',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Text(
+          coach.email,
+          style: TextStyle(fontSize: 12),
+        ),
+      ],
     );
   }
 

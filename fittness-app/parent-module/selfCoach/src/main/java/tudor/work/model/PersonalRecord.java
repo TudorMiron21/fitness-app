@@ -17,7 +17,6 @@ public class PersonalRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @OneToOne
     @JoinColumn(name = "id_exercise")
     private Exercise exercise;
