@@ -169,7 +169,11 @@ public class CoachController {
     @PostMapping("/createProgram")
     public ResponseEntity<?> createProgram(@RequestBody CreateProgramDto createProgramDto)
     {
-        return ResponseEntity.status(HttpStatus.OK).body(coachService.createProgram(createProgramDto));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.createProgram(createProgramDto));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
     }
 
 

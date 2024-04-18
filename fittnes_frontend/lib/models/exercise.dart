@@ -18,14 +18,12 @@ class Exercise {
   final bool hasNoReps;
   final bool hasWeight;
 
-
   Exercise(
-      {
-      required this.id,
+      {required this.id,
       required this.name,
       this.description = '',
       this.descriptionUrl = '',
-      this.exerciseImageStartUrl ='',
+      this.exerciseImageStartUrl = '',
       this.exerciseImageEndUrl = '',
       this.exerciseVideoUrl = '',
       required this.muscleGroup,
@@ -35,6 +33,25 @@ class Exercise {
       required this.exerciseExclusive,
       required this.hasNoReps,
       required this.hasWeight,
-      this.rating = 0.0
-      });
+      this.rating = 0.0});
+
+  factory Exercise.fromJson(Map<String, dynamic> json) {
+    return Exercise(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'] ?? '',
+      descriptionUrl: json['descriptionUrl'] ?? '',
+      exerciseImageStartUrl: json['exerciseImageStartUrl'] ?? '',
+      exerciseImageEndUrl: json['exerciseImageEndUrl'] ?? '',
+      exerciseVideoUrl: json['exerciseVideoUrl'] ?? '',
+      muscleGroup: json['muscleGroup'],
+      equipment: json['equipment'],
+      difficulty: json['difficulty'],
+      category: json['category'],
+      exerciseExclusive: json['exerciseExclusive'],
+      hasNoReps: json['hasNoReps'],
+      hasWeight: json['hasWeight'],
+      rating: json['rating'] ?? 0.0,
+    );
+  }
 }

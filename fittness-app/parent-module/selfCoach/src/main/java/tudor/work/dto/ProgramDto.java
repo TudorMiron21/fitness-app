@@ -14,6 +14,7 @@ import java.util.Set;
 public class ProgramDto {
     private Long id;
     private String name;
+    private String description;
     private Integer durationInDays;
     private String coverPhotoUrl;
     private Set<WorkoutProgram> workoutProgramSet;

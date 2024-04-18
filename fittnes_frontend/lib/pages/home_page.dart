@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:fittnes_frontend/components/program_tile.dart';
 import 'package:fittnes_frontend/models/coach.dart';
+import 'package:fittnes_frontend/models/program.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,6 +22,8 @@ class _HomePageState extends State<HomePage> {
   List<Workout> mostLikedWorkouts = [];
 
   List<Coach> followingCoaches = [];
+
+  List<Program> programs = [];
 
   late String accessToken = '';
 
@@ -75,6 +79,80 @@ class _HomePageState extends State<HomePage> {
     } else {
       throw Exception(
           'Failed to load following coaches. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<void> fetchPrograms() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.get(
+      Uri.parse(
+          'http://localhost:8080/api/selfCoach/payingUser/getAllPrograms'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      programs = jsonResponse.map((programJson) {
+        Map<int, Workout> indexedWorkouts = {};
+        var workoutList = programJson['workoutProgramSet'] as List? ??
+            []; // Handling potential null
+        for (var workoutJson in workoutList) {
+          var exercisesList = workoutJson['exercises'] as List? ??
+              []; // Handling potential null
+          var workout = Workout(
+            id: workoutJson['id'],
+            name: workoutJson['name'] ?? "",
+            description: workoutJson['description'] ?? "",
+            coverPhotoUrl: workoutJson['coverPhotoUrl'] ?? '',
+            difficultyLevel: workoutJson['difficultyLevel'] ?? 0.0,
+            exercises: exercisesList
+                .map((exerciseJson) => Exercise(
+                      id: exerciseJson['id'],
+                      name: exerciseJson['name'],
+                      description: exerciseJson['description'] ?? "",
+                      descriptionUrl: exerciseJson['descriptionUrl'] ?? "",
+                      exerciseImageStartUrl:
+                          exerciseJson['exerciseImageStartUrl'] ?? "",
+                      exerciseImageEndUrl:
+                          exerciseJson['exerciseImageEndUrl'] ?? "",
+                      exerciseVideoUrl: exerciseJson['exerciseVideoUrl'] ?? "",
+                      difficulty:
+                          exerciseJson['difficulty']['dificultyLevel'] ?? 0.0,
+                      category: exerciseJson['category']['name'] ?? "",
+                      exerciseExclusive:
+                          exerciseJson['exerciseExclusive'] ?? false,
+                      equipment: exerciseJson['equipment']['name'] ?? "",
+                      muscleGroup: exerciseJson['muscleGroup']['name'] ?? "",
+                      rating: exerciseJson['rating'] ?? 0.0,
+                      hasNoReps: exerciseJson['hasNoReps'] ?? false,
+                      hasWeight: exerciseJson['hasWeight'] ?? false,
+                    ))
+                .toList(),
+            likedByUser: workoutJson['likedByUser'] ?? false,
+          );
+          indexedWorkouts[workout.id] = workout;
+        }
+
+        return Program(
+          id: programJson['id'],
+          name: programJson['name'] ?? "",
+          description: programJson['description'] ?? "",
+          durationInDays: programJson['durationInDays'] ?? 0,
+          coverPhotoUrl: programJson['coverPhotoUrl'] ?? "",
+          indexedWorkouts: indexedWorkouts,
+        );
+      }).toList();
+    } else {
+      throw Exception(
+          'Failed to load programs. Status code: ${response.statusCode}');
     }
   }
 
@@ -273,7 +351,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -333,6 +410,38 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ),
+            SizedBox(
+              height: 200,
+              child: FutureBuilder<void>(
+                future: fetchPrograms(), // Make sure this is fetching programs
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    return PageView.builder(
+                      itemCount: programs.length +
+                          1, // Assuming there's an extra page like the background
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          // This is the extra page, possibly for some introductory content
+                          return buildPageBackground(
+                              'lib/images/background_top_workouts.jpg',
+                              'Top Most Liked Programs');
+                        }
+
+                        // Use the index - 1 because the first page is the background/intro
+                        Program program = programs[index - 1];
+
+                        // Use the ProgramTile widget that was created earlier
+                        return ProgramTile(program: program);
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
             SizedBox(
               height: 200,
               child: FutureBuilder<void>(

@@ -96,6 +96,7 @@ public class PayingUserService {
                                         .builder()
                                         .id(program.getId())
                                         .name(program.getName())
+                                        .description(program.getDescription())
                                         .durationInDays(program.getDurationInDays())
                                         .coverPhotoUrl(program.getCoverPhotoUrl())
                                         .workoutProgramSet(program.getWorkoutPrograms())

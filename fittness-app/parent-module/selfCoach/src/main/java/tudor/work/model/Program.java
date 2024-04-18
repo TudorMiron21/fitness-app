@@ -32,6 +32,9 @@ public class Program {
     )
     @JsonManagedReference
     private Set<WorkoutProgram> workoutPrograms;
-
+    
+    @ManyToOne
+    @JoinColumn(name = "adder_id")
+    private User adder;
 
 }

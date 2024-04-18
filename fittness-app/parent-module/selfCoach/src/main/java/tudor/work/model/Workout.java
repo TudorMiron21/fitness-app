@@ -1,5 +1,6 @@
 package tudor.work.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
@@ -42,7 +43,7 @@ public class Workout {
     private User adder;
 
 
-    @ManyToMany(mappedBy = "likedWorkouts" )
+    @ManyToMany(mappedBy = "likedWorkouts")
     @JsonIgnore
     private Set<User> likers;
 
@@ -51,7 +52,8 @@ public class Workout {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @JsonManagedReference
+//    @JsonManagedReference
+    @JsonBackReference
     Set<WorkoutProgram> workoutPrograms;
 
     private boolean isGlobal;

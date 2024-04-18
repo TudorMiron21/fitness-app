@@ -15,6 +15,7 @@ import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.UserAccessException;
 import tudor.work.service.AuthorityService;
+import tudor.work.service.MinioService;
 import tudor.work.service.UserService;
 import tudor.work.service.VideoStreamingService;
 import tudor.work.utils.Range;
@@ -40,12 +41,6 @@ public class UserController {
 
     @Value("${app.streaming.default-chunk-size}")
     public Integer defaultChunkSize;
-    //this controller gets all the exercises available from the database depending on the authorities of the user
-
-    @GetMapping("/testController")
-    public String testController() {
-        return "Welcome to the Self Coach Service!";
-    }
 
     @GetMapping("/exercises")
     public List<ExerciseDto> getAllExercises() {
@@ -66,6 +61,8 @@ public class UserController {
         }
 
     }
+
+
 
     @GetMapping("/workouts")
     public ResponseEntity<?> getAllWorkouts() {

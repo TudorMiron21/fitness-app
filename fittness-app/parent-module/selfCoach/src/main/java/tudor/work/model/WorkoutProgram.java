@@ -1,6 +1,7 @@
 package tudor.work.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,7 +29,8 @@ public class WorkoutProgram {
 
     @ManyToOne
     @JoinColumn(name = "id_workout")
-    @JsonBackReference
+//    @JsonBackReference
+    @JsonManagedReference
     private Workout workout;
 
     private Integer workoutIndex;

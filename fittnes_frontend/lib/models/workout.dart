@@ -20,6 +20,23 @@ class Workout extends ChangeNotifier {
     required this.likedByUser,
   });
 
+  factory Workout.fromJson(Map<String, dynamic> json) {
+    List<Exercise> parsedExercises = [];
+    if (json['exercises'] != null) {
+      parsedExercises =
+          (json['exercises'] as List).map((e) => Exercise.fromJson(e)).toList();
+    }
+
+    return Workout(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      coverPhotoUrl: json['coverPhotoUrl'] ?? '',
+      difficultyLevel: json['difficultyLevel'] ?? 0.0,
+      exercises: parsedExercises,
+      likedByUser: json['likedByUser'] ?? false,
+    );
+  }
   // Getter for likedByUser
   bool get isLiked => likedByUser;
 
@@ -30,4 +47,6 @@ class Workout extends ChangeNotifier {
     // This will trigger a rebuild of the widgets that depend on this model.
     notifyListeners();
   }
+
+  // static fromJson(workoutJson) {}
 }

@@ -1,11 +1,9 @@
 package tudor.work.service;
 
 
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.StatObjectArgs;
-import io.minio.StatObjectResponse;
+import io.minio.*;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -38,5 +36,25 @@ public class MinioService {
                         .object(objectName)
                         .build());
 
+    }
+
+
+    public String generatePreSignedUrl(String imgPath) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        String[] parts = imgPath.split("/", 2);
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Invalid image path");
+        }
+
+        String bucketName = parts[0];
+        String imageFileName = parts[1];
+
+        return minioClient.getPresignedObjectUrl(
+                GetPresignedObjectUrlArgs.builder()
+                        .method(Method.GET)
+                        .bucket(bucketName)
+                        .object(imageFileName)
+                        .expiry(1800)
+                        .build()
+        );
     }
 }

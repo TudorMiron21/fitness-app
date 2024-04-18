@@ -1,24 +1,31 @@
 package tudor.work.service;
 
 
+import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.model.User;
 import tudor.work.model.Workout;
+import tudor.work.model.WorkoutProgram;
 import tudor.work.repository.WorkoutRepository;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class WorkoutService {
 
     private final WorkoutRepository workoutRepository;
+    private final MinioService minioService;
 
     @Transactional
     public void saveWorkout(Workout workout) throws DuplicatesException {
@@ -39,10 +46,10 @@ public class WorkoutService {
         return workoutRepository.findByName(workoutName);
     }
 
-    public Optional<Workout> findWorkoutById(Long id)
-    {
+    public Optional<Workout> findWorkoutById(Long id) {
         return workoutRepository.findById(id);
     }
+
     public Workout getReference(Long id) {
         return workoutRepository.getOne(id);
     }
@@ -51,23 +58,80 @@ public class WorkoutService {
         workoutRepository.delete(workout);
     }
 
-    public List<Workout> getAllWorkouts() {
-
-        return workoutRepository.findAll();
+    private boolean needsConversion(String url) {
+        if (url != null)
+            return !(url.startsWith("http://") || url.startsWith("https://"));
+        return false;
     }
 
-    public boolean isWorkoutLikedByUser(Workout workout,User user) throws NotFoundException {
+    private Workout convertWorkoutCoverPhotos(Workout workout) {
+        String workoutCoverPhotoUrl = workout.getCoverPhotoUrl();
+        if (needsConversion(workoutCoverPhotoUrl)) {
+            try {
+                workout.setCoverPhotoUrl(minioService.generatePreSignedUrl(workoutCoverPhotoUrl));
+            } catch (ServerException | InsufficientDataException | ErrorResponseException |
+                     IOException | NoSuchAlgorithmException | InvalidKeyException |
+                     InvalidResponseException | XmlParserException | InternalException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        workout
+                .getExercises()
+                .stream()
+                .map(
+                        exercise -> {
+                            String exerciseCoverPhotoUrlStart = exercise.getExerciseImageStartUrl();
+                            String exerciseCoverPhotoUrlEnd = exercise.getExerciseImageEndUrl();
+
+                            if (needsConversion(exerciseCoverPhotoUrlStart)) {
+                                try {
+                                    exercise.setExerciseImageStartUrl(minioService.generatePreSignedUrl(exerciseCoverPhotoUrlStart));
+                                } catch (ServerException | InsufficientDataException |
+                                         ErrorResponseException | IOException |
+                                         NoSuchAlgorithmException | InvalidKeyException |
+                                         InvalidResponseException | XmlParserException |
+                                         InternalException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            if (needsConversion(exerciseCoverPhotoUrlEnd)) {
+                                try {
+                                    exercise.setExerciseImageEndUrl(minioService.generatePreSignedUrl(exerciseCoverPhotoUrlEnd));
+                                } catch (ServerException | InsufficientDataException |
+                                         ErrorResponseException | IOException |
+                                         NoSuchAlgorithmException | InvalidKeyException |
+                                         InvalidResponseException | XmlParserException |
+                                         InternalException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                            return exercise;
+                        }
+                ).collect(Collectors.toSet());
+        return workout;
+    }
+
+    public List<Workout> getAllWorkouts() {
+        return workoutRepository
+                .findAll()
+                .stream()
+                .map(this::convertWorkoutCoverPhotos)
+                .toList();
+    }
+
+    public boolean isWorkoutLikedByUser(Workout workout, User user) throws NotFoundException {
 
         return workoutRepository
                 .findById(workout.getId())
-                .orElseThrow(()->new NotFoundException("workout " + workout.getName() + " not found"))
+                .orElseThrow(() -> new NotFoundException("workout " + workout.getName() + " not found"))
                 .getLikers()
                 .stream()
                 .anyMatch(user1 -> user1.equals(user));
     }
 
-    public Long getNoLikes(Workout workout)
-    {
+    public Long getNoLikes(Workout workout) {
         return (long) workout.getLikers().size();
     }
 

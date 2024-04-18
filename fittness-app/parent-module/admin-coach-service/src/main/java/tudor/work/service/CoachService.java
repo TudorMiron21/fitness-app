@@ -251,13 +251,14 @@ public class CoachService {
     }
 
 
-    public Program createProgram(CreateProgramDto createProgramDto) {
+    public Program createProgram(CreateProgramDto createProgramDto) throws NotFoundException {
 
         Program program = Program
                 .builder()
                 .name(createProgramDto.getName())
                 .description(createProgramDto.getDescription())
                 .durationInDays(createProgramDto.getDurationInDays())
+                .adder(authorityService.getUser())
                 .build();
 
         program.setWorkoutPrograms(
@@ -344,7 +345,7 @@ public class CoachService {
                 "program-cover-photos"
         );
 
-        String imgPath = "workout-cover-photos/" + imgName;
+        String imgPath = "program-cover-photos/" + imgName;
 
         Program programToEdit = programService.getProgramById(programId);
 
