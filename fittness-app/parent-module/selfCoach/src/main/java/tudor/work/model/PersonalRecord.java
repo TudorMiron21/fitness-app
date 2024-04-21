@@ -32,4 +32,6 @@ public class PersonalRecord {
     private Double maxCalories;
 
     private Integer maxNoReps;
+
+    private Double maxVolume;
 }

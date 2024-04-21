@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table
@@ -37,4 +37,30 @@ public class Program {
     @JoinColumn(name = "adder_id")
     private User adder;
 
+    public int getNextGreatestIndex(int currentIndex) {
+
+        List<WorkoutProgram> sortedWorkoutPrograms = new ArrayList<>(workoutPrograms);
+        sortedWorkoutPrograms.sort(Comparator.comparingInt(WorkoutProgram::getWorkoutIndex));
+
+        for (WorkoutProgram wp : sortedWorkoutPrograms) {
+            if (wp.getWorkoutIndex() > currentIndex) {
+                return wp.getWorkoutIndex();
+            }
+        }
+
+        //there is no greater index that the currentIndex
+        return -1;
+    }
+
+    public int getLowestIndex() {
+        OptionalInt minIndex = workoutPrograms.stream()
+                .mapToInt(WorkoutProgram::getWorkoutIndex)
+                .min();
+
+        if (minIndex.isPresent()) {
+            return minIndex.getAsInt();
+        } else {
+            throw new NoSuchElementException("No workout programs found");
+        }
+    }
 }

@@ -444,6 +444,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   exercises: workout.exercises,
                   workoutName: workout.name,
                   workoutId: workout.id,
+                  programId: -1,
                 ),
               ),
             );

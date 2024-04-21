@@ -40,6 +40,7 @@ public class Workout {
 
     @ManyToOne
     @JoinColumn(name = "adder_id")
+    @JsonIgnore
     private User adder;
 
 

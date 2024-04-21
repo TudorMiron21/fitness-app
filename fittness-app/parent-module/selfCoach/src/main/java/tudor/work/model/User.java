@@ -45,6 +45,7 @@ public class User implements UserDetails {
     @JoinTable(name = "User_Workouts",
             joinColumns = @JoinColumn(name = "id_user"),
             inverseJoinColumns = @JoinColumn(name = "id_workout"))
+    @JsonIgnore
     private Set<Workout> likedWorkouts;
 
 
@@ -59,6 +60,7 @@ public class User implements UserDetails {
 
 
     @ManyToMany(mappedBy = "followers", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<User> following = new HashSet<>();
 
 
@@ -68,6 +70,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "UserId"), // user id is the id of the paying user
             inverseJoinColumns = @JoinColumn(name = "ParentId") // parent id is the id of the coach
     )
+    @JsonBackReference
     private Set<User> followers = new HashSet<>();
 
     public void likeWorkout(Workout workout) {

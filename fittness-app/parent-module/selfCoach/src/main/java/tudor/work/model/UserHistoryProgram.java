@@ -21,13 +21,15 @@ public class UserHistoryProgram {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "workout_id")
+    @JoinColumn(name = "program_id")
     private Program program;
 
 
     @ManyToOne
     @JoinColumn(name ="user_id")
     private User user;
+
+    private Integer currentWorkoutIndex;
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "userHistoryProgram",cascade = CascadeType.ALL)
     @JsonManagedReference

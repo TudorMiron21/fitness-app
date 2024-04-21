@@ -19,11 +19,23 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
             "AND uhw.isWorkoutDone = false")
     List<UserHistoryWorkout> findStartedWorkoutsByUserEmail(@Param("userEmail") String userEmail);
 
-    @Query("SELECT uhw " +
-            "FROM UserHistoryWorkout uhw " +
-            "WHERE uhw.user.email = :emailUser " +
-            "AND uhw.isWorkoutDone = false " +
-            "AND uhw.workout.id= :workoutId")
+    //    @Query("SELECT uhw " +
+//            "FROM UserHistoryWorkout uhw " +
+//            "WHERE uhw.user.email = :emailUser " +
+//            "AND uhw.isWorkoutDone = false " +
+//            "AND uhw.workout.id= :workoutId")
+    @Query(
+            "SELECT uhw FROM UserHistoryWorkout uhw " +
+                    "WHERE uhw.user.email = :emailUser " +
+                    "AND uhw.isWorkoutDone = false " +
+                    "AND uhw.workout.id = :workoutId " +
+                    "AND uhw.id = (" +
+                    "SELECT MAX(sub.id) FROM UserHistoryWorkout sub " +
+                    "WHERE sub.user.email = :emailUser " +
+                    "AND sub.isWorkoutDone = false " +
+                    "AND sub.workout.id = :workoutId" +
+                    ")"
+    )
     Optional<UserHistoryWorkout> findSpecificStartedWorkoutByUserEmail(@Param("workoutId") Long workoutId, @Param("emailUser") String emailUser);
 
 
@@ -53,7 +65,7 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
                     "JOIN uhm.userHistoryExercises uhe " +
                     "WHERE uhw.id = :workoutId "
     )
-    List<Double> findAllUserHistoryVolumesWeightsByUserHistoryWorkoutId(@Param("workoutId")Long userHistoryWorkoutId);
+    List<Double> findAllUserHistoryVolumesWeightsByUserHistoryWorkoutId(@Param("workoutId") Long userHistoryWorkoutId);
 
 
     @Query(
@@ -65,7 +77,7 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
                     "JOIN e.category c " +
                     "WHERE uhw.id = :workoutId "
     )
-    List<Category> findAllCategoriesByUserHistoryWorkoutId(@Param("workoutId")Long id);
+    List<Category> findAllCategoriesByUserHistoryWorkoutId(@Param("workoutId") Long id);
 
     @Query(
             "SELECT d FROM UserHistoryWorkout uhw " +
@@ -76,7 +88,7 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
                     "JOIN e.difficulty d " +
                     "WHERE uhw.id = :workoutId "
     )
-    List<Difficulty> findAllDifficultiesByUserHistoryWorkoutId(@Param("workoutId")Long id);
+    List<Difficulty> findAllDifficultiesByUserHistoryWorkoutId(@Param("workoutId") Long id);
 
 
     @Query(
@@ -88,7 +100,7 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
                     "JOIN e.muscleGroup mg " +
                     "WHERE uhw.id = :workoutId "
     )
-    List<MuscleGroup> findAllMuscleGroupsByUserHistoryWorkoutId(@Param("workoutId")Long id);
+    List<MuscleGroup> findAllMuscleGroupsByUserHistoryWorkoutId(@Param("workoutId") Long id);
 
 
     @Query(
@@ -98,5 +110,5 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
                     "JOIN uhm.userHistoryExercises uhe " +
                     "WHERE uhw.id = :workoutId "
     )
-    List<UserHistoryExercise> findAllUserHistoryExercisesByUserHistoryWorkoutId(@Param("workoutId")Long id);
+    List<UserHistoryExercise> findAllUserHistoryExercisesByUserHistoryWorkoutId(@Param("workoutId") Long id);
 }

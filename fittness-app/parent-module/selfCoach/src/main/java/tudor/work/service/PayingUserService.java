@@ -4,17 +4,21 @@ import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.ProgramDto;
+import tudor.work.dto.RequestSaveWorkoutToProgramDto;
 import tudor.work.dto.UserDto;
 import tudor.work.exceptions.DuplicateCoachSubscription;
 
+import tudor.work.exceptions.UserHistoryProgramNotFoundException;
 import tudor.work.model.Program;
 import tudor.work.model.User;
 import tudor.work.model.UserHistoryProgram;
+import tudor.work.model.UserHistoryWorkout;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +30,7 @@ public class PayingUserService {
     private final UserService userService;
     private final UserHistoryProgramService userHistoryProgramService;
     private final ProgramService programService;
+    private final UserHistoryWorkoutService userHistoryWorkoutService;
 
     @Transactional
     public void subscribeToCoach(Long coachId) throws NotFoundException, DuplicateCoachSubscription {
@@ -65,7 +70,7 @@ public class PayingUserService {
 
     }
 
-    public Long startProgram(Long programId) throws NotFoundException {
+    public UserHistoryProgram startProgram(Long programId) throws NotFoundException {
         Program program = programService.findById(programId);
 
 
@@ -76,15 +81,46 @@ public class PayingUserService {
                         .userHistoryWorkouts(new ArrayList<>())
                         .user(authorityService.getUser())
                         .isProgramDone(false)
+                        .currentWorkoutIndex(program.getLowestIndex())
                         .startedWorkoutDateAndTime(LocalDateTime.now())
                         .build();
 
-
         UserHistoryProgram saveduserHistoryProgram = userHistoryProgramService.save(userHistoryProgram);
 
-        return saveduserHistoryProgram.getId();
-
+        return saveduserHistoryProgram;
     }
+
+
+    @Transactional
+    public Long addWorkoutToProgram(Long parentUserHistoryProgramId, Long workoutId) throws NotFoundException {
+        UserHistoryProgram userHistoryProgram = userHistoryProgramService.findById(parentUserHistoryProgramId);
+
+
+        Long userHistoryWorkoutId = userService.startWorkout(workoutId);
+
+        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.findById(userHistoryWorkoutId);
+
+        userHistoryWorkout.setUserHistoryProgram(userHistoryProgram);
+
+        return userHistoryWorkout.getId();
+    }
+
+
+    public UserHistoryProgram isProgramStarted(Long programId) throws NotFoundException, UserHistoryProgramNotFoundException {
+        Optional<UserHistoryProgram> userHistoryProgram = userHistoryProgramService.findLastProgramByUserAndProgramId(authorityService.getUserId(), programId);
+
+        if (userHistoryProgram.isPresent()) {
+            if(!userHistoryProgram.get().getIsProgramDone()) {
+                return userHistoryProgram.get();
+            }
+            else {
+                throw new UserHistoryProgramNotFoundException("program with id " + programId + " found in program user history, but its done");
+            }
+        } else {
+            throw new UserHistoryProgramNotFoundException("program with id " + programId + " not found in program user history");
+        }
+    }
+
 
     public Set<ProgramDto> getTopPrograms() {
 
@@ -103,6 +139,5 @@ public class PayingUserService {
                                         .build()
                 ).collect(Collectors.toSet());
     }
-
 
 }

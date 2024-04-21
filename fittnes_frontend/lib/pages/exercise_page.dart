@@ -14,10 +14,14 @@ class ExercisePage extends StatefulWidget {
   final List<Exercise> exercises;
   final String workoutName;
   final int workoutId;
-  ExercisePage(
-      {required this.exercises,
-      required this.workoutName,
-      required this.workoutId});
+  final int programId;
+
+  ExercisePage({
+    required this.exercises,
+    required this.workoutName,
+    required this.workoutId,
+    required this.programId,
+  });
 
   @override
   State<ExercisePage> createState() => _ExercisePageState();
@@ -28,7 +32,7 @@ class _ExercisePageState extends State<ExercisePage> {
   late int userHistoryWorkoutId;
   bool isWorkoutStarted = false; // Initial flag for workout status
   late int exerciseIndex;
-  late int noSets= 1;
+  late int noSets = 1;
   late bool isFirstExercise;
 
   late int lastUserHistoryModuleId;
@@ -90,7 +94,6 @@ class _ExercisePageState extends State<ExercisePage> {
       throw Exception('Authentication token is missing or invalid.');
     }
 
-    
     final response = await http.get(
       Uri.parse(
           'http://localhost:8080/api/selfCoach/user/getUserHistoryExerciseDetails/$userHistoryExerciseId'),
@@ -105,7 +108,8 @@ class _ExercisePageState extends State<ExercisePage> {
       int currentNoSeconds = decodedJson['currentNoSeconds'];
       int noReps = decodedJson['noReps'];
       double weight = decodedJson['weight'];
-      return DetailsUserHistoryExercise(currentNoSeconds: currentNoSeconds, noReps: noReps, weight: weight);
+      return DetailsUserHistoryExercise(
+          currentNoSeconds: currentNoSeconds, noReps: noReps, weight: weight);
     } else {
       throw Exception(
           'Failed to fetch user history exercise with id $userHistoryExerciseId. Status code: ${response.statusCode}');
@@ -142,25 +146,39 @@ class _ExercisePageState extends State<ExercisePage> {
 
       // noSets = decodedJson['noSetsLastModule'];
 
-      DetailsUserHistoryExercise detailsUserHistoryExercise = await getUserHistoryExerciseDetails(lastUserHistoryExerciseId);
-      DetailsUserHistoryModule detailsUserHistoryModule = await getUserHistoryModuleDetails(lastUserHistoryModuleId);
+      DetailsUserHistoryExercise detailsUserHistoryExercise =
+          await getUserHistoryExerciseDetails(lastUserHistoryExerciseId);
+      DetailsUserHistoryModule detailsUserHistoryModule =
+          await getUserHistoryModuleDetails(lastUserHistoryModuleId);
 
       initialNoSets = detailsUserHistoryModule.noSets;
       initialNoReps = detailsUserHistoryExercise.noReps;
       initialNoSeconds = detailsUserHistoryExercise.currentNoSeconds;
       initialWeight = detailsUserHistoryExercise.weight;
-
     } else {
       exerciseIndex = 0;
       noSets = 1;
       isFirstExercise = true;
-      final response = await http.post(
-        Uri.parse(
-            'http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId'),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-        },
-      );
+
+      final response;
+
+      if (widget.programId == -1) {
+        response = await http.post(
+          Uri.parse(
+              'http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId'),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        );
+      } else {
+        response = await http.put(
+          Uri.parse(
+              'http://localhost:8080/api/selfCoach/payingUser/addWorkoutToProgram/$workoutId/${widget.programId}'),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        );
+      }
 
       if (response.statusCode == 200) {
         print("workout " + widget.workoutName + " added to history");

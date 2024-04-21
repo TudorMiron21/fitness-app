@@ -105,14 +105,14 @@ class _HomePageState extends State<HomePage> {
         var workoutList = programJson['workoutProgramSet'] as List? ??
             []; // Handling potential null
         for (var workoutJson in workoutList) {
-          var exercisesList = workoutJson['exercises'] as List? ??
+          var exercisesList = workoutJson['workout']['exercises'] as List? ??
               []; // Handling potential null
           var workout = Workout(
-            id: workoutJson['id'],
-            name: workoutJson['name'] ?? "",
-            description: workoutJson['description'] ?? "",
-            coverPhotoUrl: workoutJson['coverPhotoUrl'] ?? '',
-            difficultyLevel: workoutJson['difficultyLevel'] ?? 0.0,
+            id: workoutJson['workout']['id'],
+            name: workoutJson['workout']['name'] ?? "",
+            description: workoutJson['workout']['description'] ?? "",
+            coverPhotoUrl: workoutJson['workout']['coverPhotoUrl'] ?? '',
+            difficultyLevel: workoutJson['workout']['difficultyLevel'] ?? 0.0,
             exercises: exercisesList
                 .map((exerciseJson) => Exercise(
                       id: exerciseJson['id'],
@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                 .toList(),
             likedByUser: workoutJson['likedByUser'] ?? false,
           );
-          indexedWorkouts[workout.id] = workout;
+          indexedWorkouts[workoutJson['workoutIndex']] = workout;
         }
 
         return Program(
@@ -741,6 +741,7 @@ class _HomePageState extends State<HomePage> {
                   exercises: workout.exercises,
                   workoutName: workout.name,
                   workoutId: workout.id,
+                  programId: -1,
                 ),
               ),
             );

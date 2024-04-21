@@ -39,10 +39,10 @@ class AppPage {
   static getRegister() => register;
   static getChat() => chat;
 
-  static GetPage getExercisePage(List<Exercise> exercises, String workoutName, int workoutId){
+  static GetPage getExercisePage(List<Exercise> exercises, String workoutName, int workoutId, int userHistoryProgramId){
     return GetPage(
       name: exercisePage,
-      page: () => ExercisePage(exercises: exercises, workoutName: workoutName,workoutId: workoutId,),
+      page: () => ExercisePage(exercises: exercises, workoutName: workoutName,workoutId: workoutId,programId: userHistoryProgramId),
       transition: Transition.fadeIn, // Adjust as needed
     );
   }
