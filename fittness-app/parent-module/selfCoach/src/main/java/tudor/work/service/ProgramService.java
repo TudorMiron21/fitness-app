@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.ProgramDto;
 import tudor.work.model.Program;
+import tudor.work.model.User;
 import tudor.work.model.UserHistoryProgram;
 import tudor.work.repository.ProgramRepository;
 
@@ -115,5 +116,9 @@ public class ProgramService {
                 .map(this::convertProgramCoverPhotos)
                 .toList();
 
+    }
+
+    public Integer getNumberOfProgramsForCoach(User coach) {
+        return programRepository.findAllByAdder(coach).size();
     }
 }

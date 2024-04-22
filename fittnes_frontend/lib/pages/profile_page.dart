@@ -1,4 +1,5 @@
 import 'package:fittnes_frontend/pages/general_stats_page.dart';
+import 'package:fittnes_frontend/pages/personal_records_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fittnes_frontend/pages/last_workout_stats_page.dart';
 import 'package:fittnes_frontend/pages/user_information.dart';
@@ -10,7 +11,8 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
+class _ProfilePageState extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
   late PageController _pageController;
   int _currentPage = 0;
 
@@ -45,7 +47,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Column(
         children: [
           Expanded(
@@ -56,6 +57,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 UserInformation(),
                 LastWorkoutStatsPage(),
                 GeneralStatsPage(),
+                PersonalRecordPage(),
                 // Add more pages as needed
               ],
             ),
@@ -65,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List<Widget>.generate(
-                3, // Replace with the actual number of pages
+                4, // Replace with the actual number of pages
                 (int index) => _buildPageIndicator(index == _currentPage),
               ),
             ),

@@ -351,5 +351,16 @@ public class UserController {
         return  "bytes " + range.getRangeStart() + "-" + range.getRangeEnd(fileSize) + "/" + fileSize;
     }
 
+
+    @GetMapping("/getPersonalRecordsForUser")
+    public ResponseEntity<?> getPersonalRecordsForUser()
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getPersonalRecordsForUser());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
 }
 

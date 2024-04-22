@@ -527,8 +527,7 @@ public class UserService {
 
 
         UserHistoryProgram userHistoryProgram = userHistoryWorkout.getUserHistoryProgram();
-        if(userHistoryProgram != null)
-        {
+        if (userHistoryProgram != null) {
             userHistoryProgram.setCurrentWorkoutIndex(
                     userHistoryProgram
                             .getProgram()
@@ -538,8 +537,7 @@ public class UserService {
                             )
             );
 
-            if(userHistoryProgram.getCurrentWorkoutIndex() == -1)
-            {
+            if (userHistoryProgram.getCurrentWorkoutIndex() == -1) {
                 userHistoryProgram.setIsProgramDone(true);
                 userHistoryProgram.setFinishedWorkoutDateAndTime(LocalDateTime.now());
             }
@@ -827,5 +825,27 @@ public class UserService {
                                         .resultMuscleGroupPercentages(workoutResult.getResultMuscleGroupPercentages())
                                         .build()
                 ).toList();
+    }
+
+
+    public Set<PersonalRecordDto> getPersonalRecordsForUser() throws NotFoundException {
+
+        return personalRecordService
+                .getPersonalRecordsForUser(authorityService.getUserId())
+                .stream()
+                .map(
+                        personalRecord
+                                ->
+                                PersonalRecordDto
+                                        .builder()
+                                        .id(personalRecord.getId())
+                                        .exercise(personalRecord.getExercise())
+                                        .maxWeight(personalRecord.getMaxWeight())
+                                        .maxTime(personalRecord.getMaxTime())
+                                        .maxCalories(personalRecord.getMaxCalories())
+                                        .maxNoReps(personalRecord.getMaxNoReps())
+                                        .maxVolume(personalRecord.getMaxVolume())
+                                        .build()
+                ).collect(Collectors.toSet());
     }
 }

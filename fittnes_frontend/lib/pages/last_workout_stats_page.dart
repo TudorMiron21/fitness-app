@@ -63,19 +63,19 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
     if (isLoading) {
       return Scaffold(
         appBar: AppBar(
-        title: Text(
-          'Last Workout Statistics',
-          style: TextStyle(
-            fontSize: 20, 
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        centerTitle: true,
-        toolbarHeight: 30, 
-        backgroundColor: Colors.blue,
-        elevation: 4
-    
-      ),
+            title: Text(
+              'Last Workout Statistics',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            centerTitle: true,
+            toolbarHeight: 30,
+            backgroundColor: Colors.blue,
+            elevation: 4,
+            automaticallyImplyLeading: false
+            ),
         body: const Center(
           child: CircularProgressIndicator(),
         ),
@@ -93,20 +93,18 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
         '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
 
     return Scaffold(
-      appBar:AppBar(
-        title: Text(
-          'Last Workout Statistics',
-          style: TextStyle(
-            fontSize: 20, 
-            fontWeight: FontWeight.w500,
+      appBar: AppBar(
+          title: Text(
+            'Last Workout Statistics',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-        centerTitle: true,
-        toolbarHeight: 30, 
-        backgroundColor: Colors.blue,
-        elevation: 4
-    
-      ),
+          centerTitle: true,
+          toolbarHeight: 30,
+          backgroundColor: Colors.blue,
+          elevation: 4),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -167,7 +165,8 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
             Text(
               value,
               style: Theme.of(context).textTheme.headline6?.copyWith(
-                    color: Colors.red.shade300, // This sets the text color to red
+                    color:
+                        Colors.red.shade300, // This sets the text color to red
                   ),
             ),
           ],

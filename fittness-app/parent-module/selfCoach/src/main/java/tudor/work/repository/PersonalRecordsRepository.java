@@ -32,4 +32,12 @@ public interface PersonalRecordsRepository extends JpaRepository<PersonalRecord,
                     "AND e.id = :exerciseId"
     )
     Optional<PersonalRecord> findByUserIdAndExerciseId(@Param("userId") Long userId, @Param("exerciseId") Long exerciseId);
+
+    @Query(
+            "SELECT pr " +
+                    "FROM PersonalRecord pr " +
+                    "JOIN pr.user u " +
+                    "WHERE u.id = :userId"
+    )
+    List<PersonalRecord> findByUserId(@Param("userId") Long userId);
 }

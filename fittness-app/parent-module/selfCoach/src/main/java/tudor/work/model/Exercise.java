@@ -43,9 +43,9 @@ public class Exercise {
     @JoinColumn(name ="muscle_group_id")
     private MuscleGroup muscleGroup;
 
-//    @ManyToOne
-//    @JoinColumn(name = "adder_id")
-//    private User adder;
+    @ManyToOne
+    @JoinColumn(name = "adder_id")
+    private User adder;
 
     @ManyToOne
     @JoinColumn(name ="equipment_id")

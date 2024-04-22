@@ -11,6 +11,7 @@ import tudor.work.dto.ProgramDto;
 import tudor.work.dto.UserDto;
 import tudor.work.exceptions.DuplicateCoachSubscription;
 import tudor.work.exceptions.DuplicatesException;
+import tudor.work.exceptions.NotSubscribedException;
 import tudor.work.exceptions.UserHistoryProgramNotFoundException;
 import tudor.work.service.PayingUserService;
 import tudor.work.service.UserService;
@@ -66,7 +67,7 @@ public class PayingUserController {
     }
 
     @PutMapping("/addWorkoutToProgram/{workoutId}/{userHistoryProgramId}")
-    ResponseEntity<?> addWorkoutToProgram(@PathVariable("workoutId") Long workoutId, @PathVariable("userHistoryProgramId") Long userHistoryProgramId) {
+    public ResponseEntity<?> addWorkoutToProgram(@PathVariable("workoutId") Long workoutId, @PathVariable("userHistoryProgramId") Long userHistoryProgramId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(payingUserService.addWorkoutToProgram(userHistoryProgramId, workoutId));
         } catch (NotFoundException e) {
@@ -75,7 +76,7 @@ public class PayingUserController {
     }
 
     @GetMapping("/isProgramStarted/{programId}")
-    ResponseEntity<?> isProgramStarted(@PathVariable(name = "programId") Long programId) {
+    public ResponseEntity<?> isProgramStarted(@PathVariable(name = "programId") Long programId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(payingUserService.isProgramStarted(programId));
         } catch (NotFoundException e) {
@@ -85,7 +86,34 @@ public class PayingUserController {
         }
     }
 
+    @GetMapping("/isCoachFollowedByUser/{coachId}")
+    public ResponseEntity<?> isCoachFollowedByUser(@PathVariable("coachId") Long coachId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.isCoachFollowedByUser(coachId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
 
+    @PutMapping("/toggleFollowCoach/{coachId}")
+    public ResponseEntity<?> toggleFollowCoach(@PathVariable("coachId")Long coachId)
+    {
+        try {
+            payingUserService.toggleFollowCoach(coachId);
+            return ResponseEntity.status(HttpStatus.OK).body("subscribed/unsubscribed successfully");
+        } catch (NotFoundException | DuplicateCoachSubscription | NotSubscribedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+    @GetMapping("/getCoachDetails/{coachId}")
+    public ResponseEntity<?> getCoachDetails(@PathVariable("coachId") Long coachId){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.getCoachDetails(coachId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
 
 }
 

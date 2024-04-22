@@ -3,11 +3,13 @@ package tudor.work.service;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tudor.work.dto.CoachDetailsDto;
 import tudor.work.dto.ProgramDto;
 import tudor.work.dto.RequestSaveWorkoutToProgramDto;
 import tudor.work.dto.UserDto;
 import tudor.work.exceptions.DuplicateCoachSubscription;
 
+import tudor.work.exceptions.NotSubscribedException;
 import tudor.work.exceptions.UserHistoryProgramNotFoundException;
 import tudor.work.model.Program;
 import tudor.work.model.User;
@@ -31,6 +33,8 @@ public class PayingUserService {
     private final UserHistoryProgramService userHistoryProgramService;
     private final ProgramService programService;
     private final UserHistoryWorkoutService userHistoryWorkoutService;
+    private final ExerciseService exerciseService;
+    private final WorkoutService workoutService;
 
     @Transactional
     public void subscribeToCoach(Long coachId) throws NotFoundException, DuplicateCoachSubscription {
@@ -43,9 +47,18 @@ public class PayingUserService {
 
         if (!coach.getFollowers().add(payingUser))
             throw new DuplicateCoachSubscription("coach" + coachId + " has paying user" + payingUser.getId() + "as a subscriber");
-
-
     }
+
+    @Transactional
+    public void unsubscribeFromCoach(Long coachId) throws NotFoundException, DuplicateCoachSubscription {
+
+        User payingUser = userService.findById(authorityService.getUserId());
+        User coach = userService.findById(coachId);
+
+        payingUser.getFollowing().remove(coach);
+        coach.getFollowers().remove(payingUser);
+    }
+
 
     public Set<UserDto> getFollowingCoaches() throws NotFoundException {
 
@@ -140,4 +153,55 @@ public class PayingUserService {
                 ).collect(Collectors.toSet());
     }
 
+    public Boolean isCoachFollowedByUser(Long coachId) throws NotFoundException {
+
+        User coach = userService.findById(coachId);
+
+        User payingUser = userService.findById(authorityService.getUserId());
+
+        return payingUser.getFollowing().contains(coach);
+    }
+
+    @Transactional
+    public void toggleFollowCoach(Long coachId) throws NotFoundException,DuplicateCoachSubscription,NotSubscribedException {
+
+        User payingUser = userService.findById(authorityService.getUserId());
+        User coach = userService.findById(coachId);
+
+        if(coach.getFollowers().contains(payingUser) && payingUser.getFollowing().contains(coach))
+        {
+            //the user is subscribed and now we want to unsubscribe
+            if (!payingUser.getFollowing().remove(coach))
+                throw new NotSubscribedException("paying user "+ payingUser.getId()+" is not subscribed to coach "+coachId);
+
+            if(!coach.getFollowers().remove(payingUser))
+                throw new NotSubscribedException("coach "+coachId+" does not have paying user" +payingUser.getId()+ "as a subscriber");
+        }
+        else if(!coach.getFollowers().contains(payingUser) && !payingUser.getFollowing().contains(coach))
+        {
+            //the user is not subscribed and now we want to subscribe
+            if (!payingUser.getFollowing().add(coach))
+                throw new DuplicateCoachSubscription("paying user" + payingUser.getId() + " already subscribed to coach" + coachId);
+
+            if (!coach.getFollowers().add(payingUser))
+                throw new DuplicateCoachSubscription("coach" + coachId + " already has paying user" + payingUser.getId() + "as a subscriber");
+        }
+        else {
+            throw new RuntimeException("coach/payingUser follows/not follows payingUser/coach, but not vice versa");
+        }
+    }
+
+    public CoachDetailsDto getCoachDetails(Long coachId) throws NotFoundException {
+        User coach = userService.findById(coachId);
+
+        return CoachDetailsDto
+                .builder()
+                .numberOfSubscribers(coach.getFollowers().size())
+                .numberOfChallenges(0)
+                .numberOfExercises(exerciseService.getNumberOfExercisesForCoach(coach))
+                .numberOfWorkouts(workoutService.getNumberOfWorkoutsForCoach(coach))
+                .numberOfPrograms(programService.getNumberOfProgramsForCoach(coach))
+                .build();
+
+    }
 }

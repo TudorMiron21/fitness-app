@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fittnes_frontend/components/program_tile.dart';
 import 'package:fittnes_frontend/models/coach.dart';
 import 'package:fittnes_frontend/models/program.dart';
+import 'package:fittnes_frontend/pages/coach_profile.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -501,7 +502,6 @@ class _HomePageState extends State<HomePage> {
                               'lib/images/background_top_workouts.jpg',
                               'Top Beginner Workouts');
                         }
-
                         Workout workout = mostLikedWorkouts[index - 1];
 
                         return buildWorkoutCard(workout);
@@ -758,8 +758,14 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 20),
         InkWell(
           onTap: () {
-            // Action when the image is tapped
-            print('View profile of ${coach.firstName}');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CoachProfile(
+                  coach: coach,
+                ),
+              ),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(8.0),

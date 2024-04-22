@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tudor.work.dto.SimplifiedExerciseDto;
 import tudor.work.model.Exercise;
+import tudor.work.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,4 +32,6 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
             "FROM Exercise e " +
             "WHERE e.isExerciseExclusive = false ")
     Set<Exercise> findAllNonExclusiveExercises();
+
+    List<Exercise> findAllByAdder(User coach);
 }

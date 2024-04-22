@@ -136,4 +136,7 @@ public class WorkoutService {
     }
 
 
+    public Integer getNumberOfWorkoutsForCoach(User coach) {
+        return workoutRepository.findAllByAdder(coach).size();
+    }
 }

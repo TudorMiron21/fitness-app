@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tudor.work.dto.ExerciseDto;
 import tudor.work.dto.SimplifiedExerciseDto;
 import tudor.work.model.Exercise;
+import tudor.work.model.User;
 import tudor.work.repository.ExerciseRepository;
 
 import java.util.List;
@@ -80,5 +81,10 @@ public class ExerciseService {
     public Set<Exercise> getAllNonExclusiveExercises()
     {
         return exerciseRepository.findAllNonExclusiveExercises();
+    }
+
+    public Integer getNumberOfExercisesForCoach(User coach) {
+
+       return exerciseRepository.findAllByAdder(coach).size();
     }
 }

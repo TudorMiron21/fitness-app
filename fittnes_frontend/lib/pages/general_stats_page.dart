@@ -151,7 +151,7 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
       return Scaffold(
         appBar: AppBar(
             title: Text(
-              'Last Workout Statistics',
+              'General Workout Statistics',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w500,
@@ -160,7 +160,9 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
             centerTitle: true,
             toolbarHeight: 30,
             backgroundColor: Colors.blue,
-            elevation: 4),
+            elevation: 4,
+            automaticallyImplyLeading: false
+            ),
         body: const Center(
           child: CircularProgressIndicator(),
         ),
