@@ -139,4 +139,12 @@ public class WorkoutService {
     public Integer getNumberOfWorkoutsForCoach(User coach) {
         return workoutRepository.findAllByAdder(coach).size();
     }
+
+    public List<Workout> findAllByAdder(User coach) {
+        return workoutRepository.findAllByAdder(coach)
+                .stream()
+                .map(this::convertWorkoutCoverPhotos)
+                .toList();
+    }
+
 }

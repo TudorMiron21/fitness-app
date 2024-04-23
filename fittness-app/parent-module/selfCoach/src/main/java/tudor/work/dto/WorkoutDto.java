@@ -23,12 +23,10 @@ public class WorkoutDto {
     private String coverPhotoUrl;
     private Double difficultyLevel;
     private boolean isLikedByUser;
-
     private Long noLikes;
 
     @JsonDeserialize(using = ExercisesDeserialiser.class)
     private Set<Exercise> exercises;
-
 
 //
 //    @JsonDeserialize(using = UserDeserializer.class)

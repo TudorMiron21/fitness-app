@@ -68,6 +68,15 @@ public class User implements UserDetails {
     private Set<User> followers = new HashSet<>();
 
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "_user_achievements",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_achievement")
+    )
+    @JsonManagedReference
+    private Set<Achievement> achievements;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

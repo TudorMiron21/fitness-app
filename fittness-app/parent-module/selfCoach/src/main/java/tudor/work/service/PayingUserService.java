@@ -3,18 +3,12 @@ package tudor.work.service;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tudor.work.dto.CoachDetailsDto;
-import tudor.work.dto.ProgramDto;
-import tudor.work.dto.RequestSaveWorkoutToProgramDto;
-import tudor.work.dto.UserDto;
+import tudor.work.dto.*;
 import tudor.work.exceptions.DuplicateCoachSubscription;
 
 import tudor.work.exceptions.NotSubscribedException;
 import tudor.work.exceptions.UserHistoryProgramNotFoundException;
-import tudor.work.model.Program;
-import tudor.work.model.User;
-import tudor.work.model.UserHistoryProgram;
-import tudor.work.model.UserHistoryWorkout;
+import tudor.work.model.*;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -22,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.List;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -123,10 +119,9 @@ public class PayingUserService {
         Optional<UserHistoryProgram> userHistoryProgram = userHistoryProgramService.findLastProgramByUserAndProgramId(authorityService.getUserId(), programId);
 
         if (userHistoryProgram.isPresent()) {
-            if(!userHistoryProgram.get().getIsProgramDone()) {
+            if (!userHistoryProgram.get().getIsProgramDone()) {
                 return userHistoryProgram.get();
-            }
-            else {
+            } else {
                 throw new UserHistoryProgramNotFoundException("program with id " + programId + " found in program user history, but its done");
             }
         } else {
@@ -163,30 +158,26 @@ public class PayingUserService {
     }
 
     @Transactional
-    public void toggleFollowCoach(Long coachId) throws NotFoundException,DuplicateCoachSubscription,NotSubscribedException {
+    public void toggleFollowCoach(Long coachId) throws NotFoundException, DuplicateCoachSubscription, NotSubscribedException {
 
         User payingUser = userService.findById(authorityService.getUserId());
         User coach = userService.findById(coachId);
 
-        if(coach.getFollowers().contains(payingUser) && payingUser.getFollowing().contains(coach))
-        {
-            //the user is subscribed and now we want to unsubscribe
+        if (coach.getFollowers().contains(payingUser) && payingUser.getFollowing().contains(coach)) {
+            //the user is subscribed, and now we want to unsubscribe
             if (!payingUser.getFollowing().remove(coach))
-                throw new NotSubscribedException("paying user "+ payingUser.getId()+" is not subscribed to coach "+coachId);
+                throw new NotSubscribedException("paying user " + payingUser.getId() + " is not subscribed to coach " + coachId);
 
-            if(!coach.getFollowers().remove(payingUser))
-                throw new NotSubscribedException("coach "+coachId+" does not have paying user" +payingUser.getId()+ "as a subscriber");
-        }
-        else if(!coach.getFollowers().contains(payingUser) && !payingUser.getFollowing().contains(coach))
-        {
-            //the user is not subscribed and now we want to subscribe
+            if (!coach.getFollowers().remove(payingUser))
+                throw new NotSubscribedException("coach " + coachId + " does not have paying user" + payingUser.getId() + "as a subscriber");
+        } else if (!coach.getFollowers().contains(payingUser) && !payingUser.getFollowing().contains(coach)) {
+            //the user is not subscribed, and now we want to subscribe
             if (!payingUser.getFollowing().add(coach))
                 throw new DuplicateCoachSubscription("paying user" + payingUser.getId() + " already subscribed to coach" + coachId);
 
             if (!coach.getFollowers().add(payingUser))
                 throw new DuplicateCoachSubscription("coach" + coachId + " already has paying user" + payingUser.getId() + "as a subscriber");
-        }
-        else {
+        } else {
             throw new RuntimeException("coach/payingUser follows/not follows payingUser/coach, but not vice versa");
         }
     }
@@ -203,5 +194,56 @@ public class PayingUserService {
                 .numberOfPrograms(programService.getNumberOfProgramsForCoach(coach))
                 .build();
 
+    }
+
+    public Set<WorkoutDto> getCoachWorkouts(Long coachId) throws NotFoundException {
+
+        User coach = userService.findById(coachId);
+        List<Workout> coachWorkouts = workoutService.findAllByAdder(coach);
+
+        return coachWorkouts
+                .stream()
+                .map(
+                        workout ->
+                        {
+                            try {
+                                return WorkoutDto
+                                        .builder()
+                                        .id(workout.getId())
+                                        .name(workout.getName())
+                                        .description(workout.getDescription())
+                                        .coverPhotoUrl(workout.getCoverPhotoUrl())
+                                        .difficultyLevel(workout.getDifficultyLevel())
+                                        .isLikedByUser(workout.getLikers().contains(authorityService.getUser()))
+                                        .noLikes(((long) workout.getLikers().size()))
+                                        .exercises(workout.getExercises())
+                                        .build();
+                            } catch (NotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                ).collect(Collectors.toSet());
+    }
+
+    public Set<ProgramDto> getCoachPrograms(Long coachId) throws NotFoundException {
+        User coach = userService.findById(coachId);
+
+        List<Program> programs = programService.findAllByAdder(coach);
+
+        return programs
+                .stream()
+                .map(
+                        program ->
+                                ProgramDto
+                                        .builder()
+                                        .id(program.getId())
+                                        .name(program.getName())
+                                        .description(program.getDescription())
+                                        .durationInDays(program.getDurationInDays())
+                                        .coverPhotoUrl(program.getCoverPhotoUrl())
+                                        .workoutProgramSet(program.getWorkoutPrograms())
+                                        .build()
+                ).collect(Collectors.toSet());
     }
 }

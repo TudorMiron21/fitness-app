@@ -49,6 +49,7 @@ public class User implements UserDetails {
     private Set<Workout> likedWorkouts;
 
 
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "_user_achievements",

@@ -25,6 +25,11 @@ public class PersonalRecord {
     @JoinColumn(name = "id_user")
     private User user;
 
+
+    @OneToOne
+    @JoinColumn(name = "id_userHistoryExercise")
+    private UserHistoryExercise userHistoryExercise;
+
     private Double maxWeight;
 
     private Long maxTime;

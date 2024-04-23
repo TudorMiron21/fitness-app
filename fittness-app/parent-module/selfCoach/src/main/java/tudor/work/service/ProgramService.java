@@ -121,4 +121,11 @@ public class ProgramService {
     public Integer getNumberOfProgramsForCoach(User coach) {
         return programRepository.findAllByAdder(coach).size();
     }
+
+    public List<Program> findAllByAdder(User coach) {
+        return programRepository.findAllByAdder(coach)
+                .stream()
+                .map(this::convertProgramCoverPhotos)
+                .toList();
+    }
 }

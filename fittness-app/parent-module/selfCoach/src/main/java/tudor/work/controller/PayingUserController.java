@@ -96,8 +96,7 @@ public class PayingUserController {
     }
 
     @PutMapping("/toggleFollowCoach/{coachId}")
-    public ResponseEntity<?> toggleFollowCoach(@PathVariable("coachId")Long coachId)
-    {
+    public ResponseEntity<?> toggleFollowCoach(@PathVariable("coachId") Long coachId) {
         try {
             payingUserService.toggleFollowCoach(coachId);
             return ResponseEntity.status(HttpStatus.OK).body("subscribed/unsubscribed successfully");
@@ -107,13 +106,33 @@ public class PayingUserController {
     }
 
     @GetMapping("/getCoachDetails/{coachId}")
-    public ResponseEntity<?> getCoachDetails(@PathVariable("coachId") Long coachId){
+    public ResponseEntity<?> getCoachDetails(@PathVariable("coachId") Long coachId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(payingUserService.getCoachDetails(coachId));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
     }
+
+    @GetMapping("/getCoachWorkouts/{coachId}")
+    public ResponseEntity<?> getCoachWorkouts(@PathVariable("coachId") Long coachId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.getCoachWorkouts(coachId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+    @GetMapping("/getCoachPrograms/{coachId}")
+    public ResponseEntity<?> getCoachPrograms(@PathVariable("coachId")Long coachId)
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.getCoachPrograms(coachId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
 
 }
 

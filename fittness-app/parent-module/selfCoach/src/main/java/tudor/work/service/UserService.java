@@ -45,6 +45,7 @@ public class UserService {
     private final WorkoutResultService workoutResultService;
     private final StatisticsService statisticsService;
     private final PersonalRecordService personalRecordService;
+    private final LeaderBoardService leaderBoardService;
 
 
     public User findById(Long id) throws NotFoundException {
@@ -353,10 +354,13 @@ public class UserService {
                             if (personalRecordValue.getMaxNoReps() < requestUserHistoryExercise.getNoReps()) {
                                 personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
                                 personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                                personalRecordValue.setUserHistoryExercise(userHistoryExercise);
                             }
                         } else {
                             personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
                             personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+
                         }
                     } else {
 
@@ -367,6 +371,8 @@ public class UserService {
                                         .user(authorityService.getUser())
                                         .maxNoReps(requestUserHistoryExercise.getNoReps())
                                         .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
+                                        .userHistoryExercise(userHistoryExercise)
+
                                         .build()
                         );
                     }
@@ -388,12 +394,15 @@ public class UserService {
                             personalRecordValue.setMaxWeight(requestUserHistoryExercise.getWeight());
                             personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
                             personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
 
                         }
                     } else {
                         personalRecordValue.setMaxWeight(requestUserHistoryExercise.getWeight());
                         personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
                         personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+
                     }
                 } else {
 
@@ -404,6 +413,7 @@ public class UserService {
                                     .user(authorityService.getUser())
                                     .maxWeight(requestUserHistoryExercise.getWeight())
                                     .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
+                                    .userHistoryExercise(userHistoryExercise)
                                     .build()
                     );
                 }
@@ -422,11 +432,12 @@ public class UserService {
                         if (personalRecordValue.getMaxVolume() < requestUserHistoryExercise.getWeight() * requestUserHistoryExercise.getNoReps()) {
                             personalRecordValue.setMaxVolume(requestUserHistoryExercise.getWeight() * requestUserHistoryExercise.getNoReps());
                             personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-
+                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
                         }
                     } else {
                         personalRecordValue.setMaxVolume(requestUserHistoryExercise.getWeight() * requestUserHistoryExercise.getNoReps());
                         personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
                     }
                 } else {
                     personalRecordService.save(
@@ -436,6 +447,7 @@ public class UserService {
                                     .user(authorityService.getUser())
                                     .maxVolume(requestUserHistoryExercise.getWeight() * requestUserHistoryExercise.getNoReps())
                                     .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
+                                    .userHistoryExercise(userHistoryExercise)
                                     .build()
                     );
                 }
@@ -453,10 +465,13 @@ public class UserService {
                     if (personalRecordValue.getMaxCalories() < requestUserHistoryExercise.getCaloriesBurned()) {
                         personalRecordValue.setMaxCalories(requestUserHistoryExercise.getCaloriesBurned());
                         personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+
                     }
                 } else {
                     personalRecordValue.setMaxCalories(requestUserHistoryExercise.getCaloriesBurned());
                     personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
+                    personalRecordValue.setUserHistoryExercise(userHistoryExercise);
                 }
             } else {
 
@@ -467,6 +482,7 @@ public class UserService {
                                 .user(authorityService.getUser())
                                 .maxCalories(requestUserHistoryExercise.getCaloriesBurned())
                                 .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
+                                .userHistoryExercise(userHistoryExercise)
                                 .build()
                 );
             }
@@ -544,11 +560,87 @@ public class UserService {
         }
     }
 
+
+    private Boolean getPersonalRecordForUserHistoryExercise(UserHistoryExercise userHistoryExercise) {
+        Optional<PersonalRecord> personalRecordOptional = personalRecordService.findByUserHistoryExercise(userHistoryExercise);
+        return personalRecordOptional.isPresent();
+    }
+
+    @Transactional
+    public void calculateNumberOfPoints(Long userHistoryWorkoutId) throws NotFoundException {
+
+        UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.findById(userHistoryWorkoutId);
+
+        //pondere = p = 0.1;
+        //exercise = e
+        //no_points = sum(p * volume(e) + p/2 * time(e) + p * no_calories(e) )
+        //if a personal record was set doing the exercise, then p = p * 2;
+
+        List<UserHistoryExercise> userHistoryExercises = userHistoryWorkout.getUserHistoryModules()
+                .stream()
+                .flatMap(module -> module.getUserHistoryExercises().stream())
+                .toList();
+
+        Double weight = 0.1; //pondere
+        Double noPoints = userHistoryExercises
+                .stream()
+                .mapToDouble(
+                        uhe ->
+                        {
+                            Double numberOfPoints;
+                            Double caloriesBurned = 0.0;
+                            Double exerciseWeight = 0.0;
+                            Integer noReps = 0;
+                            Long exerciseTime = 0L;
+
+                            if (uhe.getCaloriesBurned() != null)
+                                caloriesBurned = uhe.getCaloriesBurned();
+
+                            if (uhe.getWeight() != null)
+                                exerciseWeight = uhe.getWeight();
+
+                            if (uhe.getNoReps() != null)
+                                noReps = uhe.getNoReps();
+
+                            if (uhe.getCurrNoSeconds() != null)
+                                exerciseTime = uhe.getCurrNoSeconds();
+
+                            numberOfPoints = exerciseWeight * noReps * weight + exerciseTime * weight / 2 + caloriesBurned * weight;
+                            if (this.getPersonalRecordForUserHistoryExercise(uhe))
+                                numberOfPoints *= 2;
+                            return numberOfPoints;
+                        }
+                )
+                .sum();
+
+        Optional<LeaderBoard> leaderBoardOptional = leaderBoardService.findByUser(authorityService.getUser());
+
+        if (leaderBoardOptional.isPresent()) {
+            LeaderBoard leaderBoard = leaderBoardOptional.get();
+            leaderBoard.setNumberOfPoints(leaderBoard.getNumberOfPoints() + noPoints);
+        } else {
+
+            LeaderBoard leaderBoard =
+                    LeaderBoard
+                            .builder()
+                            .user(authorityService.getUser())
+                            .numberOfPoints(noPoints)
+                            .build();
+
+            leaderBoardService.save(leaderBoard);
+        }
+    }
+
+
+
+
     public void finishWorkout(Long userHistoryWorkoutId) throws NotFoundException, ExecutionException, InterruptedException {
 
         WorkoutResult workoutResult = saveUserHistoryWorkoutAndGetWorkoutResult(userHistoryWorkoutId);
 
         incrementWorkoutIndex(userHistoryWorkoutId);
+
+        calculateNumberOfPoints(userHistoryWorkoutId);
 
         User user = authorityService.getUser();
         //TODO: async generate the stats for the newly added workout history entry
@@ -563,8 +655,9 @@ public class UserService {
         workoutResult.setResultDifficultyPercentages(completedWorkoutResult.getResultDifficultyPercentages());
         workoutResult.setResultMuscleGroupPercentages(completedWorkoutResult.getResultMuscleGroupPercentages());
 
-
         workoutResultService.save(workoutResult);
+
+
     }
 
 

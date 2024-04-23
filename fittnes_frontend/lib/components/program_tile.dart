@@ -22,44 +22,56 @@ class ProgramTile extends StatelessWidget {
         );
       },
       child: Card(
+        elevation: 5,
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Image.network(
-              program.coverPhotoUrl,
-              width: double.infinity,
-              height: 200,
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(program.coverPhotoUrl),
               fit: BoxFit.cover,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    program.name,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    program.description,
-                    style: TextStyle(fontSize: 16),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    '${program.durationInDays} days',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
-                ],
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(
+                    0.65), // Adjust opacity of the background image
+                BlendMode.darken,
               ),
             ),
-          ],
+          ),
+          child: ListTile(
+            contentPadding: EdgeInsets.all(16),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        program.name,
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        program.description,
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        '${program.durationInDays} days',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -1,21 +1,26 @@
 package tudor.work.model;
 
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-
+@Table
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
 public class LeaderBoard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @OneToOne
-//    private User user;
+    @OneToOne
+    @JoinColumn(name = "id_user")
+    private User user;
 
-    private Integer totalNumberOfPoints;
+    private Double numberOfPoints;
 
-    
 }
