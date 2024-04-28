@@ -23,4 +23,11 @@ public class LeaderBoard {
 
     private Double numberOfPoints;
 
+    private Integer numberOfDoneExercises;
+
+    private Integer numberOfDoneWorkouts;
+
+    private Integer numberOfDonePrograms;
+
+
 }

@@ -46,6 +46,7 @@ public class UserService {
     private final StatisticsService statisticsService;
     private final PersonalRecordService personalRecordService;
     private final LeaderBoardService leaderBoardService;
+    private final AchievementService achievementService;
 
 
     public User findById(Long id) throws NotFoundException {
@@ -371,7 +372,7 @@ public class UserService {
                                         .user(authorityService.getUser())
                                         .maxNoReps(requestUserHistoryExercise.getNoReps())
                                         .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
-                                        .userHistoryExercise(userHistoryExercise)
+//                                        .userHistoryExercise(userHistoryExercise)
 
                                         .build()
                         );
@@ -413,7 +414,7 @@ public class UserService {
                                     .user(authorityService.getUser())
                                     .maxWeight(requestUserHistoryExercise.getWeight())
                                     .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
-                                    .userHistoryExercise(userHistoryExercise)
+//                                    .userHistoryExercise(userHistoryExercise)
                                     .build()
                     );
                 }
@@ -447,7 +448,7 @@ public class UserService {
                                     .user(authorityService.getUser())
                                     .maxVolume(requestUserHistoryExercise.getWeight() * requestUserHistoryExercise.getNoReps())
                                     .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
-                                    .userHistoryExercise(userHistoryExercise)
+//                                    .userHistoryExercise(userHistoryExercise)
                                     .build()
                     );
                 }
@@ -482,7 +483,7 @@ public class UserService {
                                 .user(authorityService.getUser())
                                 .maxCalories(requestUserHistoryExercise.getCaloriesBurned())
                                 .maxTime(requestUserHistoryExercise.getCurrNoSeconds())
-                                .userHistoryExercise(userHistoryExercise)
+//                                .userHistoryExercise(userHistoryExercise)
                                 .build()
                 );
             }
@@ -566,23 +567,69 @@ public class UserService {
         return personalRecordOptional.isPresent();
     }
 
+
     @Transactional
-    public void calculateNumberOfPoints(Long userHistoryWorkoutId) throws NotFoundException {
+    public void addUserResults(Long userHistoryWorkoutId) throws NotFoundException {
 
         UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.findById(userHistoryWorkoutId);
 
+        Double noPoints = this.getNumberOfPoints(userHistoryWorkout);
+
+        Integer noDoneExercises = this.getNoDoneExercises(userHistoryWorkout);
+        Integer noDoneWorkouts = 1;
+        Integer noDonePrograms = this.getNoDonePrograms(userHistoryWorkout);
+
+
+        Optional<LeaderBoard> leaderBoardOptional = leaderBoardService.findByUser(authorityService.getUser());
+
+        if (leaderBoardOptional.isPresent()) {
+
+            LeaderBoard leaderBoard = leaderBoardOptional.get();
+
+            noPoints += addAchievements(
+                    leaderBoard.getNumberOfDoneExercises(), noDoneExercises,
+                    leaderBoard.getNumberOfDoneWorkouts(), noDoneWorkouts,
+                    leaderBoard.getNumberOfDonePrograms(), noDonePrograms
+            );
+
+            leaderBoard.setNumberOfPoints(leaderBoard.getNumberOfPoints() + noPoints);
+            leaderBoard.setNumberOfDoneExercises(leaderBoard.getNumberOfDoneExercises() + noDoneExercises);
+            leaderBoard.setNumberOfDoneWorkouts(leaderBoard.getNumberOfDoneWorkouts() + noDoneWorkouts);
+            leaderBoard.setNumberOfDonePrograms(leaderBoard.getNumberOfDonePrograms() + noDonePrograms);
+        } else {
+
+            noPoints += addAchievements(
+                    0, noDoneExercises,
+                    0, noDoneWorkouts,
+                    0, noDonePrograms
+            );
+
+            LeaderBoard leaderBoard =
+                    LeaderBoard
+                            .builder()
+                            .user(authorityService.getUser())
+                            .numberOfPoints(noPoints)
+                            .numberOfDoneExercises(noDoneExercises)
+                            .numberOfDoneWorkouts(noDoneWorkouts)
+                            .numberOfDonePrograms(noDonePrograms)
+                            .build();
+
+            leaderBoardService.save(leaderBoard);
+        }
+    }
+
+    private Double getNumberOfPoints(UserHistoryWorkout userHistoryWorkout) {
         //pondere = p = 0.1;
         //exercise = e
         //no_points = sum(p * volume(e) + p/2 * time(e) + p * no_calories(e) )
         //if a personal record was set doing the exercise, then p = p * 2;
-
         List<UserHistoryExercise> userHistoryExercises = userHistoryWorkout.getUserHistoryModules()
                 .stream()
                 .flatMap(module -> module.getUserHistoryExercises().stream())
                 .toList();
 
         Double weight = 0.1; //pondere
-        Double noPoints = userHistoryExercises
+        return userHistoryExercises
                 .stream()
                 .mapToDouble(
                         uhe ->
@@ -612,26 +659,52 @@ public class UserService {
                         }
                 )
                 .sum();
+    }
 
-        Optional<LeaderBoard> leaderBoardOptional = leaderBoardService.findByUser(authorityService.getUser());
+    //this returns the number of point accumulated through the achievements
+    private Double addAchievements(
+            Integer totalNumberOfDoneExercises, Integer noDoneExercises,
+            Integer totalNumberOfDoneWorkouts, Integer noDoneWorkouts,
+            Integer totalNumberOfDonePrograms, Integer noDonePrograms) throws NotFoundException {
 
-        if (leaderBoardOptional.isPresent()) {
-            LeaderBoard leaderBoard = leaderBoardOptional.get();
-            leaderBoard.setNumberOfPoints(leaderBoard.getNumberOfPoints() + noPoints);
-        } else {
+        List<Achievement> allAchievements = achievementService.findAll();
 
-            LeaderBoard leaderBoard =
-                    LeaderBoard
-                            .builder()
-                            .user(authorityService.getUser())
-                            .numberOfPoints(noPoints)
-                            .build();
+        Set<Achievement> achievementsClaimed =
+                allAchievements
+                        .stream()
+                        .filter(
+                                achievement -> {
+                                    return ((achievement.getNumberOfExercisesMilestone() > totalNumberOfDoneExercises) && (achievement.getNumberOfExercisesMilestone() <= totalNumberOfDoneExercises + noDoneExercises)) ||
+                                            ((achievement.getNumberOfWorkoutsMileStone() > totalNumberOfDoneWorkouts) && (achievement.getNumberOfWorkoutsMileStone() <= totalNumberOfDoneWorkouts + noDoneWorkouts)) ||
+                                            ((achievement.getNumberOfProgramsMilestone() > totalNumberOfDonePrograms) && (achievement.getNumberOfProgramsMilestone() <= totalNumberOfDonePrograms + noDonePrograms));
+                                }
+                        ).collect(Collectors.toSet());
 
-            leaderBoardService.save(leaderBoard);
-        }
+        User user = authorityService.getUser();
+
+        Set<Achievement> userAchievements = user.getAchievements();
+
+        userAchievements.addAll(achievementsClaimed);
+
+        user.setAchievements(userAchievements);
+
+        return achievementsClaimed.stream().mapToDouble(Achievement::getNumberOfPoints).sum();
+    }
+
+    private Integer getNoDoneExercises(UserHistoryWorkout userHistoryWorkout) {
+
+        return userHistoryWorkout.getUserHistoryModules()
+                .size();
     }
 
 
+    private Integer getNoDonePrograms(UserHistoryWorkout userHistoryWorkout) {
+        UserHistoryProgram userHistoryProgram = userHistoryWorkout.getUserHistoryProgram();
+        if (userHistoryProgram != null)
+            if (userHistoryProgram.getIsProgramDone())
+                return 1;
+        return 0;
+    }
 
 
     public void finishWorkout(Long userHistoryWorkoutId) throws NotFoundException, ExecutionException, InterruptedException {
@@ -640,11 +713,13 @@ public class UserService {
 
         incrementWorkoutIndex(userHistoryWorkoutId);
 
-        calculateNumberOfPoints(userHistoryWorkoutId);
+        addUserResults(userHistoryWorkoutId);
+
 
         User user = authorityService.getUser();
         //TODO: async generate the stats for the newly added workout history entry
         CompletableFuture<WorkoutResult> result = statisticsService.getStatistics(userHistoryWorkoutId, workoutResult.getId(), user);
+
 
         WorkoutResult completedWorkoutResult = result.get();
 

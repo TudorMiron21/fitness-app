@@ -4,6 +4,7 @@ import 'package:fittnes_frontend/models/LastEntryUserHistoryExercise.dart';
 import 'package:fittnes_frontend/models/UpdateExerciseToModule.dart';
 
 import 'package:fittnes_frontend/models/exercise.dart';
+import 'package:fittnes_frontend/pages/finish_workout_page.dart';
 import 'package:fittnes_frontend/pages/profile_page.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:fittnes_frontend/utils/WebSocketManager.dart';
@@ -225,7 +226,6 @@ class StartExercisePage extends StatefulWidget {
 }
 
 class _StartExercisePageState extends State<StartExercisePage> {
-
   Timer? countdownTimer;
   late Duration myDuration;
   //= Duration(seconds: 0);
@@ -651,6 +651,10 @@ class _StartExercisePageState extends State<StartExercisePage> {
     } else {
       //workout finish
       Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FinishWorkoutPage()),
+      );
       // Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfilePage()));
     }
   }
@@ -835,8 +839,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
             }
 
             if (widget.exerciseIndex == widget.exercises.length - 1) {
-              if(noSets == 1)
+              if (noSets == 1) {
                 await finishWorkout(widget.userHistoryWorkoutId);
+              }
             }
           },
           child: Text(
@@ -932,6 +937,4 @@ class _StartExercisePageState extends State<StartExercisePage> {
       ),
     );
   }
-
-
 }

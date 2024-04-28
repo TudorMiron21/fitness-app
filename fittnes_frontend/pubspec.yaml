@@ -54,7 +54,7 @@ dependencies:
   firebase_core: ^2.17.0 
   firebase_auth: ^4.10.1
   google_sign_in: ^6.2.1
-
+  confetti: ^0.7.0 
 
 dev_dependencies:
   flutter_test:
