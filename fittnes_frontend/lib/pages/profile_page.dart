@@ -1,8 +1,13 @@
+import 'package:fittnes_frontend/components/bottom_nav.dart';
+import 'package:fittnes_frontend/pages/contacts_leader_board.dart';
 import 'package:fittnes_frontend/pages/general_stats_page.dart';
+import 'package:fittnes_frontend/pages/global_leader_board.dart';
 import 'package:fittnes_frontend/pages/personal_records_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fittnes_frontend/pages/last_workout_stats_page.dart';
 import 'package:fittnes_frontend/pages/user_information.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -13,13 +18,13 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-  late PageController _pageController;
+  PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _currentPage = 0;
   }
 
   @override
@@ -58,6 +63,8 @@ class _ProfilePageState extends State<ProfilePage>
                 LastWorkoutStatsPage(),
                 GeneralStatsPage(),
                 PersonalRecordPage(),
+                GlobalLeaderBoard(),
+                ContactsLeaderBoard(),
                 // Add more pages as needed
               ],
             ),
@@ -67,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List<Widget>.generate(
-                4, // Replace with the actual number of pages
+                6, // Replace with the actual number of pages
                 (int index) => _buildPageIndicator(index == _currentPage),
               ),
             ),

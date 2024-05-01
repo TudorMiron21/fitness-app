@@ -21,6 +21,7 @@ public class LeaderBoard {
     @JoinColumn(name = "id_user")
     private User user;
 
+    @Column(precision = 10, scale = 2)
     private Double numberOfPoints;
 
     private Integer numberOfDoneExercises;

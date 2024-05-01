@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class UserDetails {
@@ -10,8 +13,20 @@ class UserDetails {
 }
 
 Future<UserDetails?> retrieveGoogleUser() async {
-  final googleAccount = await GoogleSignIn().signIn();
+  final googleAccount = await GoogleSignIn(scopes: [
+    "https://www.googleapis.com/auth/contacts.readonly",
+    "https://www.googleapis.com/auth/contacts.other.readonly"
+  ]).signIn();
   final googleAuth = await googleAccount?.authentication;
+
+  //this saves in the flutter secure storage the auth token fot the people apis
+  final authHeader = await googleAccount?.authHeaders;
+  final authHeadersJson = jsonEncode(authHeader);
+  final secureStorage = FlutterSecureStorage();
+  await secureStorage.write(
+    key: 'authHeader',
+    value: authHeadersJson,
+  );
 
   final credential = GoogleAuthProvider.credential(
     accessToken: googleAuth?.accessToken,

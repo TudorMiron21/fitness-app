@@ -35,7 +35,7 @@ public class PersonalRecordService {
         return personalRecordsRepository.findByUserId(userId);
     }
 
-    public Optional<PersonalRecord> findByUserHistoryExercise(UserHistoryExercise userHistoryExercise) {
-        return personalRecordsRepository.findByUserHistoryExercise(userHistoryExercise);
-    }
+//    public Optional<PersonalRecord> findByUserHistoryExercise(UserHistoryExercise userHistoryExercise) {
+//        return personalRecordsRepository.findByUserHistoryExercise(userHistoryExercise);
+//    }
 }

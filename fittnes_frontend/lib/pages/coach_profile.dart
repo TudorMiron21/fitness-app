@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:fittnes_frontend/components/custom_divider.dart';
 import 'package:fittnes_frontend/components/program_tile.dart';
-import 'package:fittnes_frontend/models/coach.dart';
+import 'package:fittnes_frontend/models/user.dart';
 import 'package:fittnes_frontend/models/coach_details.dart';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:fittnes_frontend/models/program.dart';
@@ -13,7 +13,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class CoachProfile extends StatefulWidget {
-  final Coach coach;
+  final User coach;
   const CoachProfile({super.key, required this.coach});
   @override
   State<CoachProfile> createState() => _CoachProfileState();

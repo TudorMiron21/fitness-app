@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:fittnes_frontend/components/program_tile.dart';
-import 'package:fittnes_frontend/models/coach.dart';
+import 'package:fittnes_frontend/models/user.dart';
 import 'package:fittnes_frontend/models/program.dart';
 import 'package:fittnes_frontend/pages/coach_profile.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Workout> mostLikedWorkouts = [];
 
-  List<Coach> followingCoaches = [];
+  List<User> followingCoaches = [];
 
   List<Program> programs = [];
 
@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
       final List<dynamic> data = json.decode(response.body);
 
       followingCoaches = data
-          .map((json) => Coach(
+          .map((json) => User(
                 id: json['id'] ??
                     0, // Provide a default value for id if it's null
                 email: json['email'] ??
@@ -399,7 +399,7 @@ class _HomePageState extends State<HomePage> {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: List.generate(endIndex - startIndex, (i) {
-                              Coach coach = followingCoaches[startIndex + i];
+                              User coach = followingCoaches[startIndex + i];
                               return Expanded(
                                 child: buildCoachCard(coach),
                               );
@@ -751,7 +751,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildCoachCard(Coach coach) {
+  Widget buildCoachCard(User coach) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[

@@ -21,7 +21,7 @@ public class AchievementRequestDto {
 
     private String description;
 
-    private Integer numberOfPoints;
+    private Double numberOfPoints;
 
     private MultipartFile achievementPicture;
 

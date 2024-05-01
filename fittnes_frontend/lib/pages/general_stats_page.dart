@@ -161,7 +161,7 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
             toolbarHeight: 30,
             backgroundColor: Colors.blue,
             elevation: 4,
-            automaticallyImplyLeading: false
+            automaticallyImplyLeading: true
             ),
         body: const Center(
           child: CircularProgressIndicator(),

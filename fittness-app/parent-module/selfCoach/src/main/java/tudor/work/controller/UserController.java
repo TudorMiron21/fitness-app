@@ -222,8 +222,8 @@ public class UserController {
     @PutMapping("/finishWorkout/{userHistoryWorkoutId}")
     public ResponseEntity<?> finishWorkout(@PathVariable(name = "userHistoryWorkoutId") Long userHistoryWorkoutId) {
         try {
-            userService.finishWorkout(userHistoryWorkoutId);
-            return ResponseEntity.status(HttpStatus.OK).body("workout finished");
+            WorkoutRewardsResponseDto workoutRewardsResponseDto = userService.finishWorkout(userHistoryWorkoutId);
+            return ResponseEntity.status(HttpStatus.OK).body(workoutRewardsResponseDto);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (ExecutionException | InterruptedException e) {
@@ -360,6 +360,18 @@ public class UserController {
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
+    }
+
+    @GetMapping("/getLeaderBoardEntries")
+    public ResponseEntity<?> getLeaderBoardEntries(){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getLeaderBoardEntries());
+    }
+
+
+    @GetMapping("/getContactsLeaderBoard")
+    public ResponseEntity<?>getContactsLeaderBoard(@RequestParam("email") List<String> emails)
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getContactsLeaderBoard(emails)) ;
     }
 
 }

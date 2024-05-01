@@ -43,5 +43,5 @@ public interface PersonalRecordsRepository extends JpaRepository<PersonalRecord,
     )
     List<PersonalRecord> findByUserId(@Param("userId") Long userId);
 
-    Optional<PersonalRecord> findByUserHistoryExercise(UserHistoryExercise userHistoryExercise);
+//    Optional<PersonalRecord> findByUserHistoryExercise(UserHistoryExercise userHistoryExercise);
 }

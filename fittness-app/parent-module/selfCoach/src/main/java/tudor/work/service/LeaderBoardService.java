@@ -6,6 +6,7 @@ import tudor.work.model.LeaderBoard;
 import tudor.work.model.User;
 import tudor.work.repository.LeaderBoardRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,7 +20,13 @@ public class LeaderBoardService {
         return leaderBoardRepository.findByUser(user);
     }
 
-    public void save(LeaderBoard leaderBoard) {
-        leaderBoardRepository.save(leaderBoard);
+    public LeaderBoard save(LeaderBoard leaderBoard) {
+        return leaderBoardRepository.save(leaderBoard);
     }
+
+    public List<LeaderBoard> findAll()
+    {
+        return leaderBoardRepository.findAll();
+    }
+
 }

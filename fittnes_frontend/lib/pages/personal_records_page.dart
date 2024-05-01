@@ -122,6 +122,17 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
                         color: Colors.grey,
                         child: Center(
                             child: Text(
+                          'Reps',
+                          style: TextStyle(
+                            fontWeight:
+                                FontWeight.w600, // Specify the font size here
+                          ),
+                        ))),
+                    Container(
+                        height: 32,
+                        color: Colors.grey,
+                        child: Center(
+                            child: Text(
                           'Time',
                           style: TextStyle(
                             fontWeight:
@@ -134,17 +145,6 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
                         child: Center(
                             child: Text(
                           'Volume',
-                          style: TextStyle(
-                            fontWeight:
-                                FontWeight.w600, // Specify the font size here
-                          ),
-                        ))),
-                    Container(
-                        height: 32,
-                        color: Colors.grey,
-                        child: Center(
-                            child: Text(
-                          'Reps',
                           style: TextStyle(
                             fontWeight:
                                 FontWeight.w600, // Specify the font size here
@@ -193,6 +193,16 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
                                 height: 54,
                                 child: Center(
                                     child: Text(
+                                  record.maxNoReps?.toString() ?? 'N/A',
+                                  style: TextStyle(
+                                    fontSize: 12, // Specify the font size here
+                                  ),
+                                ))),
+                            Container(
+                                color: Colors.blue.shade100,
+                                height: 54,
+                                child: Center(
+                                    child: Text(
                                   record.maxTime.toString(),
                                   style: TextStyle(
                                     fontSize: 12, // Specify the font size here
@@ -204,16 +214,6 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
                                 child: Center(
                                     child: Text(
                                   record.maxVolume?.toString() ?? 'N/A',
-                                  style: TextStyle(
-                                    fontSize: 12, // Specify the font size here
-                                  ),
-                                ))),
-                            Container(
-                                color: Colors.blue.shade100,
-                                height: 54,
-                                child: Center(
-                                    child: Text(
-                                  record.maxNoReps?.toString() ?? 'N/A',
                                   style: TextStyle(
                                     fontSize: 12, // Specify the font size here
                                   ),

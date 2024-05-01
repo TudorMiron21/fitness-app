@@ -4,6 +4,7 @@ import 'package:fittnes_frontend/models/LastEntryUserHistoryExercise.dart';
 import 'package:fittnes_frontend/models/UpdateExerciseToModule.dart';
 
 import 'package:fittnes_frontend/models/exercise.dart';
+import 'package:fittnes_frontend/models/workout_rewards.dart';
 import 'package:fittnes_frontend/pages/finish_workout_page.dart';
 import 'package:fittnes_frontend/pages/profile_page.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
@@ -237,6 +238,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
   int userHistoryModuleIdStore = 1;
 
+  WorkoutRewards workoutRewards =
+      WorkoutRewards(numberOfPoints: 0, achievements: []);
+
   Future<void> saveModule() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
@@ -303,7 +307,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
   }
 
-  Future<void> finishWorkout(int userHistoryWorkoutId) async {
+  Future<WorkoutRewards> finishWorkout(int userHistoryWorkoutId) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
@@ -321,14 +325,18 @@ class _StartExercisePageState extends State<StartExercisePage> {
       },
     );
 
-    // if (response.statusCode == 200) {
-
-    // }
+    if (response.statusCode == 200) {
+      var decodedJson = json.decode(response.body);
+      return WorkoutRewards.fromJson(decodedJson);
+    }
 
     if (response.statusCode != 200) {
       throw Exception(
           'Failed to finish workout. Status code: ${response.statusCode}');
     }
+
+    // Add a return statement here
+    throw Exception('Unexpected error occurred while finishing the workout.');
   }
 
   Future<LastEntryUserHistoryExerciseDto> getLastUserHistoryExercise(
@@ -627,7 +635,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     Navigator.pop(context);
   }
 
-  void goToNextModule(bool isFirstExercise) {
+  void goToNextModule(bool isFirstExercise) async {
     int nextIndex = widget.exerciseIndex + 1;
     if (nextIndex < widget.exercises.length) {
       Navigator.pushReplacement(
@@ -650,10 +658,15 @@ class _StartExercisePageState extends State<StartExercisePage> {
       );
     } else {
       //workout finish
+      workoutRewards = await finishWorkout(widget.userHistoryWorkoutId);
+
       Navigator.pop(context);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => FinishWorkoutPage()),
+        MaterialPageRoute(
+            builder: (context) => FinishWorkoutPage(
+                  workoutRewards: workoutRewards,
+                )),
       );
       // Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfilePage()));
     }
@@ -838,11 +851,11 @@ class _StartExercisePageState extends State<StartExercisePage> {
               goToNextExercise(false);
             }
 
-            if (widget.exerciseIndex == widget.exercises.length - 1) {
-              if (noSets == 1) {
-                await finishWorkout(widget.userHistoryWorkoutId);
-              }
-            }
+            // if (widget.exerciseIndex == widget.exercises.length - 1) {
+            //   if (noSets == 1) {
+            //     workoutRewards = await finishWorkout(widget.userHistoryWorkoutId);
+            //   }
+            // }
           },
           child: Text(
             noSets > 1

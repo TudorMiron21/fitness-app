@@ -32,7 +32,8 @@ public class Achievement {
 
     private String description;
 
-    private Integer numberOfPoints;
+    @Column(precision = 10, scale = 2)
+    private Double numberOfPoints;
 
     private String achievementPicturePath;
 

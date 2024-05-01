@@ -77,7 +77,6 @@ public class AuthService {
 
     }
 
-
     public AuthResponse login(LoginRequest request) throws AuthenticationException, NotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -93,6 +92,7 @@ public class AuthService {
                 .build();
     }
 
+    //TODO:this is not secure
     public AuthResponse loginGoogle(LoginRequest request) throws AuthenticationException, NotFoundException {
 
         var user = userRepository.findByEmail(request.getEmail())

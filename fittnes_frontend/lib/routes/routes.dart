@@ -21,15 +21,13 @@ class AppPage {
         GetPage(name: discover, page: () => const DiscoverPage()),
         GetPage(name: search, page: () => const SearchPage()),
         GetPage(name: profile, page: () => const ProfilePage()),
-        GetPage(name: chat, page: () => const ChatPage())
-
+        GetPage(name: chat, page: () => const ChatPage()),
       ],
     ),
     GetPage(name: login, page: () => LoginPage()),
     GetPage(name: register, page: () => const Register()),
   //you should add teh routes for start_exercise_page and exercise_page
   ];
-
   static getNavbar() => navbar;
   static getHome() => home;
   static getDiscover() => discover;

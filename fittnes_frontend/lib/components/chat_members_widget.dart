@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fittnes_frontend/components/conversation_list.dart';
-import 'package:fittnes_frontend/models/coach.dart';
+import 'package:fittnes_frontend/models/user.dart';
 import 'package:fittnes_frontend/models/message.dart';
 import 'package:fittnes_frontend/pages/private_chat.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
@@ -22,7 +22,7 @@ class ChatMembersWidget extends StatefulWidget {
 }
 
 class _ChatMembersWidgetState extends State<ChatMembersWidget> {
-  List<Coach> followingCoaches = [];
+  List<User> followingCoaches = [];
   List<Message> lastMessages = [];
   late IO.Socket socket;
   late String sourceEmail;
@@ -49,7 +49,7 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
       final List<dynamic> data = json.decode(response.body);
       setState(() {
         followingCoaches = data
-            .map((json) => Coach(
+            .map((json) => User(
                   id: json['id'] ??
                       0, // Provide a default value for id if it's null
                   email: json['email'] ??

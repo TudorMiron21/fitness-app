@@ -1,15 +1,11 @@
 package tudor.work.service;
 
+import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 import tudor.work.dto.*;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
@@ -20,15 +16,15 @@ import tudor.work.repository.ExerciseRepository;
 import tudor.work.repository.UserRepository;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.springframework.transaction.annotation.Propagation.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +43,7 @@ public class UserService {
     private final PersonalRecordService personalRecordService;
     private final LeaderBoardService leaderBoardService;
     private final AchievementService achievementService;
+    private final MinioService minioService;
 
 
     public User findById(Long id) throws NotFoundException {
@@ -355,12 +352,12 @@ public class UserService {
                             if (personalRecordValue.getMaxNoReps() < requestUserHistoryExercise.getNoReps()) {
                                 personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
                                 personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-                                personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+//                                personalRecordValue.setUserHistoryExercise(userHistoryExercise);
                             }
                         } else {
                             personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
                             personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+//                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
 
                         }
                     } else {
@@ -395,14 +392,14 @@ public class UserService {
                             personalRecordValue.setMaxWeight(requestUserHistoryExercise.getWeight());
                             personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
                             personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+//                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
 
                         }
                     } else {
                         personalRecordValue.setMaxWeight(requestUserHistoryExercise.getWeight());
                         personalRecordValue.setMaxNoReps(requestUserHistoryExercise.getNoReps());
                         personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+//                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
 
                     }
                 } else {
@@ -433,12 +430,12 @@ public class UserService {
                         if (personalRecordValue.getMaxVolume() < requestUserHistoryExercise.getWeight() * requestUserHistoryExercise.getNoReps()) {
                             personalRecordValue.setMaxVolume(requestUserHistoryExercise.getWeight() * requestUserHistoryExercise.getNoReps());
                             personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+//                            personalRecordValue.setUserHistoryExercise(userHistoryExercise);
                         }
                     } else {
                         personalRecordValue.setMaxVolume(requestUserHistoryExercise.getWeight() * requestUserHistoryExercise.getNoReps());
                         personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+//                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
                     }
                 } else {
                     personalRecordService.save(
@@ -466,13 +463,13 @@ public class UserService {
                     if (personalRecordValue.getMaxCalories() < requestUserHistoryExercise.getCaloriesBurned()) {
                         personalRecordValue.setMaxCalories(requestUserHistoryExercise.getCaloriesBurned());
                         personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+//                        personalRecordValue.setUserHistoryExercise(userHistoryExercise);
 
                     }
                 } else {
                     personalRecordValue.setMaxCalories(requestUserHistoryExercise.getCaloriesBurned());
                     personalRecordValue.setMaxTime(requestUserHistoryExercise.getCurrNoSeconds());
-                    personalRecordValue.setUserHistoryExercise(userHistoryExercise);
+//                    personalRecordValue.setUserHistoryExercise(userHistoryExercise);
                 }
             } else {
 
@@ -562,14 +559,14 @@ public class UserService {
     }
 
 
-    private Boolean getPersonalRecordForUserHistoryExercise(UserHistoryExercise userHistoryExercise) {
-        Optional<PersonalRecord> personalRecordOptional = personalRecordService.findByUserHistoryExercise(userHistoryExercise);
-        return personalRecordOptional.isPresent();
-    }
+//    private Boolean getPersonalRecordForUserHistoryExercise(UserHistoryExercise userHistoryExercise) {
+//        Optional<PersonalRecord> personalRecordOptional = personalRecordService.findByUserHistoryExercise(userHistoryExercise);
+//        return personalRecordOptional.isPresent();
+//    }
 
 
     @Transactional
-    public void addUserResults(Long userHistoryWorkoutId) throws NotFoundException {
+    public WorkoutRewardsResponseDto addUserResults(Long userHistoryWorkoutId) throws NotFoundException {
 
         UserHistoryWorkout userHistoryWorkout = userHistoryWorkoutService.findById(userHistoryWorkoutId);
 
@@ -582,28 +579,33 @@ public class UserService {
 
         Optional<LeaderBoard> leaderBoardOptional = leaderBoardService.findByUser(authorityService.getUser());
 
+        WorkoutRewardsResponseDto workoutRewardsResponseDto;
         if (leaderBoardOptional.isPresent()) {
 
             LeaderBoard leaderBoard = leaderBoardOptional.get();
 
-            noPoints += addAchievements(
+            workoutRewardsResponseDto = addAchievements(
                     leaderBoard.getNumberOfDoneExercises(), noDoneExercises,
                     leaderBoard.getNumberOfDoneWorkouts(), noDoneWorkouts,
                     leaderBoard.getNumberOfDonePrograms(), noDonePrograms
             );
+            noPoints += workoutRewardsResponseDto.getNumberOfPoints();
 
             leaderBoard.setNumberOfPoints(leaderBoard.getNumberOfPoints() + noPoints);
             leaderBoard.setNumberOfDoneExercises(leaderBoard.getNumberOfDoneExercises() + noDoneExercises);
             leaderBoard.setNumberOfDoneWorkouts(leaderBoard.getNumberOfDoneWorkouts() + noDoneWorkouts);
             leaderBoard.setNumberOfDonePrograms(leaderBoard.getNumberOfDonePrograms() + noDonePrograms);
+
+            workoutRewardsResponseDto.setNumberOfPoints(workoutRewardsResponseDto.getNumberOfPoints() + noPoints);
+
         } else {
 
-            noPoints += addAchievements(
+            workoutRewardsResponseDto = addAchievements(
                     0, noDoneExercises,
                     0, noDoneWorkouts,
                     0, noDonePrograms
             );
-
+            noPoints += workoutRewardsResponseDto.getNumberOfPoints();
             LeaderBoard leaderBoard =
                     LeaderBoard
                             .builder()
@@ -613,9 +615,26 @@ public class UserService {
                             .numberOfDoneWorkouts(noDoneWorkouts)
                             .numberOfDonePrograms(noDonePrograms)
                             .build();
-
             leaderBoardService.save(leaderBoard);
+            workoutRewardsResponseDto.setNumberOfPoints(workoutRewardsResponseDto.getNumberOfPoints() + noPoints);
+
         }
+
+
+        //converts the picture from path to pre signed url
+        workoutRewardsResponseDto.getAchievements().forEach(achievementDto -> {
+            try {
+                achievementDto.setAchievementPicturePath(
+                        minioService.generatePreSignedUrl(achievementDto.getAchievementPicturePath())
+                );
+            } catch (ServerException | InsufficientDataException | ErrorResponseException |
+                     IOException | NoSuchAlgorithmException | InvalidKeyException |
+                     InvalidResponseException | XmlParserException | InternalException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return workoutRewardsResponseDto;
+
     }
 
     private Double getNumberOfPoints(UserHistoryWorkout userHistoryWorkout) {
@@ -653,8 +672,8 @@ public class UserService {
                                 exerciseTime = uhe.getCurrNoSeconds();
 
                             numberOfPoints = exerciseWeight * noReps * weight + exerciseTime * weight / 2 + caloriesBurned * weight;
-                            if (this.getPersonalRecordForUserHistoryExercise(uhe))
-                                numberOfPoints *= 2;
+//                            if (this.getPersonalRecordForUserHistoryExercise(uhe))
+//                                numberOfPoints *= 2;
                             return numberOfPoints;
                         }
                 )
@@ -662,7 +681,7 @@ public class UserService {
     }
 
     //this returns the number of point accumulated through the achievements
-    private Double addAchievements(
+    private WorkoutRewardsResponseDto addAchievements(
             Integer totalNumberOfDoneExercises, Integer noDoneExercises,
             Integer totalNumberOfDoneWorkouts, Integer noDoneWorkouts,
             Integer totalNumberOfDonePrograms, Integer noDonePrograms) throws NotFoundException {
@@ -688,7 +707,29 @@ public class UserService {
 
         user.setAchievements(userAchievements);
 
-        return achievementsClaimed.stream().mapToDouble(Achievement::getNumberOfPoints).sum();
+        return WorkoutRewardsResponseDto
+                .builder()
+                .numberOfPoints(
+                        achievementsClaimed
+                                .stream()
+                                .mapToDouble(Achievement::getNumberOfPoints)
+                                .sum()
+                )
+                .achievements(
+                        achievementsClaimed
+                                .stream()
+                                .map(achievement ->
+                                        AchievementDto
+                                                .builder()
+                                                .id(achievement.getId())
+                                                .name(achievement.getName())
+                                                .description(achievement.getDescription())
+                                                .numberOfPoints(achievement.getNumberOfPoints())
+                                                .achievementPicturePath(achievement.getAchievementPicturePath())
+                                                .build()
+                                ).collect(Collectors.toSet())
+                )
+                .build();
     }
 
     private Integer getNoDoneExercises(UserHistoryWorkout userHistoryWorkout) {
@@ -707,19 +748,17 @@ public class UserService {
     }
 
 
-    public void finishWorkout(Long userHistoryWorkoutId) throws NotFoundException, ExecutionException, InterruptedException {
+    public WorkoutRewardsResponseDto finishWorkout(Long userHistoryWorkoutId) throws NotFoundException, ExecutionException, InterruptedException {
 
         WorkoutResult workoutResult = saveUserHistoryWorkoutAndGetWorkoutResult(userHistoryWorkoutId);
 
         incrementWorkoutIndex(userHistoryWorkoutId);
 
-        addUserResults(userHistoryWorkoutId);
-
+        WorkoutRewardsResponseDto workoutRewardsResponseDto = addUserResults(userHistoryWorkoutId);
 
         User user = authorityService.getUser();
         //TODO: async generate the stats for the newly added workout history entry
         CompletableFuture<WorkoutResult> result = statisticsService.getStatistics(userHistoryWorkoutId, workoutResult.getId(), user);
-
 
         WorkoutResult completedWorkoutResult = result.get();
 
@@ -732,7 +771,7 @@ public class UserService {
 
         workoutResultService.save(workoutResult);
 
-
+        return workoutRewardsResponseDto;
     }
 
 
@@ -1016,4 +1055,73 @@ public class UserService {
                                         .build()
                 ).collect(Collectors.toSet());
     }
+
+    public List<LeaderBoardDto> getLeaderBoardEntries() {
+        List<LeaderBoard> leaderBoards = leaderBoardService.findAll();
+
+        return
+                leaderBoards
+                        .stream()
+                        .map(leaderBoard ->
+                                LeaderBoardDto
+                                        .builder()
+                                        .id(leaderBoard.getId())
+                                        .numberOfPoints(leaderBoard.getNumberOfPoints())
+                                        .numberOfDoneExercises(leaderBoard.getNumberOfDoneExercises())
+                                        .numberOfDoneWorkouts(leaderBoard.getNumberOfDoneWorkouts())
+                                        .numberOfDonePrograms(leaderBoard.getNumberOfDonePrograms())
+                                        .user(
+                                                UserDto
+                                                        .builder()
+                                                        .id(leaderBoard.getUser().getId())
+                                                        .email(leaderBoard.getUser().getEmail())
+                                                        .firstName(leaderBoard.getUser().getFirstname())
+                                                        .lastName(leaderBoard.getUser().getLastname())
+                                                        .profilePictureUrl("profile-pic")
+                                                        .build()
+                                        )
+                                        .build()
+                        ).toList();
+    }
+
+    public User findByEmail(String email) throws NotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user with email " + email + " not found"));
+    }
+
+    public List<LeaderBoardDto> getContactsLeaderBoard(List<String> emails) {
+        return emails.stream().map(email -> {
+                    try {
+                        return findByEmail(email);
+                    } catch (NotFoundException nfe) {
+                        System.out.println(nfe.getMessage());
+                        return null; // Return null when user is not found
+                    }
+                }).filter(Objects::nonNull) // Filter out null users
+                .map(user -> {
+                    Optional<LeaderBoard> leaderBoardOptional = leaderBoardService.findByUser(user);
+                    if (leaderBoardOptional.isPresent()) {
+                        LeaderBoard leaderBoard = leaderBoardOptional.get();
+                        return LeaderBoardDto.builder()
+                                .id(leaderBoard.getId())
+                                .numberOfPoints(leaderBoard.getNumberOfPoints())
+                                .numberOfDoneExercises(leaderBoard.getNumberOfDoneExercises())
+                                .numberOfDoneWorkouts(leaderBoard.getNumberOfDoneWorkouts())
+                                .numberOfDonePrograms(leaderBoard.getNumberOfDonePrograms())
+                                .user(UserDto.builder()
+                                        .id(leaderBoard.getUser().getId())
+                                        .email(leaderBoard.getUser().getEmail())
+                                        .firstName(leaderBoard.getUser().getFirstname())
+                                        .lastName(leaderBoard.getUser().getLastname())
+                                        .profilePictureUrl("profile-pic")
+                                        .build())
+                                .build();
+                    } else {
+                        // Handle the case when leaderboard is not found
+                        System.out.println("Leaderboard not found for user: " + user.getEmail());
+                        return null; // Return null when leaderboard is not found
+                    }
+                }).filter(Objects::nonNull) // Filter out null leaderboards
+                .toList();
+    }
+
 }
