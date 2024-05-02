@@ -3,12 +3,15 @@ package tudor.work.service;
 import com.github.dockerjava.api.exception.NotFoundException;
 import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import tudor.work.dto.FilterSearchDto;
 import tudor.work.dto.ProgramDto;
 import tudor.work.model.Program;
 import tudor.work.model.User;
 import tudor.work.model.UserHistoryProgram;
 import tudor.work.repository.ProgramRepository;
+import tudor.work.specification.ProgramSpecification;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -127,5 +130,26 @@ public class ProgramService {
                 .stream()
                 .map(this::convertProgramCoverPhotos)
                 .toList();
+    }
+
+    public List<Program> getFilteredPrograms(FilterSearchDto filterSearchDto){
+        Specification<Program> spec = Specification.where(null);
+
+        if (filterSearchDto.getName() != null) {
+            spec = spec.and(ProgramSpecification.nameLike(filterSearchDto.getName()));
+        }
+
+
+        if (filterSearchDto.getMaxDifficulty() != null
+                && filterSearchDto.getMinDifficulty() != null) {
+            spec = spec.and(ProgramSpecification.isProgramDifficultyLevelBetween(
+                    filterSearchDto.getMinDifficulty(),
+                    filterSearchDto.getMaxDifficulty()
+                    )
+            );
+
+
+        }
+        return programRepository.findAll(spec);
     }
 }

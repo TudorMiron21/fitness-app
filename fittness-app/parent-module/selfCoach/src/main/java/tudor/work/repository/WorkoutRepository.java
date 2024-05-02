@@ -1,6 +1,7 @@
 package tudor.work.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import tudor.work.model.User;
 import tudor.work.model.Workout;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface WorkoutRepository extends JpaRepository<Workout,Long> {
+public interface WorkoutRepository extends JpaRepository<Workout,Long> , JpaSpecificationExecutor<Workout> {
 
     Optional<Workout> findByName(String name);
 

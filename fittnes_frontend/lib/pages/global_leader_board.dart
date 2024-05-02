@@ -59,13 +59,32 @@ class _GlobalLeaderBoardState extends State<GlobalLeaderBoard> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Global Leaderboard'),
       ),
-      body: LeaderBoardWidget(leaderBoardList: leaderBoardEntries),
+      body: FutureBuilder<List<LeaderBoard>>(
+        future: getLeaderBoardEntries(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasData) {
+            List<LeaderBoard> leaderBoardEntries = snapshot.data!;
+            return LeaderBoardWidget(leaderBoardList: leaderBoardEntries);
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error loading leader board entries'),
+            );
+          } else {
+            return Center(
+              child: Text('No data available'),
+            );
+          }
+        },
+      ),
     );
   }
 }

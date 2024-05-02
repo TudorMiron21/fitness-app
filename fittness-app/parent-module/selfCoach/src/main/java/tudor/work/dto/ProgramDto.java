@@ -18,4 +18,5 @@ public class ProgramDto {
     private Integer durationInDays;
     private String coverPhotoUrl;
     private Set<WorkoutProgram> workoutProgramSet;
+    private Double difficultyLevel;
 }

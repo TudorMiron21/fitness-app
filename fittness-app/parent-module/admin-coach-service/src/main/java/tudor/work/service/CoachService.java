@@ -250,6 +250,16 @@ public class CoachService {
 
     }
 
+    private Double calculateDifficultyForProgram(Set<WorkoutProgram> workoutPrograms) {
+        return workoutPrograms
+                .stream()
+                .mapToDouble(
+                        workoutProgram ->
+                                workoutProgram
+                                        .getWorkout()
+                                        .getDifficultyLevel()).sum()
+                / workoutPrograms.size();
+    }
 
     public Program createProgram(CreateProgramDto createProgramDto) throws NotFoundException {
 
@@ -285,6 +295,8 @@ public class CoachService {
                                 }
                         ).collect(Collectors.toSet())
         );
+
+        program.setDifficultyLevel(this.calculateDifficultyForProgram(program.getWorkoutPrograms()));
 
         programService.saveProgram(program);
         return program;
@@ -355,7 +367,6 @@ public class CoachService {
     }
 
     public Set<SubscribersDto> getSubscribers() throws NotFoundException {
-
         return
                 userService
                         .findById(authorityService.getUserId())

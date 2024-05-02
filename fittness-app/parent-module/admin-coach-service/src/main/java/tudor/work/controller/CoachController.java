@@ -197,7 +197,6 @@ public class CoachController {
     @GetMapping("/getSubscribers")
     public ResponseEntity<?> getSubscribers()
     {
-
         try {
             Set<SubscribersDto> subscribers = coachService.getSubscribers();
             return ResponseEntity.status(HttpStatus.OK).body(subscribers);

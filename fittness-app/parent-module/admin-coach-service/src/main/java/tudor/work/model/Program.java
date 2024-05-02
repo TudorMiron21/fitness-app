@@ -35,4 +35,6 @@ public class Program {
     @ManyToOne
     @JoinColumn(name = "adder_id")
     private User adder;
+
+    private Double difficultyLevel;
 }

@@ -6,7 +6,9 @@ import 'package:fittnes_frontend/models/user.dart';
 import 'package:fittnes_frontend/models/program.dart';
 import 'package:fittnes_frontend/pages/coach_profile.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -20,10 +22,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool areWorkoutsLoading = true;
+  String fetchWorkoutsErrorMeassage = '';
   List<Workout> mostLikedWorkouts = [];
 
+  bool areCoachesLoading = true;
+  String fetchCoachesErrorMeassage = '';
   List<User> followingCoaches = [];
 
+  bool areProgramsLoading = true;
+  String fetchProgramsErrorMeassage = '';
   List<Program> programs = [];
 
   late String accessToken = '';
@@ -32,6 +40,54 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchAccessToken();
+    _fetchMostLikedWorkouts();
+    _fetchFollowingCoaches();
+    _fetchPrograms();
+  }
+
+  Future<void> _fetchMostLikedWorkouts() async {
+    try {
+      List<Workout> data = await fetchirstSixMostLikedWorkouts();
+      setState(() {
+        mostLikedWorkouts = data;
+        areWorkoutsLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        fetchWorkoutsErrorMeassage = 'Error: $error';
+        areWorkoutsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchFollowingCoaches() async {
+    try {
+      List<User> data = await fetchFollowingCoaches();
+      setState(() {
+        followingCoaches = data;
+        areCoachesLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        fetchCoachesErrorMeassage = 'Error: $error';
+        areCoachesLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchPrograms() async {
+    try {
+      List<Program> data = await fetchPrograms();
+      setState(() {
+        programs = data;
+        areProgramsLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        fetchProgramsErrorMeassage = 'Error: $error';
+        areProgramsLoading = false;
+      });
+    }
   }
 
   Future<void> _fetchAccessToken() async {
@@ -43,7 +99,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  Future<void> fetchFollowingCoaches() async {
+  Future<List<User>> fetchFollowingCoaches() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
@@ -63,7 +119,7 @@ class _HomePageState extends State<HomePage> {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
 
-      followingCoaches = data
+      return data
           .map((json) => User(
                 id: json['id'] ??
                     0, // Provide a default value for id if it's null
@@ -83,7 +139,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> fetchPrograms() async {
+  Future<List<Program>> fetchPrograms() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
@@ -101,7 +157,7 @@ class _HomePageState extends State<HomePage> {
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = json.decode(response.body);
-      programs = jsonResponse.map((programJson) {
+      return jsonResponse.map((programJson) {
         Map<int, Workout> indexedWorkouts = {};
         var workoutList = programJson['workoutProgramSet'] as List? ??
             []; // Handling potential null
@@ -157,7 +213,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> fetchirstSixMostLikedWorkouts() async {
+  Future<List<Workout>> fetchirstSixMostLikedWorkouts() async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
@@ -177,7 +233,7 @@ class _HomePageState extends State<HomePage> {
       final List<dynamic> data = json.decode(response.body);
 
       // Map the API response to a list of Workout objects
-      mostLikedWorkouts = data.map((json) {
+      return data.map((json) {
         List<Exercise> exerciseList = (json['exercises'] as List)
             .map((exerciseJson) => Exercise(
                   id: exerciseJson['id'],
@@ -356,238 +412,168 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue.shade800,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            if (JwtUtils.isPayingUser(accessToken))
-              SizedBox(
-                height: 300,
-                child: FutureBuilder<void>(
-                  future: fetchFollowingCoaches(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-                    } else {
-                      int pageCount = (followingCoaches.length / 3).ceil();
-                      return PageView.builder(
-                        itemCount: pageCount +
-                            2, // +1 for the background page, +1 for the button
+      body: Column(
+        children: [
+          Visibility(
+            visible: JwtUtils.isPayingUser(accessToken),
+            child: Expanded(
+              flex: 1,
+              child: areCoachesLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : fetchCoachesErrorMeassage.isNotEmpty
+                      ? Center(child: Text(fetchCoachesErrorMeassage))
+                      : buildFollowingCoachesPageView(),
+            ),
+          ),
+          Expanded(
+            // height: constraints.maxHeight,
+            flex: 1,
+            child: areProgramsLoading
+                ? Center(child: CircularProgressIndicator())
+                : fetchProgramsErrorMeassage.isNotEmpty
+                    ? Center(child: Text(fetchProgramsErrorMeassage))
+                    : buildProgramPageView(),
+          ),
+          Expanded(
+            flex: 1,
+            child: areWorkoutsLoading
+                ? Center(child: CircularProgressIndicator())
+                : fetchWorkoutsErrorMeassage.isNotEmpty
+                    ? Center(child: Text(fetchWorkoutsErrorMeassage))
+                    : PageView.builder(
+                        itemCount: mostLikedWorkouts.length + 1,
                         itemBuilder: (context, index) {
                           if (index == 0) {
                             return buildPageBackground(
-                                'lib/images/background_top_workouts.jpg',
-                                'Followed Coaches');
-                          } else if (index == pageCount + 1) {
-                            // Button page
-                            return Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  // Implement the functionality to add more coaches
-                                  print("Follow more coaches");
-                                },
-                                child: Text("Follow More Coaches"),
-                              ),
+                              'lib/images/background_top_workouts.jpg',
+                              'Top Workouts',
                             );
                           }
-                          int startIndex = (index - 1) * 3;
-                          int endIndex =
-                              min(startIndex + 3, followingCoaches.length);
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List.generate(endIndex - startIndex, (i) {
-                              User coach = followingCoaches[startIndex + i];
-                              return Expanded(
-                                child: buildCoachCard(coach),
-                              );
-                            }),
-                          );
+                          Workout workout = mostLikedWorkouts[index - 1];
+
+                          return buildWorkoutCard(workout);
                         },
-                      );
-                    }
-                  },
-                ),
-              ),
-            SizedBox(
-              height: 200,
-              child: FutureBuilder<void>(
-                future: fetchPrograms(), // Make sure this is fetching programs
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    return PageView.builder(
-                      itemCount: programs.length +
-                          1, // Assuming there's an extra page like the background
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          // This is the extra page, possibly for some introductory content
-                          return buildPageBackground(
-                              'lib/images/background_top_workouts.jpg',
-                              'Top Most Liked Programs');
-                        }
+                      ),
+          ),
+          // Visibility(
+          //   visible: JwtUtils.isUser(accessToken),
+          //   child: Expanded(
+          //     flex: 1, //easy workouts
+          //     child: FutureBuilder<List<Workout>>(
+          //       future:
+          //           fetchirstSixMostLikedWorkoutsFromDifficultyLevel(0.0, 1.0),
+          //       builder: (context, mostLikedWorkoutsSnapshot) {
+          //         if (mostLikedWorkoutsSnapshot.connectionState ==
+          //             ConnectionState.waiting) {
+          //           return Center(child: CircularProgressIndicator());
+          //         } else if (mostLikedWorkoutsSnapshot.hasError) {
+          //           return Center(
+          //               child:
+          //                   Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
+          //         } else {
+          //           List<Workout> mostLikedWorkouts =
+          //               mostLikedWorkoutsSnapshot.data!;
 
-                        // Use the index - 1 because the first page is the background/intro
-                        Program program = programs[index - 1];
+          //           return PageView.builder(
+          //             itemCount: mostLikedWorkouts.length + 1,
+          //             itemBuilder: (context, index) {
+          //               if (index == 0) {
+          //                 return buildPageBackground(
+          //                     'lib/images/background_top_workouts.jpg',
+          //                     'Top Beginner Workouts');
+          //               }
+          //               Workout workout = mostLikedWorkouts[index - 1];
 
-                        // Use the ProgramTile widget that was created earlier
-                        return ProgramTile(program: program);
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-            SizedBox(
-              height: 200,
-              child: FutureBuilder<void>(
-                future: fetchirstSixMostLikedWorkouts(),
-                builder: (context, mostLikedWorkoutsSnapshot) {
-                  if (mostLikedWorkoutsSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (mostLikedWorkoutsSnapshot.hasError) {
-                    return Center(
-                        child:
-                            Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
-                  } else {
-                    return PageView.builder(
-                      itemCount: mostLikedWorkouts.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return buildPageBackground(
-                              'lib/images/background_top_workouts.jpg',
-                              'Top Most Liked Workouts');
-                        }
+          //               return buildWorkoutCard(workout);
 
-                        Workout workout = mostLikedWorkouts[index - 1];
+          //               // Remaining code remains the same...
+          //             },
+          //           );
+          //         }
+          //       },
+          //     ),
+          //   ),
+          // ),
+          // Visibility(
+          //   visible: JwtUtils.isUser(accessToken),
+          //   child: Expanded(
+          //     flex: 1, //easy workouts
+          //     child: FutureBuilder<List<Workout>>(
+          //       future:
+          //           fetchirstSixMostLikedWorkoutsFromDifficultyLevel(1.0, 2.0),
+          //       builder: (context, mostLikedWorkoutsSnapshot) {
+          //         if (mostLikedWorkoutsSnapshot.connectionState ==
+          //             ConnectionState.waiting) {
+          //           return Center(child: CircularProgressIndicator());
+          //         } else if (mostLikedWorkoutsSnapshot.hasError) {
+          //           return Center(
+          //               child:
+          //                   Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
+          //         } else {
+          //           List<Workout> mostLikedWorkouts =
+          //               mostLikedWorkoutsSnapshot.data!;
 
-                        return buildWorkoutCard(workout);
+          //           return PageView.builder(
+          //             itemCount: mostLikedWorkouts.length + 1,
+          //             itemBuilder: (context, index) {
+          //               if (index == 0) {
+          //                 return buildPageBackground(
+          //                     'lib/images/background_top_workouts.jpg',
+          //                     'Top Intermediate Workouts');
+          //               }
 
-                        // Remaining code remains the same...
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-            SizedBox(
-              height: 200,
-              //easy workouts
-              child: FutureBuilder<List<Workout>>(
-                future:
-                    fetchirstSixMostLikedWorkoutsFromDifficultyLevel(0.0, 1.0),
-                builder: (context, mostLikedWorkoutsSnapshot) {
-                  if (mostLikedWorkoutsSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (mostLikedWorkoutsSnapshot.hasError) {
-                    return Center(
-                        child:
-                            Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
-                  } else {
-                    List<Workout> mostLikedWorkouts =
-                        mostLikedWorkoutsSnapshot.data!;
+          //               Workout workout = mostLikedWorkouts[index - 1];
 
-                    return PageView.builder(
-                      itemCount: mostLikedWorkouts.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return buildPageBackground(
-                              'lib/images/background_top_workouts.jpg',
-                              'Top Beginner Workouts');
-                        }
-                        Workout workout = mostLikedWorkouts[index - 1];
+          //               return buildWorkoutCard(workout);
 
-                        return buildWorkoutCard(workout);
+          //               // Remaining code remains the same...
+          //             },
+          //           );
+          //         }
+          //       },
+          //     ),
+          //   ),
+          // ),
+          // Visibility(
+          //   visible: JwtUtils.isUser(accessToken),
+          //   child: Expanded(
+          //     flex: 1, //easy workouts
+          //     child: FutureBuilder<List<Workout>>(
+          //       future:
+          //           fetchirstSixMostLikedWorkoutsFromDifficultyLevel(2.0, 3.0),
+          //       builder: (context, mostLikedWorkoutsSnapshot) {
+          //         if (mostLikedWorkoutsSnapshot.connectionState ==
+          //             ConnectionState.waiting) {
+          //           return Center(child: CircularProgressIndicator());
+          //         } else if (mostLikedWorkoutsSnapshot.hasError) {
+          //           return Center(
+          //               child:
+          //                   Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
+          //         } else {
+          //           List<Workout> mostLikedWorkouts =
+          //               mostLikedWorkoutsSnapshot.data!;
 
-                        // Remaining code remains the same...
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-            SizedBox(
-              height: 200,
-              child: FutureBuilder<List<Workout>>(
-                future:
-                    fetchirstSixMostLikedWorkoutsFromDifficultyLevel(1.0, 2.0),
-                builder: (context, mostLikedWorkoutsSnapshot) {
-                  if (mostLikedWorkoutsSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (mostLikedWorkoutsSnapshot.hasError) {
-                    return Center(
-                        child:
-                            Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
-                  } else {
-                    List<Workout> mostLikedWorkouts =
-                        mostLikedWorkoutsSnapshot.data!;
+          //           return PageView.builder(
+          //             itemCount: mostLikedWorkouts.length + 1,
+          //             itemBuilder: (context, index) {
+          //               if (index == 0) {
+          //                 return buildPageBackground(
+          //                     'lib/images/background_top_workouts.jpg',
+          //                     'Top Expert Workouts');
+          //               }
+          //               Workout workout = mostLikedWorkouts[index - 1];
 
-                    return PageView.builder(
-                      itemCount: mostLikedWorkouts.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return buildPageBackground(
-                              'lib/images/background_top_workouts.jpg',
-                              'Top Intermediate Workouts');
-                        }
+          //               buildWorkoutCard(workout);
 
-                        Workout workout = mostLikedWorkouts[index - 1];
-
-                        return buildWorkoutCard(workout);
-
-                        // Remaining code remains the same...
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-            SizedBox(
-              height: 200,
-              child: FutureBuilder<List<Workout>>(
-                future:
-                    fetchirstSixMostLikedWorkoutsFromDifficultyLevel(2.0, 3.0),
-                builder: (context, mostLikedWorkoutsSnapshot) {
-                  if (mostLikedWorkoutsSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (mostLikedWorkoutsSnapshot.hasError) {
-                    return Center(
-                        child:
-                            Text('Error: ${mostLikedWorkoutsSnapshot.error}'));
-                  } else {
-                    List<Workout> mostLikedWorkouts =
-                        mostLikedWorkoutsSnapshot.data!;
-
-                    return PageView.builder(
-                      itemCount: mostLikedWorkouts.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return buildPageBackground(
-                              'lib/images/background_top_workouts.jpg',
-                              'Top Expert Workouts');
-                        }
-                        Workout workout = mostLikedWorkouts[index - 1];
-
-                        buildWorkoutCard(workout);
-
-                        // Remaining code remains the same...
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
+          //               // Remaining code remains the same...
+          //             },
+          //           );
+          //         }
+          //       },
+          //     ),
+          //   ),
+          // ),
+        ],
       ),
     );
   }
@@ -800,5 +786,59 @@ class _HomePageState extends State<HomePage> {
     } else {
       return 'Unknown';
     }
+  }
+
+  Widget buildFollowingCoachesPageView() {
+    int pageCount = (followingCoaches.length / 3).ceil();
+    return PageView.builder(
+      itemCount: pageCount + 2,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return buildPageBackground(
+            'lib/images/background_top_workouts.jpg',
+            'Followed Coaches',
+          );
+        } else if (index == pageCount + 1) {
+          // Button page
+          return Center(
+            child: ElevatedButton(
+              onPressed: () {
+                // Implement the functionality to add more coaches
+                print("Follow more coaches");
+              },
+              child: Text("Follow More Coaches"),
+            ),
+          );
+        }
+        int startIndex = (index - 1) * 3;
+        int endIndex = min(startIndex + 3, followingCoaches.length);
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(endIndex - startIndex, (i) {
+            User coach = followingCoaches[startIndex + i];
+            return Expanded(
+              child: buildCoachCard(coach),
+            );
+          }),
+        );
+      },
+    );
+  }
+
+  Widget buildProgramPageView() {
+    return PageView.builder(
+      itemCount: programs.length + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return buildPageBackground(
+            'lib/images/background_top_workouts.jpg',
+            'Top Most Liked Programs',
+          );
+        }
+
+        Program program = programs[index - 1];
+        return ProgramTile(program: program);
+      },
+    );
   }
 }

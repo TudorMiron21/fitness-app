@@ -24,6 +24,7 @@ public class Program {
     private String description;
     private Integer durationInDays;
     private String coverPhotoUrl;
+    private Double difficultyLevel;
 
     @OneToMany(
             mappedBy = "program",

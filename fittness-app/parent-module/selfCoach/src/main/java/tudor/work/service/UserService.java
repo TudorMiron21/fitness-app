@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1124,4 +1125,53 @@ public class UserService {
                 .toList();
     }
 
+    public List<WorkoutDto> getFilteredWorkouts(FilterSearchDto filterSearchDto) throws NotFoundException {
+        //get filtered workouts
+        List<Workout> filteredWorkouts = workoutService.getFilteredWorkouts(filterSearchDto);
+
+        //get admin workouts
+        Predicate<Workout> isWorkoutGlobal = Workout::isGlobal;
+
+        //get following coaches
+        Set<User> followingCoaches = authorityService.getUser().getFollowing();
+
+        //get following coaches workouts
+        Predicate<Workout> isWorkoutFromFollowingCoaches =
+                workout ->
+                {
+                    if (authorityService.isUser()) {
+                        return false;
+                    } else if (authorityService.isPayingUser()) {
+                        if (followingCoaches.contains(workout.getAdder())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+
+        return filteredWorkouts
+                .stream()
+                .filter(
+                        isWorkoutGlobal
+                                .or(isWorkoutFromFollowingCoaches))
+                .map(
+                        workout -> {
+                            try {
+                                return WorkoutDto.
+                                        builder().
+                                        id(workout.getId()).
+                                        name(workout.getName()).
+                                        description(workout.getDescription()).
+                                        coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                        difficultyLevel(workout.getDifficultyLevel()).
+                                        isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
+                                        noLikes(workoutService.getNoLikes(workout)).
+                                        exercises(workout.getExercises())
+                                        .build();
+                            } catch (NotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                ).toList();
+    }
 }

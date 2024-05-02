@@ -4,17 +4,21 @@ package tudor.work.service;
 import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import tudor.work.dto.FilterSearchDto;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.model.User;
 import tudor.work.model.Workout;
 import tudor.work.model.WorkoutProgram;
 import tudor.work.repository.WorkoutRepository;
+import tudor.work.specification.WorkoutSpecification;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -145,6 +149,27 @@ public class WorkoutService {
                 .stream()
                 .map(this::convertWorkoutCoverPhotos)
                 .toList();
+    }
+
+
+    public List<Workout> getFilteredWorkouts(FilterSearchDto filterSearchDto) {
+        Specification<Workout> spec = Specification.where(null);
+
+        if (filterSearchDto.getName() != null) {
+            spec = spec.and(WorkoutSpecification.nameLike(filterSearchDto.getName()));
+        }
+
+
+        if (filterSearchDto.getMaxDifficulty() != null
+                && filterSearchDto.getMinDifficulty() != null) {
+            spec = spec.and(WorkoutSpecification.isWorkoutDifficultyLevelBetween(
+                            filterSearchDto.getMinDifficulty(),
+                            filterSearchDto.getMaxDifficulty()
+                    )
+            );
+
+        }
+        return workoutRepository.findAll(spec);
     }
 
 }

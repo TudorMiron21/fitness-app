@@ -63,7 +63,6 @@ public class UserController {
     }
 
 
-
     @GetMapping("/workouts")
     public ResponseEntity<?> getAllWorkouts() {
         List<WorkoutDto> workouts = userService.getAllWorkouts();
@@ -339,7 +338,7 @@ public class UserController {
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
                  InternalException e) {
-          return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
     }
 
@@ -348,13 +347,12 @@ public class UserController {
     }
 
     private String constructContentRangeHeader(Range range, long fileSize) {
-        return  "bytes " + range.getRangeStart() + "-" + range.getRangeEnd(fileSize) + "/" + fileSize;
+        return "bytes " + range.getRangeStart() + "-" + range.getRangeEnd(fileSize) + "/" + fileSize;
     }
 
 
     @GetMapping("/getPersonalRecordsForUser")
-    public ResponseEntity<?> getPersonalRecordsForUser()
-    {
+    public ResponseEntity<?> getPersonalRecordsForUser() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(userService.getPersonalRecordsForUser());
         } catch (NotFoundException e) {
@@ -363,16 +361,31 @@ public class UserController {
     }
 
     @GetMapping("/getLeaderBoardEntries")
-    public ResponseEntity<?> getLeaderBoardEntries(){
+    public ResponseEntity<?> getLeaderBoardEntries() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLeaderBoardEntries());
     }
 
 
     @GetMapping("/getContactsLeaderBoard")
-    public ResponseEntity<?>getContactsLeaderBoard(@RequestParam("email") List<String> emails)
-    {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getContactsLeaderBoard(emails)) ;
+    public ResponseEntity<?> getContactsLeaderBoard(@RequestParam("email") List<String> emails) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getContactsLeaderBoard(emails));
     }
+
+    @GetMapping("/getFilteredWorkouts")
+    public ResponseEntity<?> getFilteredWorkouts(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "minDifficultyLevel") Double minDifficultyLevel,
+            @RequestParam(value = "maxDifficultyLevel") Double maxDifficultyLevel)
+    {
+        userService.getFilteredWorkouts(FilterSearchDto
+                .builder()
+                .name(name)
+                .minDifficulty(minDifficultyLevel)
+                .maxDifficulty(maxDifficultyLevel)
+                .build()
+        );
+    }
+
 
 }
 

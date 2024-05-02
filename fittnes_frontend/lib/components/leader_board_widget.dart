@@ -17,7 +17,14 @@ class _LeaderBoardWidgetState extends State<LeaderBoardWidget> {
   final int loadMoreIncrement =
       5; // Number of items to load on "Load More" button press
 
- 
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      print(widget.leaderBoardList.length);
+      displayedItems = widget.leaderBoardList.length.clamp(0, 4);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,12 +79,25 @@ class _LeaderBoardWidgetState extends State<LeaderBoardWidget> {
                       color: Colors.white,
                     )
                   : null,
-              title: Text(
-                '${index + 1}. ${leaderBoard.user.firstName} ${leaderBoard.user.lastName}',
-                style: TextStyle(
-                  fontWeight: index < 3 ? FontWeight.bold : FontWeight.normal,
-                  color: Colors.white,
-                ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${index + 1}. ${leaderBoard.user.firstName} ${leaderBoard.user.lastName}',
+                    style: TextStyle(
+                      fontWeight:
+                          index < 3 ? FontWeight.bold : FontWeight.normal,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    leaderBoard.user.email,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12
+                    ),
+                  ),
+                ],
               ),
               subtitle: Text(
                 'Points: ${leaderBoard.numberOfPoints}',
