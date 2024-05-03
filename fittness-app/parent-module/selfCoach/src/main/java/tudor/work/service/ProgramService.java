@@ -150,6 +150,9 @@ public class ProgramService {
 
 
         }
-        return programRepository.findAll(spec);
+        return programRepository.findAll(spec)
+                .stream()
+                .map(this::convertProgramCoverPhotos)
+                .toList();
     }
 }

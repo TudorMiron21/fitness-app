@@ -7,10 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.*;
-import tudor.work.exceptions.AuthorizationExceptionHandler;
-import tudor.work.exceptions.DuplicatesException;
-import tudor.work.exceptions.LastWorkoutResultEmpty;
-import tudor.work.exceptions.UserAccessException;
+import tudor.work.exceptions.*;
 import tudor.work.model.*;
 import tudor.work.repository.ExerciseRepository;
 import tudor.work.repository.UserRepository;
@@ -45,6 +42,7 @@ public class UserService {
     private final LeaderBoardService leaderBoardService;
     private final AchievementService achievementService;
     private final MinioService minioService;
+    private final ProgramService programService;
 
 
     public User findById(Long id) throws NotFoundException {
@@ -926,7 +924,7 @@ public class UserService {
                 ).collect(Collectors.toSet());
     }
 
-    @Cacheable(value = "longPeriodCache", key = "'getAllNonExclusiveExercises'")
+    //    @Cacheable(value = "longPeriodCache", key = "'getAllNonExclusiveExercises'")
     public Set<SimplifiedExerciseDto> getAllNonExclusiveExercises() {
         return exerciseService.getAllNonExclusiveExercises()
                 .stream()
@@ -1173,5 +1171,97 @@ public class UserService {
                             }
                         }
                 ).toList();
+    }
+
+    public List<ProgramDto> getFilteredPrograms(FilterSearchDto filterSearchDto) throws NotFoundException {
+
+        //get filtered programs
+        List<Program> filteredPrograms = programService.getFilteredPrograms(filterSearchDto);
+
+        //filter admin programs
+        Predicate<Program> isAdminProgram = program -> program.getAdder().getRole().equals(Roles.ADMIN);
+
+        //get following coaches list
+        Set<User> followingCoaches = authorityService.getUser().getFollowing();
+
+        //filter following coaches programs
+        Predicate<Program> isProgramFromFollowingCoaches =
+                program ->
+                {
+                    if (authorityService.isUser())
+                        return false;
+                    else if (authorityService.isPayingUser()) {
+                        if (followingCoaches.contains(program.getAdder())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+
+        return filteredPrograms
+                .stream()
+                .filter(isAdminProgram.or(isProgramFromFollowingCoaches))
+                .map(
+                        program ->
+                                ProgramDto
+                                        .builder()
+                                        .id(program.getId())
+                                        .name(program.getName())
+                                        .description(program.getDescription())
+                                        .durationInDays(program.getDurationInDays())
+                                        .coverPhotoUrl(program.getCoverPhotoUrl())
+                                        .workoutProgramSet(program.getWorkoutPrograms())
+                                        .build()
+                )
+                .toList();
+
+    }
+
+    public List<AchievementDto> getUserAchievements() throws NotFoundException {
+        return authorityService.getUser().getAchievements().stream()
+                .map(
+                        achievement ->
+                        {
+                            try {
+                                return AchievementDto
+                                        .builder()
+                                        .id(achievement.getId())
+                                        .name(achievement.getName())
+                                        .description(achievement.getDescription())
+                                        .numberOfPoints(achievement.getNumberOfPoints())
+                                        .achievementPicturePath(minioService.generatePreSignedUrl(achievement.getAchievementPicturePath()))
+                                        .build();
+                            } catch (ServerException | InsufficientDataException | ErrorResponseException |
+                                     IOException | NoSuchAlgorithmException | InvalidKeyException |
+                                     InvalidResponseException | XmlParserException | InternalException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                ).toList();
+    }
+
+    public LeaderBoardDto getLeaderBoardEntryForUser() throws NotFoundException, LeaderBoardEntryNotFoundException {
+        Optional<LeaderBoard> optionalLeaderBoard = leaderBoardService.findByUser(authorityService.getUser());
+
+        if (optionalLeaderBoard.isPresent()) {
+
+            LeaderBoard leaderBoard = optionalLeaderBoard.get();
+            return LeaderBoardDto.builder()
+                    .id(leaderBoard.getId())
+                    .numberOfPoints(leaderBoard.getNumberOfPoints())
+                    .numberOfDoneExercises(leaderBoard.getNumberOfDoneExercises())
+                    .numberOfDoneWorkouts(leaderBoard.getNumberOfDoneWorkouts())
+                    .numberOfDonePrograms(leaderBoard.getNumberOfDonePrograms())
+                    .user(UserDto.builder()
+                            .id(leaderBoard.getUser().getId())
+                            .email(leaderBoard.getUser().getEmail())
+                            .firstName(leaderBoard.getUser().getFirstname())
+                            .lastName(leaderBoard.getUser().getLastname())
+                            .profilePictureUrl("profile-pic")
+                            .build())
+                    .build();
+        } else {
+            throw new LeaderBoardEntryNotFoundException("leader board entry for user with id " + authorityService.getUser().getId() + " not found");
+        }
     }
 }

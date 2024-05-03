@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fittnes_frontend/components/custom_divider.dart';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:fittnes_frontend/models/workout.dart';
 import 'package:fittnes_frontend/pages/create_workout_page.dart';
@@ -244,6 +245,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           //   ),
           // ),
 
+          CustomDivider(dividerText: "Started Workouts"),
           Expanded(
             flex: 1, // Adjust the flex factor as needed for balance
             child: FutureBuilder<List<Workout>>(
@@ -269,6 +271,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
               },
             ),
           ),
+
+          SizedBox(
+            height: 10,
+          ),
+          CustomDivider(dividerText: "Your Workouts"),
 
           Expanded(
             flex: 1, // Adjust the flex factor as needed for balance
@@ -298,6 +305,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           ),
         ],
       ),
+      
       floatingActionButton: ElevatedButton(
         onPressed: () {
           Navigator.of(context).push(

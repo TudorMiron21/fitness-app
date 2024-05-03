@@ -1,0 +1,12 @@
+.certification-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .certification-grid {
+      gap: 10px;
+    }
+  }

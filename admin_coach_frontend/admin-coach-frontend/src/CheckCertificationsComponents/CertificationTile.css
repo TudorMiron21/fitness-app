@@ -1,0 +1,71 @@
+.certification-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    height: auto;
+  }
+  
+  .certification-tile.expanded {
+    position: absolute; /* Absolute positioning to isolate */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Centering */
+    z-index: 9999; /* Keep on top */
+    width: 80%; /* Limited width to avoid covering the whole page */
+    height: 80%; /* Limited height for scrollability */
+    padding: 40px; /* Increased padding */
+    background-color: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-radius: 15px; /* Rounded corners */
+    overflow: auto; /* Enable scrolling */
+  }
+  
+  .certification-tile.expanded .certification-image {
+    width: 100%; /* Full width */
+    height: auto;
+    max-height: 70vh; /* Prevent image from overflowing */
+    object-fit: contain; /* Contain image within its bounds */
+    border-radius: 15px;
+    cursor: zoom-in; /* Cursor indicates zooming */
+  }
+  
+  .certification-tile.expanded .expanded-content {
+    text-align: center;
+    margin-top: 20px; /* Space between image and content */
+  }
+  
+  .certification-tile.expanded .validate-button {
+    margin-right: 10px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .certification-tile.expanded .validate-button:hover {
+    background-color: #45a049;
+  }
+  
+  .certification-tile.expanded .close-button {
+    color: red;
+    padding: 10px 20px;
+    border: 1px solid red;
+    border-radius: 5px;
+    background-color: transparent; /* Transparent background */
+    cursor: pointer;
+  }
+  
+  .certification-tile.expanded .close-button:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+  }
+  

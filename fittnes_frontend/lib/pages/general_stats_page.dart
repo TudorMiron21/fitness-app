@@ -150,6 +150,7 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
     if (isLoading) {
       return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading:false,
             title: Text(
               'General Workout Statistics',
               style: TextStyle(
@@ -161,7 +162,6 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
             toolbarHeight: 30,
             backgroundColor: Colors.blue,
             elevation: 4,
-            automaticallyImplyLeading: true
             ),
         body: const Center(
           child: CircularProgressIndicator(),

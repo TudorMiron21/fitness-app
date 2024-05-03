@@ -9,6 +9,7 @@ import { CreateExercise } from "./CreateExerciseComponents/CreateExercisePage.js
 import { CreateWorkoutPage } from "./CreateWorkoutComponents/CreateWorkoutPage.jsx";
 import { CreateProgramPage } from "./CreateProgramComponents/CreateProgramPage.jsx";
 import { ChatPage } from "./ChatComponent/ChatPage.jsx";
+import { CheckCertificationsPage } from "./CheckCertificationsComponents/CheckCertificationsPage.jsx";
 function App() {
   return (
     <div>
@@ -35,6 +36,10 @@ function App() {
           ></Route>
           <Route path="/" element={<GreetingsPage />}></Route>
           <Route path="/chat-page" element={<ChatPage />}></Route>
+          <Route
+            path="/certifications"
+            element={<CheckCertificationsPage />}
+          ></Route>
         </Routes>
       </Router>
     </div>

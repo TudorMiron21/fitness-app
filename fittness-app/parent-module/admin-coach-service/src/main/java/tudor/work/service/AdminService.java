@@ -4,6 +4,7 @@ import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.AchievementRequestDto;
 import tudor.work.dto.CoachDetailsResponseDto;

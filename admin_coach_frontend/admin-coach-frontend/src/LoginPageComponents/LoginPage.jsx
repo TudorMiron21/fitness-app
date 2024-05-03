@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./LoginPage.css";
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -22,27 +22,25 @@ export const Login = () => {
         }
       );
       const token = response.data.access_token;
-      console.log(token)
+      console.log(token);
       localStorage.setItem("access_token", token);
 
       const decoded = jwtDecode(token);
-      
 
       const authoritiesString = decoded.authorities;
-      console.log(authoritiesString)
+      console.log(authoritiesString);
 
-      const authoritiesArray = authoritiesString.slice(1, -1).split(', ');
+      const authoritiesArray = authoritiesString.slice(1, -1).split(", ");
 
-      const authorities = authoritiesArray.map(role => role.trim());
+      const authorities = authoritiesArray.map((role) => role.trim());
 
-
-      console.log(authorities)
+      console.log(authorities);
       if (authorities.includes("ROLE_ADMIN")) {
         localStorage.setItem("role", "ROLE_ADMIN");
+        navigate("/home-page");
       } else if (authorities.includes("ROLE_COACH")) {
         localStorage.setItem("role", "ROLE_COACH");
-        navigate('/home-page');
-
+        navigate("/home-page");
       } else {
         alert("Unauthorized: You do not have access to this area.");
       }

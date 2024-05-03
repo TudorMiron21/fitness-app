@@ -65,7 +65,8 @@ class _LeaderBoardWidgetState extends State<LeaderBoardWidget> {
         }
         return Padding(
           padding: EdgeInsets.symmetric(
-              vertical: 2.0), // Add vertical spacing between list items
+              vertical: 1.5,
+              horizontal: 3.0), // Add vertical spacing between list items
           child: Container(
             decoration: BoxDecoration(
               color: backgroundColor,
@@ -92,10 +93,7 @@ class _LeaderBoardWidgetState extends State<LeaderBoardWidget> {
                   ),
                   Text(
                     leaderBoard.user.email,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ],
               ),

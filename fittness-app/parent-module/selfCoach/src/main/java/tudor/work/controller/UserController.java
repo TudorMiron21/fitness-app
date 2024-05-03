@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.*;
 import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
+import tudor.work.exceptions.LeaderBoardEntryNotFoundException;
 import tudor.work.exceptions.UserAccessException;
 import tudor.work.service.AuthorityService;
 import tudor.work.service.MinioService;
@@ -375,15 +376,57 @@ public class UserController {
     public ResponseEntity<?> getFilteredWorkouts(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "minDifficultyLevel") Double minDifficultyLevel,
-            @RequestParam(value = "maxDifficultyLevel") Double maxDifficultyLevel)
-    {
-        userService.getFilteredWorkouts(FilterSearchDto
-                .builder()
-                .name(name)
-                .minDifficulty(minDifficultyLevel)
-                .maxDifficulty(maxDifficultyLevel)
-                .build()
-        );
+            @RequestParam(value = "maxDifficultyLevel") Double maxDifficultyLevel) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getFilteredWorkouts(FilterSearchDto
+                    .builder()
+                    .name(name)
+                    .minDifficulty(minDifficultyLevel)
+                    .maxDifficulty(maxDifficultyLevel)
+                    .build()
+            ));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getFilteredPrograms")
+    public ResponseEntity<?> getFilteredPrograms(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "minDifficultyLevel") Double minDifficultyLevel,
+            @RequestParam(value = "maxDifficultyLevel") Double maxDifficultyLevel
+    ) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getFilteredPrograms(FilterSearchDto
+                    .builder()
+                    .name(name)
+                    .minDifficulty(minDifficultyLevel)
+                    .maxDifficulty(maxDifficultyLevel)
+                    .build()
+            ));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getUserAchievements")
+    public ResponseEntity<?> getUserAchievements() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getUserAchievements());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getLeaderBoardEntryForUser")
+    public ResponseEntity<?> getLeaderBoardEntryForUser() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getLeaderBoardEntryForUser());
+        } catch (LeaderBoardEntryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(e.getMessage());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 

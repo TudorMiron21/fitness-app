@@ -20,4 +20,6 @@ class Achievement {
         numberOfPoints: json['numberOfPoints'],
         achievementPicturePath: json['achievementPicturePath']?? '');
   }
+
+  
 }

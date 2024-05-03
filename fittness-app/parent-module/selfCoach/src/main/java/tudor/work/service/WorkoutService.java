@@ -169,7 +169,10 @@ public class WorkoutService {
             );
 
         }
-        return workoutRepository.findAll(spec);
+        return workoutRepository.findAll(spec)
+                .stream()
+                .map(this::convertWorkoutCoverPhotos)
+                .toList();
     }
 
 }
