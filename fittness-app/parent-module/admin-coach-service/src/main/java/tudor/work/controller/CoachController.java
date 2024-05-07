@@ -127,12 +127,11 @@ public class CoachController {
     @GetMapping("/getFilteredWorkouts")
     public ResponseEntity<?> getFilteredWorkouts(
 
-            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "isWorkoutPrivate", required = false) Boolean isWorkoutPrivate,
             @RequestParam(value = "minDifficultyLevel") Double minDifficultyLevel,
             @RequestParam(value = "maxDifficultyLevel") Double maxDifficultyLevel
-    )
-    {
+    ) {
 
         try {
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -147,7 +146,7 @@ public class CoachController {
                     )
             );
         } catch (NotFoundException e) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
 
     }
@@ -167,8 +166,7 @@ public class CoachController {
 
 
     @PostMapping("/createProgram")
-    public ResponseEntity<?> createProgram(@RequestBody CreateProgramDto createProgramDto)
-    {
+    public ResponseEntity<?> createProgram(@RequestBody CreateProgramDto createProgramDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(coachService.createProgram(createProgramDto));
         } catch (NotFoundException e) {
@@ -178,16 +176,16 @@ public class CoachController {
 
 
     @PutMapping("/uploadProgramCoverPhoto/{programId}")
-    public ResponseEntity<?>  uploadProgramCoverPhoto(@PathVariable Long programId, MultipartFile coverPhoto){
+    public ResponseEntity<?> uploadProgramCoverPhoto(@PathVariable Long programId, MultipartFile coverPhoto) {
 
         try {
-            String imgPath = coachService.uploadProgramCoverPhoto(programId,coverPhoto);
+            String imgPath = coachService.uploadProgramCoverPhoto(programId, coverPhoto);
 
             return ResponseEntity.status(HttpStatus.OK).body(imgPath);
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
                  InternalException e) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.FOUND).body(e);
@@ -195,8 +193,7 @@ public class CoachController {
     }
 
     @GetMapping("/getSubscribers")
-    public ResponseEntity<?> getSubscribers()
-    {
+    public ResponseEntity<?> getSubscribers() {
         try {
             Set<SubscribersDto> subscribers = coachService.getSubscribers();
             return ResponseEntity.status(HttpStatus.OK).body(subscribers);
@@ -206,5 +203,61 @@ public class CoachController {
         }
     }
 
+    @GetMapping("/getAllExercisesForCoach")
+    public ResponseEntity<?> getAllExercisesForCoach() {
 
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.getAllExercisesForCoach());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getAllWorkoutsForCoach")
+    public ResponseEntity<?> getAllWorkoutsForCoach() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.getAllWorkoutsForCoach());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getAllProgramsForCoach")
+    public ResponseEntity<?> getAllProgramsForCoach() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.getAllProgramsForCoach());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getAllCertificationsForCoach")
+    public ResponseEntity<?> getAllCertificationsForCoach()
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.getAllCertificationsForCoach());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getDetailedWorkout/{workoutId}")
+    public ResponseEntity<?> getDetailedWorkout(@PathVariable(name = "workoutId")Long workoutId)
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.getDetailedWorkout(workoutId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getDetailedProgram/{programId}")
+    public ResponseEntity<?> getDetailedProgram(@PathVariable(name = "programId")Long programId)
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.getDetailedProgram(programId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

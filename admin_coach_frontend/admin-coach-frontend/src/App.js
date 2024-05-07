@@ -10,6 +10,7 @@ import { CreateWorkoutPage } from "./CreateWorkoutComponents/CreateWorkoutPage.j
 import { CreateProgramPage } from "./CreateProgramComponents/CreateProgramPage.jsx";
 import { ChatPage } from "./ChatComponent/ChatPage.jsx";
 import { CheckCertificationsPage } from "./CheckCertificationsComponents/CheckCertificationsPage.jsx";
+import { ProfilePage } from "./ProfilePageComponents/ProfilePage.jsx";
 function App() {
   return (
     <div>
@@ -40,6 +41,7 @@ function App() {
             path="/certifications"
             element={<CheckCertificationsPage />}
           ></Route>
+          <Route path="/profile-page" element={<ProfilePage />}></Route>
         </Routes>
       </Router>
     </div>

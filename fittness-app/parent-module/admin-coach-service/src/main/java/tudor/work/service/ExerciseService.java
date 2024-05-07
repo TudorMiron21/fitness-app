@@ -1,5 +1,6 @@
 package tudor.work.service;
 
+import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,7 +11,11 @@ import tudor.work.model.Exercise;
 import tudor.work.repository.ExerciseRepository;
 import tudor.work.specification.ExerciseSpecification;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,6 +26,7 @@ public class ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
     private final AuthorityService authorityService;
+    private final MinioService minioService;
 
 
     public Exercise saveExercise(Exercise exercise) {
@@ -31,9 +37,39 @@ public class ExerciseService {
         return exerciseRepository.findById(exerciseId).orElseThrow(() -> new NotFoundException("Exercise with id " + exerciseId + " not found"));
     }
 
-    public Set<Exercise> getAllExercisesByAdderId(Long adderId) {
-        return exerciseRepository.findAllByAdderId(adderId);
+    private boolean needsConversion(String url) {
+        if (url != null)
+            return !(url.startsWith("http://") || url.startsWith("https://"));
+        return false;
     }
+
+    public Exercise convertExercisePhotos(Exercise exercise) {
+        String startPhotoUrl = exercise.getExerciseImageStartUrl();
+        String endPhotoUrl  =  exercise.getExerciseImageEndUrl();
+
+            try {
+                if(needsConversion(startPhotoUrl)) {
+                    exercise.setExerciseImageStartUrl(minioService.generatePreSignedUrl(startPhotoUrl));
+                }
+                if(needsConversion(endPhotoUrl))
+                {
+                    exercise.setExerciseImageEndUrl(minioService.generatePreSignedUrl(endPhotoUrl));
+                }
+                return exercise;
+            } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                     NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                     InternalException e) {
+                throw new RuntimeException(e);
+            }
+
+
+    }
+
+    public List<Exercise> getAllExercisesByAdderId(Long adderId) {
+        return exerciseRepository.findAllByAdderId(adderId).stream().map(this::convertExercisePhotos).toList();
+    }
+
+
 
 
     public Set<Exercise> getFilteredExercises(ExerciseFilteredRequestDto exerciseFilteredRequestDto) throws NotFoundException {

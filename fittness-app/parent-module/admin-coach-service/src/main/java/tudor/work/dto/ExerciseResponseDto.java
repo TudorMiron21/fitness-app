@@ -22,6 +22,8 @@ public class ExerciseResponseDto {
 
     private String exerciseImageStartUrl;
 
+    private String exerciseImageEndUrl;
+
     private MuscleGroup muscleGroup;
 
     private Equipment equipment;

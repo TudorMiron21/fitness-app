@@ -1,18 +1,20 @@
 package tudor.work.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 
 @RequiredArgsConstructor
-@Data
+//@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @Table(name = "exercise")
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
 public class Exercise {
 
     @Id
@@ -41,6 +43,7 @@ public class Exercise {
 
     @ManyToOne
     @JoinColumn(name = "adder_id")
+    @JsonIgnore
     private User adder;
 
     @ManyToOne

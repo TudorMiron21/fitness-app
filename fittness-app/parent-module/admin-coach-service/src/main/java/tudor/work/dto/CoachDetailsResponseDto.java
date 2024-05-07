@@ -25,6 +25,4 @@ public class CoachDetailsResponseDto {
 
     private Boolean isValidated;
 
-
-
 }

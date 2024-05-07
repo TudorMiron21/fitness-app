@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -334,7 +335,7 @@ public class CoachService {
 
                         WorkoutDto
                                 .builder()
-                                .Id(workout.getId())
+                                .id(workout.getId())
                                 .coverPhotoUrl(workout.getCoverPhotoUrl())
                                 .difficultyLevel(workout.getDifficultyLevel())
                                 .name(workout.getName())
@@ -384,6 +385,166 @@ public class CoachService {
                                                 .build()
                         ).collect(Collectors.toSet());
     }
+
+    public List<ExerciseResponseDto> getAllExercisesForCoach() throws NotFoundException {
+
+        return exerciseService
+                .getAllExercisesByAdderId
+                        (authorityService.getUserId())
+                .stream()
+                .map(
+                        exercise ->
+                                ExerciseResponseDto
+                                        .builder()
+                                        .exerciseId(exercise.getId())
+                                        .name(exercise.getName())
+                                        .exerciseImageStartUrl(exercise.getExerciseImageStartUrl())
+                                        .exerciseImageEndUrl(exercise.getExerciseImageEndUrl())
+                                        .muscleGroup(exercise.getMuscleGroup())
+                                        .equipment(exercise.getEquipment())
+                                        .difficulty(exercise.getDifficulty())
+                                        .category(exercise.getCategory())
+                                        .isExerciseExclusive(exercise.isExerciseExclusive())
+                                        .build()
+                ).toList();
+    }
+
+    public List<WorkoutDto> getAllWorkoutsForCoach() throws NotFoundException {
+
+        return workoutService
+                .getAllWorkoutsByAdderId(
+                        authorityService.getUserId()
+                ).stream()
+                .map(workout ->
+                        WorkoutDto
+                                .builder()
+                                .id(workout.getId())
+                                .coverPhotoUrl(workout.getCoverPhotoUrl())
+                                .difficultyLevel(workout.getDifficultyLevel())
+                                .name(workout.getName())
+                                .build())
+                .toList();
+    }
+
+    public List<ProgramDto> getAllProgramsForCoach() throws NotFoundException {
+
+        return programService
+                .getAllByAdderId(
+                        authorityService.getUserId()
+                )
+                .stream()
+                .map(
+                        program ->
+                                ProgramDto
+                                        .builder()
+                                        .id(program.getId())
+                                        .coverPhotoUrl(program.getCoverPhotoUrl())
+                                        .difficultyLevel(program.getDifficultyLevel())
+                                        .name(program.getName())
+                                        .build()
+                ).toList();
+    }
+
+    public List<CoachDetailsResponseDto> getAllCertificationsForCoach() throws NotFoundException {
+
+        return authorityService
+                .getUser()
+                .getCoachDetails()
+                .stream()
+                .map(
+                        coachDetails -> {
+
+                            try {
+                                return CoachDetailsResponseDto
+                                        .builder()
+                                        .id(coachDetails.getId())
+                                        .imageResourcePreSignedUrl(minioService.generatePreSignedUrl(coachDetails.getCoachCertificatePath()))
+                                        .certificationType(coachDetails.getCertificationType())
+                                        .isValidated(coachDetails.getIsValidated())
+                                        .build();
+                            } catch (ServerException | InsufficientDataException | ErrorResponseException |
+                                     IOException |
+                                     NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException |
+                                     XmlParserException |
+                                     InternalException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                ).toList();
+    }
+
+    public DetailedWorkoutDto getDetailedWorkout(Long workoutId) throws NotFoundException {
+        Workout workout = workoutService.findById(workoutId);
+
+        try {
+            return
+                    DetailedWorkoutDto
+                            .builder()
+                            .id(workoutId)
+                            .name(workout.getName())
+                            .description(workout.getDescription())
+                            .difficultyLevel(workout.getDifficultyLevel())
+                            .coverPhotoUrl(minioService.generatePreSignedUrl(workout.getCoverPhotoUrl()))
+                            .exercises(workout
+                                    .getExercises()
+                                    .stream()
+                                    .map(
+                                            exercise ->
+                                            {
+                                                try {
+                                                    return ExerciseResponseDto
+                                                            .builder()
+                                                            .exerciseId(exercise.getId())
+                                                            .name(exercise.getName())
+                                                            .exerciseImageStartUrl(minioService.generatePreSignedUrl(exercise.getExerciseImageStartUrl()))
+                                                            .exerciseImageEndUrl(minioService.generatePreSignedUrl(exercise.getExerciseImageEndUrl()))
+                                                            .muscleGroup(exercise.getMuscleGroup())
+                                                            .equipment(exercise.getEquipment())
+                                                            .difficulty(exercise.getDifficulty())
+                                                            .category(exercise.getCategory())
+                                                            .isExerciseExclusive(exercise.isExerciseExclusive())
+                                                            .build();
+                                                } catch (ServerException | InsufficientDataException |
+                                                         ErrorResponseException | IOException |
+                                                         NoSuchAlgorithmException | InvalidKeyException |
+                                                         InvalidResponseException | XmlParserException |
+                                                         InternalException e) {
+                                                    throw new RuntimeException(e);
+                                                }
+                                            }
+                                    ).toList()
+                            )
+                            .build();
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    public DetailedProgramDto getDetailedProgram(Long programId) throws NotFoundException {
+        Program program = programService.findById(programId);
+
+        try {
+            return DetailedProgramDto
+                    .builder()
+                    .id(programId)
+                    .name(program.getName())
+                    .description(program.getDescription())
+                    .difficultyLevel(program.getDifficultyLevel())
+                    .durationInDays(program.getDurationInDays())
+                    .coverPhotoUrl(minioService.generatePreSignedUrl(program.getCoverPhotoUrl()))
+                    .workoutPrograms(program.getWorkoutPrograms())
+                    .build();
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 
 
