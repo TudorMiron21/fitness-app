@@ -92,5 +92,22 @@ public class MinioService {
         );
     }
 
+    public void deleteObject(String imgPath) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        String[] parts = imgPath.split("/", 2);
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Invalid image path");
+        }
+
+        String bucketName = parts[0];
+        String imageFileName = parts[1];
+
+        minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(imageFileName)
+                        .build()
+        );
+    }
+
 
 }

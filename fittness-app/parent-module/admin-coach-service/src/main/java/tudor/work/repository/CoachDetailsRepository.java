@@ -15,4 +15,9 @@ public interface CoachDetailsRepository extends JpaRepository<CoachDetails, Long
             "FROM CoachDetails cd " +
             "WHERE cd.isValidated = false ")
     Set<CoachDetails> findAllByInvalidated();
+
+    @Query("SELECT cd " +
+            "FROM CoachDetails cd " +
+            "WHERE cd.isValidated IS NULL ")
+    Set<CoachDetails> findAllByPending();
 }

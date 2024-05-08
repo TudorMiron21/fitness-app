@@ -47,7 +47,16 @@ public class AdminController {
         }
 
     }
+    @PutMapping("/invalidateCoachRequest/{idCoachDetails}")
+    public ResponseEntity<?> invalidateCoachRequest(@PathVariable("idCoachDetails") Long idCoachDetails) {
+        try {
+            adminService.invalidateCoachRequest(idCoachDetails);
+            return ResponseEntity.status(HttpStatus.OK).body("coach details certificate with id " + idCoachDetails + " was invalidated");
 
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
     @PostMapping("/addAchievement")
     public ResponseEntity<?> addAchievement(@ModelAttribute AchievementRequestDto achievementRequestDto)
     {

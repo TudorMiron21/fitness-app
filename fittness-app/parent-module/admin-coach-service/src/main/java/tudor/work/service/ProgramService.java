@@ -57,4 +57,8 @@ public class ProgramService {
     public Program findById(Long programId) throws NotFoundException {
         return programRepository.findById(programId).orElseThrow(() ->new NotFoundException("program with id "+programId+ " npt found"));
     }
+
+    public void delete(Program program){
+        programRepository.delete(program);
+    }
 }

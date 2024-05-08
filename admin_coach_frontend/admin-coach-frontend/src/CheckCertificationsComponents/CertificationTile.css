@@ -55,6 +55,20 @@
   .certification-tile.expanded .validate-button:hover {
     background-color: #45a049;
   }
+
+  .certification-tile.expanded .invalidate-button {
+    margin-right: 10px; /* Optional, adjust as needed */
+    background-color: #f44336; /* Red background for invalidation */
+    color: white; /* White text for contrast */
+    padding: 10px 20px; /* Padding for a comfortable click area */
+    border: none; /* No border */
+    border-radius: 5px; /* Slightly rounded corners */
+    transition: background-color 0.3s ease-in-out; /* Smooth transition on hover */
+  }
+  
+  .certification-tile.expanded .invalidate-button:hover {
+    background-color: #e53935; /* Darker red on hover */
+  }
   
   .certification-tile.expanded .close-button {
     color: red;

@@ -4,6 +4,7 @@ import "./CertificationTile.css"; // Custom CSS for styling
 export const CertificationTile = ({
   certification,
   onValidate,
+  onInvalidate,
   onOpen,
   onClose,
 }) => {
@@ -114,7 +115,12 @@ export const CertificationTile = ({
           <button className="validate-button" onClick={onValidate}>
             Validate
           </button>
+
+          <button className="invalidate-button" onClick={onInvalidate}>
+            Invalidate
+          </button>
           <button
+          
             className="close-button"
             onClick={(event) => {
               event.stopPropagation();

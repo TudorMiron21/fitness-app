@@ -22,8 +22,10 @@ C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-co
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\model\Program.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\controller\AdminController.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\FireBaseNotificationRequestDto.java
+C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\DetailedWorkoutDto.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\repository\ProgramRepository.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\FireBaseNotificationResponseDto.java
+C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\ProgramDto.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\utils\MinioMultipartUploadUtils.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\model\Equipment.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\filter\JwtVerifierFilter.java
@@ -44,6 +46,7 @@ C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-co
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\model\Category.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\service\AdminService.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\config\FirebaseNotificationConfig.java
+C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\DetailedProgramDto.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\dto\ExerciseFilteredRequestDto.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\repository\EquipmentRepository.java
 C:\Users\Tudor\Desktop\Facultate\Licenta2023\fittness-app\parent-module\admin-coach-service\src\main\java\tudor\work\controller\CoachController.java

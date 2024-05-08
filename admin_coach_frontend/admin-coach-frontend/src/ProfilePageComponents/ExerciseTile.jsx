@@ -8,7 +8,7 @@ import {
   Button,
   Modal,
   Box,
-  Grid
+  Grid,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 
@@ -25,10 +25,23 @@ const modalStyle = {
 };
 
 export const ExerciseTile = ({ exercise, onEdit, onDelete }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // Modal for detailed info
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false); // Modal for delete confirmation
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const openDeleteConfirmation = (e) => {
+    e.stopPropagation();
+    setConfirmDeleteOpen(true);
+  };
+
+  const closeDeleteConfirmation = () => setConfirmDeleteOpen(false);
+
+  const handleDelete = async () => {
+    await onDelete(exercise.exerciseId);
+    closeDeleteConfirmation();
+  };
 
   return (
     <>
@@ -51,40 +64,51 @@ export const ExerciseTile = ({ exercise, onEdit, onDelete }) => {
         <CardActions>
           <Button
             size="small"
-            color="primary"
-            startIcon={<Edit />}
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent card click event from triggering
-              onEdit(exercise);
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            size="small"
             color="secondary"
             startIcon={<Delete />}
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent card click event from triggering
-              onDelete(exercise.id);
-            }}
+            onClick={openDeleteConfirmation} // Opens the confirmation modal
           >
             Delete
           </Button>
         </CardActions>
       </Card>
 
-      {/* Modal for showing more detailed information */}
+      {/* Modal for Delete Confirmation */}
+      <Modal open={confirmDeleteOpen} onClose={closeDeleteConfirmation}>
+        <Box sx={modalStyle}>
+          <Typography variant="h5" gutterBottom>
+            Are you sure you want to delete the exercise "{exercise.name}"?
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 2,
+              mt: 2,
+            }}
+          >
+            <Button
+              onClick={closeDeleteConfirmation}
+              variant="outlined"
+              color="secondary"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleDelete} variant="contained" color="primary">
+              Yes
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* Existing Modal for Detailed Information */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={modalStyle}>
           <Typography variant="h5" gutterBottom>
-            {exercise.name} {/* Title */}
+            {exercise.name}
           </Typography>
-
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              {" "}
-              {/* Grid for the Start Image */}
               <Typography variant="subtitle1" color="text.primary">
                 Start Image:
               </Typography>
@@ -98,10 +122,7 @@ export const ExerciseTile = ({ exercise, onEdit, onDelete }) => {
                 alt={`Start image of ${exercise.name}`}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
-              {" "}
-              {/* Grid for the End Image */}
               <Typography variant="subtitle1" color="text.primary">
                 End Image:
               </Typography>
@@ -116,11 +137,9 @@ export const ExerciseTile = ({ exercise, onEdit, onDelete }) => {
               />
             </Grid>
           </Grid>
-
           <Typography variant="h6" color="text.primary" gutterBottom>
             Details
           </Typography>
-
           <Typography variant="body1" color="text.primary">
             Muscle Group: {exercise.muscleGroup.name}
           </Typography>
@@ -140,10 +159,7 @@ export const ExerciseTile = ({ exercise, onEdit, onDelete }) => {
           <Typography variant="body1" color="text.primary">
             Description: {exercise.description || "No description available"}
           </Typography>
-
           <Box sx={{ textAlign: "right", mt: 2 }}>
-            {" "}
-            {/* Align close button to the right */}
             <Button onClick={handleClose} variant="outlined" color="secondary">
               Close
             </Button>

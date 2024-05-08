@@ -28,7 +28,8 @@ public class AdminService {
 
     public Set<CoachDetailsResponseDto> getAllInvalidatedCoachRequests() {
 
-        Set<CoachDetails> coachDetailsSet = coachDetailsService.findAllByInvalidated();
+//        Set<CoachDetails> coachDetailsSet = coachDetailsService.findAllByInvalidated();
+        Set<CoachDetails> coachDetailsSet = coachDetailsService.findAllByPending();
 
 
         return coachDetailsSet.stream().map(coachDetails -> {
@@ -44,7 +45,7 @@ public class AdminService {
                         .build();
             } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                      NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                     InternalException  e) {
+                     InternalException e) {
                 throw new RuntimeException(e);
             }
 
@@ -56,6 +57,13 @@ public class AdminService {
         CoachDetails coachDetails = coachDetailsService.findById(idCoachDetails);
         coachDetails.setIsValidated(true);
     }
+
+    @Transactional
+    public void invalidateCoachRequest(Long idCoachDetails) throws NotFoundException {
+        CoachDetails coachDetails = coachDetailsService.findById(idCoachDetails);
+        coachDetails.setIsValidated(false);
+    }
+
     public String getFileExtension(String fileName) {
         if (fileName == null) {
             return null;
@@ -67,6 +75,7 @@ public class AdminService {
         }
         return fileName.substring(dotIndex + 1);
     }
+
     public Long addAchievement(AchievementRequestDto achievementRequestDto) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
         String imgName = RandomString.make(45) + "." + this.getFileExtension(achievementRequestDto.getAchievementPicture().getOriginalFilename());
@@ -94,8 +103,8 @@ public class AdminService {
                         .achievementPicturePath(imgPath)
                         .build();
 
-       Achievement fetchedAchievement = achievementService.save(achievement);
+        Achievement fetchedAchievement = achievementService.save(achievement);
 
-       return fetchedAchievement.getId();
+        return fetchedAchievement.getId();
     }
 }

@@ -7,8 +7,29 @@ export const ExerciseGrid = () => {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const onDelete = async (exerciseId) => {
+    if (!exerciseId || exerciseId === "undefined") {
+      console.error("Invalid exercise ID");
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/v1/adminCoachService/coach/deleteExercise/${exerciseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      setExercises((prevExercises) =>
+        prevExercises.filter((exercise) => exercise.exerciseId !== exerciseId)
+      );
+    } catch (error) {
+      console.error("Error deleting exercise:" + exerciseId, error);
+    }
+  };
 
+  useEffect(() => {
     const fetchWorkouts = async () => {
       try {
         const response = await axios.get(
@@ -38,8 +59,11 @@ export const ExerciseGrid = () => {
         <Grid container spacing={2} justifyContent="center">
           {exercises.map((exercise, index) => (
             <Grid item key={index}>
-              <ExerciseTile exercise={exercise}                 onEdit={() => {}}
-                onDelete={() => {}}/>{" "}
+              <ExerciseTile
+                exercise={exercise}
+                onEdit={() => {}}
+                onDelete={() => onDelete(exercise.exerciseId)}
+              />{" "}
               {/* Render each workout as a tile */}
             </Grid>
           ))}

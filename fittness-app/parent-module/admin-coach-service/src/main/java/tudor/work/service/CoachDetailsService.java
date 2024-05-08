@@ -21,6 +21,10 @@ public class CoachDetailsService {
     public Set<CoachDetails> findAllByInvalidated() {
         return coachDetailsRepository.findAllByInvalidated();
     }
+    public Set<CoachDetails> findAllByPending() {
+        return coachDetailsRepository.findAllByPending();
+    }
+
 
     public CoachDetails findById(Long id) throws NotFoundException {
         return coachDetailsRepository.findById(id).orElseThrow(() -> new NotFoundException("coach details entity with id " + id + " nor found"));

@@ -16,10 +16,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,16 +55,18 @@ public class CoachService {
                         .coachCertificatePath(imgPath)
                         .certificationType(uploadCoachDetailsRequestDto.getCertificationType())
                         .yearsOfExperience(uploadCoachDetailsRequestDto.getYearsOfExperience())
-                        .isValidated(false)
+//                        .isValidated(false)
                         .build()
         );
     }
 
     public Boolean checkAreCoachDetailsValid() throws NotFoundException {
 
-        authorityService.getUser();
-        return authorityService.getUser().getCoachDetails().stream().anyMatch(CoachDetails::getIsValidated);
-    }
+        // Convert null to false
+        return authorityService.getUser()
+                .getCoachDetails()
+                .stream()
+                .anyMatch(cd -> Optional.ofNullable(cd.getIsValidated()).orElse(false));    }
 
     private Integer generatePartCount(Long fileSize) {
         long maxRequestSizeLong = Long.parseLong(maxRequestSize.replaceAll("[^0-9]", "")) * 1000000;
@@ -543,6 +542,68 @@ public class CoachService {
                  InternalException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Transactional
+    public void deleteExercise(Long exerciseId) throws NotFoundException {
+        try {
+            Exercise exercise = exerciseService.getExerciseByid(exerciseId);
+
+            if (exercise.getExerciseVideoUrl() != null)
+                minioService.deleteObject(exercise.getExerciseVideoUrl());
+            if (exercise.getExerciseImageStartUrl() != null)
+                minioService.deleteObject(exercise.getExerciseImageStartUrl());
+
+            if (exercise.getExerciseImageEndUrl() != null)
+                minioService.deleteObject(exercise.getExerciseImageEndUrl());
+
+            for (Workout workout : workoutService.findByExercisesContaining(exercise)) {
+                workout.removeExercise(exercise);
+                workoutService.save(workout);
+            }
+
+            exerciseService.delete(exercise);
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void deleteWorkout(Long workoutId) throws NotFoundException {
+
+
+        Workout workout = workoutService.findById(workoutId);
+
+        if(workout.getCoverPhotoUrl()!=null) {
+            try {
+                minioService.deleteObject(workout.getCoverPhotoUrl());
+            } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                     NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                     InternalException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        workoutService.delete(workout);
+    }
+
+    public void deleteProgram(Long programId) throws NotFoundException {
+        Program program = programService.findById(programId);
+
+        if(program.getCoverPhotoUrl()!=null) {
+            try {
+                minioService.deleteObject(program.getCoverPhotoUrl());
+            } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                     NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                     InternalException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        programService.delete(program);
+
     }
 
 }

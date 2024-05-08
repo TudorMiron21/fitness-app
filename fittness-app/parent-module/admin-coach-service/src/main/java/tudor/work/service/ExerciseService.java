@@ -111,4 +111,8 @@ public class ExerciseService {
     public Exercise findById(Long id) throws NotFoundException {
         return exerciseRepository.findById(id).orElseThrow(() -> new NotFoundException("exercise with id " + id + " not found"));
     }
+
+    public void delete(Exercise exercise) {
+        exerciseRepository.delete(exercise);
+    }
 }

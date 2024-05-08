@@ -36,6 +36,14 @@ export const WorkoutTile = ({ workout, onEdit, onDelete }) => {
   const [open, setOpen] = useState(false);
   const [detailedWorkout, setDetailedWorkout] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+
+  const openDeleteConfirmation = (e) => {
+    e.stopPropagation();
+    setConfirmDeleteOpen(true);
+  };
+
+  const closeDeleteConfirmation = () => setConfirmDeleteOpen(false);
 
   const handleOpen = async () => {
     await fetchDetailedWorkoutData();
@@ -47,6 +55,10 @@ export const WorkoutTile = ({ workout, onEdit, onDelete }) => {
     setLoading(true);
   };
 
+  const handleDelete = async () => {
+    await onDelete(workout.id);
+    closeDeleteConfirmation();
+  };
   const fetchDetailedWorkoutData = async () => {
     try {
       const response = await axios.get(
@@ -83,7 +95,7 @@ export const WorkoutTile = ({ workout, onEdit, onDelete }) => {
         </CardContent>
 
         <CardActions>
-          <Button
+          {/* <Button
             size="small"
             color="primary"
             startIcon={<Edit />}
@@ -93,21 +105,38 @@ export const WorkoutTile = ({ workout, onEdit, onDelete }) => {
             }}
           >
             Edit
-          </Button>
+          </Button> */}
           <Button
             size="small"
             color="secondary"
             startIcon={<Delete />}
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent card click from triggering
-              onDelete(workout.id);
-            }}
+            onClick={openDeleteConfirmation}
           >
             Delete
           </Button>
         </CardActions>
       </Card>
-
+      <Modal open={confirmDeleteOpen} onClose={closeDeleteConfirmation}>
+        <Box sx={modalStyle}>
+          <Typography variant="h5" gutterBottom>
+            Are you sure you want to delete the workout "{workout.name}"?
+          </Typography>
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}
+          >
+            <Button
+              onClick={closeDeleteConfirmation}
+              variant="outlined"
+              color="secondary"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleDelete} variant="contained" color="primary">
+              Yes
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       <Modal open={open} onClose={handleClose}>
         <Box sx={modalStyle}>
           {loading ? (

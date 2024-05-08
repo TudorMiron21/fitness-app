@@ -36,6 +36,14 @@ export const ProgramTile = ({ program, onEdit, onDelete }) => {
   const [open, setOpen] = useState(false); // State to control modal visibility
   const [detailedProgram, setDetailedProgram] = useState(null); // State for detailed program data
   const [loading, setLoading] = useState(true); // Loading state for async operations
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+
+  const openDeleteConfirmation = (e) => {
+    e.stopPropagation();
+    setConfirmDeleteOpen(true);
+  };
+
+  const closeDeleteConfirmation = () => setConfirmDeleteOpen(false);
 
   const handleOpen = async () => {
     setLoading(true);
@@ -48,6 +56,10 @@ export const ProgramTile = ({ program, onEdit, onDelete }) => {
     setLoading(true); // Reset loading state
   };
 
+  const handleDelete = async () => {
+    await onDelete(program.id);
+    closeDeleteConfirmation();
+  };
   const fetchDetailedProgramData = async () => {
     try {
       const response = await axios.get(
@@ -85,7 +97,7 @@ export const ProgramTile = ({ program, onEdit, onDelete }) => {
         </CardContent>
 
         <CardActions>
-          <Button
+          {/* <Button
             size="small"
             color="primary"
             startIcon={<Edit />}
@@ -95,21 +107,38 @@ export const ProgramTile = ({ program, onEdit, onDelete }) => {
             }}
           >
             Edit
-          </Button>
+          </Button> */}
           <Button
             size="small"
             color="secondary"
             startIcon={<Delete />}
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent card click from triggering
-              onDelete(program.id);
-            }}
+            onClick={openDeleteConfirmation}
           >
             Delete
           </Button>
         </CardActions>
       </Card>
-
+      <Modal open={confirmDeleteOpen} onClose={closeDeleteConfirmation}>
+        <Box sx={modalStyle}>
+          <Typography variant="h5" gutterBottom>
+            Are you sure you want to delete the program "{program.name}"?
+          </Typography>
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}
+          >
+            <Button
+              onClick={closeDeleteConfirmation}
+              variant="outlined"
+              color="secondary"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleDelete} variant="contained" color="primary">
+              Yes
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       {/* Modal for detailed program information */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={modalStyle}>

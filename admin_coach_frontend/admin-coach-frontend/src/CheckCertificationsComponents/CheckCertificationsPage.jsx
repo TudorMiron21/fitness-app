@@ -103,6 +103,44 @@ export const CheckCertificationsPage = () => {
     }
   };
 
+  const invalidateCertification = async (certificationId) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        const isTokenValid = await validateToken(token);
+        if (!isTokenValid) {
+          navigate("/login");
+        } else {
+          const response = await axios.put(
+            `http://localhost:8080/api/v1/adminCoachService/admin/invalidateCoachRequest/${certificationId}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            }
+          );
+          if (response.status == 200) {
+            console.log(
+              `certification with id ${certificationId} is invalidated`
+            );
+
+            setCertifications((prevCertifications) =>
+              prevCertifications.filter(
+                (certification) => certification.id !== certificationId // Remove the invalidated item
+              )
+            );
+          } else {
+            console.error("Error validating certification");
+          }
+        }
+      } else navigate("/login");
+    } catch (error) {
+      console.error("Error fetching coach details status", error);
+    }
+  };
+
+
   return (
     <div>
       <NavBar />
@@ -113,6 +151,7 @@ export const CheckCertificationsPage = () => {
             key={certification.id}
             certification={certification}
             onValidate={() => validateCertification(certification.id)}
+            onInvalidate={()=>invalidateCertification(certification.id)}
             onOpen={() => handleTilePress(certification.id)}
             onClose={() => handleTilePress(certification.id)}
           />

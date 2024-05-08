@@ -7,6 +7,27 @@ export const ProgramGrid = () => {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const onDelete = async (programId) => {
+    if (!programId || programId === "undefined") {
+      console.error("Invalid exercise ID");
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/v1/adminCoachService/coach/deleteProgram/${programId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      setPrograms((prevPrograms) =>
+        prevPrograms.filter((program) => program.id !== programId)
+      );
+    } catch (error) {
+      console.error("Error deleting program:" + programId, error);
+    }
+  };
   useEffect(() => {
 
     const fetchWorkouts = async () => {
@@ -41,7 +62,7 @@ export const ProgramGrid = () => {
               <ProgramTile
                 program={program}
                 onEdit={() => {}}
-                onDelete={() => {}}
+                onDelete={() => onDelete(program.id)}
               />{" "}
             </Grid>
           ))}

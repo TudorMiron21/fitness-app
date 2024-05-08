@@ -34,10 +34,6 @@ public class CoachController {
 
     private final CoachService coachService;
 
-    @PostMapping("/certificateCoach")
-    public ResponseEntity<?> certificateCoach() {
-        return null;
-    }
 
     @PostMapping("/uploadCoachDetails")
     public ResponseEntity<?> uploadCoachDetails(@ModelAttribute UploadCoachDetailsRequestDto uploadCoachDetailsRequestDto) {
@@ -256,6 +252,41 @@ public class CoachController {
     {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(coachService.getDetailedProgram(programId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteExercise/{exerciseId}")
+    public ResponseEntity<?> deleteExercise(@PathVariable(name = "exerciseId") Long exerciseId)
+    {
+        try {
+            coachService.deleteExercise(exerciseId);
+            return ResponseEntity.status(HttpStatus.OK).body("exercise with id "+exerciseId+" deleted");
+
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteWorkout/{workoutId}")
+    public ResponseEntity<?> deleteWorkout(@PathVariable(name = "workoutId")Long workoutId)
+    {
+        try {
+            coachService.deleteWorkout(workoutId);
+            return ResponseEntity.status(HttpStatus.OK).body("workout with id "+workoutId+" deleted");
+
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteProgram/{programId}")
+    public ResponseEntity<?> deleteProgram(@PathVariable(name = "programId")Long programId)
+    {
+        try {
+            coachService.deleteProgram(programId);
+            return ResponseEntity.status(HttpStatus.OK).body("program with id "+programId+" deleted");
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tudor.work.dto.WorkoutDto;
 import tudor.work.dto.WorkoutFilteredRequestDto;
+import tudor.work.model.Exercise;
 import tudor.work.model.Workout;
 import tudor.work.repository.WorkoutRepository;
 import tudor.work.specification.WorkoutSpecification;
@@ -47,10 +48,8 @@ public class WorkoutService {
                 spec = spec.and(WorkoutSpecification.isWorkoutAdderEqual(authorityService.getUserId())).and(WorkoutSpecification.isWorkoutPrivateEqual(true));
             else
                 spec = spec.and(WorkoutSpecification.isWorkoutPrivateEqual(false));
-        }
-        else
-        {
-            spec =  spec.and(WorkoutSpecification.isWorkoutPrivateEqual(false));
+        } else {
+            spec = spec.and(WorkoutSpecification.isWorkoutPrivateEqual(false));
         }
 
         if (workoutFilteredRequest.getMaxDifficulty() != null
@@ -87,7 +86,23 @@ public class WorkoutService {
 
         return workout;
     }
-        public List<Workout> getAllWorkoutsByAdderId(Long userId) {
-       return workoutRepository.findAllByAdderId(userId).stream().map(this::convertWorkoutCoverPhotos).toList();
+
+    public List<Workout> getAllWorkoutsByAdderId(Long userId) {
+        return workoutRepository.findAllByAdderId(userId).stream().map(this::convertWorkoutCoverPhotos).toList();
     }
+
+    public List<Workout> findByExercisesContaining(Exercise exercise)
+    {
+        return workoutRepository.findByExercisesContaining(exercise);
+    }
+
+    public Workout save(Workout workout) {
+       return workoutRepository.save(workout);
+    }
+
+    public void delete(Workout workout)
+    {
+        workoutRepository.delete(workout);
+    }
+
 }
