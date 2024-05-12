@@ -9,6 +9,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ../../apps/self-coach-app
+  path: ./gitops/apps/self-coach-app
   prune: true
   wait: true
