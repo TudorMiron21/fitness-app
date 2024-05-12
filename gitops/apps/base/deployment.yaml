@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # name: {{ .Values.deploymentName }}
+  name: default-name
+  # namespace: {{ .Values.namespace }}
+  namespace: default
+
+  labels:
+    # app: {{ .Values.appName }}
+    app: default-app
+spec:
+  # replicas: {{ .Values.replicas }}
+  replicas: 2
+  selector:
+    matchLabels:
+      # app: {{ .Values.appName }}
+      app: default-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        # app: {{ .Values.appName }}
+        app: default-app
+        tier: backend
+    spec: # Pod spec
+      containers:
+      # - name: fitness-app-auth-container
+      - name: default-container-name
+        # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: "tudormiron/fitness-app-eureka:latest"
+        imagePullPolicy: Always
+        ports:
+        # - containerPort: {{ .Values.port }}
+        -containerPort: 8080
+        resources:
+          requests:
+            memory: "64Mi" 
+            cpu: "50m"    
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+      restartPolicy: Always
