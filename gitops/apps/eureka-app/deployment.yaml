@@ -2,36 +2,36 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # name: {{ .Values.deploymentName }}
-  name: fitness-self-coach-deployment
+  name: fitness-eureka-deployment
   # namespace: {{ .Values.namespace }}
   namespace: default
   labels:
     # app: {{ .Values.appName }}
-    app: fitness-self-coach-app
+    app: fitness-eureka-app
 spec:
   # replicas: {{ .Values.replicas }}
   replicas: 2
   selector:
     matchLabels:
       # app: {{ .Values.appName }}
-      app: fitness-self-coach-app
+      app: fitness-eureka-app
       tier: backend
   template:
     metadata:
       labels:
         # app: {{ .Values.appName }}
-        app: fitness-self-coach-app
+        app: fitness-eureka-app
         tier: backend
     spec: # Pod spec
       containers:
       # - name: fitness-app-auth-container
-      - name: fitness-app-self-coach-container
+      - name: fitness-app-eureka-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/fitness-app-self-coach:1.0.0 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
+        image: docker.io/tudormiron/fitness-app-eureka:1.0.2 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
-        - containerPort: 8081
+        - containerPort: 8761
         resources:
           requests:
             memory: "64Mi"
