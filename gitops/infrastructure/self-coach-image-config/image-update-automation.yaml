@@ -14,8 +14,8 @@ spec:
         branch: master
     commit:
       author:
-        email: fluxcdbot@users.noreply.github.com
-        name: fluxcdbot
+        email: tudormiron19@gmail.com
+        name: TudorMiron21
       messageTemplate: "updated image tag for self coach app"
     push:
       branch: flux-automated-upgrade-self-coach #master
