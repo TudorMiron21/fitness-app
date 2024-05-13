@@ -20,7 +20,7 @@ spec:
     push:
       branch: flux-automated-upgrade-self-coach #master
   update:
-    path: ./
+    path: ../../apps/self-coach-app
     strategy: Setters
 
   
