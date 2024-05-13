@@ -28,7 +28,7 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-self-coach-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image:  docker.io/tudormiron/fitness-app-eureka:1.0.1 #{$imagepolicy: "flux-system:self-coach-app-img-conf"}
+        image:  docker.io/tudormiron/fitness-app-eureka:1.0.1 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
