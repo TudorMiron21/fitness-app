@@ -1,21 +1,64 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: fitness-self-coach-deployment
+#   labels:
+#     app: fitness-self-coach-app 
+# spec:
+#   replicas: 2
+#   selector:
+#     matchLabels:
+#       app: fitness-self-coach-app
+#   template:
+#     metadata:
+#       labels:
+#         app: fitness-self-coach-app
+#     spec:
+#       containers:
+#       - name: fitness-app-self-coach-container
+#         image: "tudormiron/fitness-app-self-coach:latest"
+#         ports:
+#         - containerPort: 8081
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  # name: {{ .Values.deploymentName }}
   name: fitness-self-coach-deployment
+  # namespace: {{ .Values.namespace }}
+  namespace: default
+
   labels:
-    app: fitness-self-coach-app 
+    # app: {{ .Values.appName }}
+    app: fitness-self-coach-app
 spec:
+  # replicas: {{ .Values.replicas }}
   replicas: 2
   selector:
     matchLabels:
+      # app: {{ .Values.appName }}
       app: fitness-self-coach-app
+      tier: backend
   template:
     metadata:
       labels:
+        # app: {{ .Values.appName }}
         app: fitness-self-coach-app
-    spec:
+        tier: backend
+    spec: # Pod spec
       containers:
+      # - name: fitness-app-auth-container
       - name: fitness-app-self-coach-container
-        image: "tudormiron/fitness-app-self-coach:latest"
+        # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image:  "tudormiron/fitness-app-self-coach:latest"
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8081
+        # - containerPort: {{ .Values.port }}
+        -containerPort: 8081
+        resources:
+          requests:
+            memory: "64Mi" 
+            cpu: "50m"    
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+      restartPolicy: Always
