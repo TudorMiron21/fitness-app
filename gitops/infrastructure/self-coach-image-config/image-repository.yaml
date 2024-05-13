@@ -4,5 +4,5 @@ metadata:
   name: self-coach-app-img-conf
   namespace: flux-system
 spec:
-  image: docker.io/tudormiron/fitness-app-eureka
+  image: docker.io/tudormiron/fitness-app-self-coach
   interval: 1m

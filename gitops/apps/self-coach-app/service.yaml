@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # name: {{ .Values.serviceName }}
+  name: fitness-self-coach-service
+  # namespace: {{ .Values.namespace }}
+  namespace: default
+  labels:
+    # app: {{ .Values.appName }}
+    app: fitness-self-coach-app
+
+spec:
+  ports:
+  # - port: {{ .Values.port }}
+    - port: 8081
+    protocol: TCP
+    name: springboot-server
+    # targetPort: {{ .Values.targetPort }}
+    targetPort: 8081
+  selector:
+    # app: {{ .Values.appName }}
+    app: fitness-self-coach-app
+    tier: backend
+  type: ClusterIP

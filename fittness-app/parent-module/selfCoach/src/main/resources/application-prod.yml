@@ -29,6 +29,10 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
 
+app:
+  streaming:
+    default-chunk-size: 3145728
+
 eureka:
   client:
     service-url:

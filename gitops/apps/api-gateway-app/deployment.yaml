@@ -2,36 +2,36 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # name: {{ .Values.deploymentName }}
-  name: fitness-self-coach-deployment
+  name: fitness-api-gateway-deployment
   # namespace: {{ .Values.namespace }}
   namespace: default
   labels:
     # app: {{ .Values.appName }}
-    app: fitness-self-coach-app
+    app: fitness-api-gateway-app
 spec:
   # replicas: {{ .Values.replicas }}
   replicas: 2
   selector:
     matchLabels:
       # app: {{ .Values.appName }}
-      app: fitness-self-coach-app
+      app: fitness-api-gateway-app
       tier: backend
   template:
     metadata:
       labels:
         # app: {{ .Values.appName }}
-        app: fitness-self-coach-app
+        app: fitness-api-gateway-app
         tier: backend
     spec: # Pod spec
       containers:
       # - name: fitness-app-auth-container
-      - name: fitness-app-self-coach-container
+      - name: fitness-app-api-gateway-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/fitness-app-self-coach:1.0.0 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
+        image: docker.io/tudormiron/fitness-app-api-gateway:1.0.0 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
-        - containerPort: 8081
+        - containerPort: 8080
         resources:
           requests:
             memory: "64Mi"

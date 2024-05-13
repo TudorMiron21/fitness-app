@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # name: {{ .Values.serviceName }}
+  name: fitness-eureka-service
+  # namespace: {{ .Values.namespace }}
+  namespace: default
+  labels:
+    # app: {{ .Values.appName }}
+    app: fitness-eureka-app
+
+spec:
+  ports:
+  # - port: {{ .Values.port }}
+    - port: 8761
+    protocol: TCP
+    name: springboot-server
+    # targetPort: {{ .Values.targetPort }}
+    targetPort: 8761
+  selector:
+    # app: {{ .Values.appName }}
+    app: fitness-eureka-app
+    tier: backend
+  type: ClusterIP
