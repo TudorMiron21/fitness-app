@@ -5,7 +5,6 @@ metadata:
   name: fitness-self-coach-deployment
   # namespace: {{ .Values.namespace }}
   namespace: default
-
   labels:
     # app: {{ .Values.appName }}
     app: fitness-self-coach-app
@@ -28,15 +27,15 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-self-coach-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image:  docker.io/tudormiron/fitness-app-eureka:1.0.1 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
+        image: docker.io/tudormiron/fitness-app-eureka:1.0.2 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
         -containerPort: 8081
         resources:
           requests:
-            memory: "64Mi" 
-            cpu: "50m"    
+            memory: "64Mi"
+            cpu: "50m"
           limits:
             memory: "256Mi"
             cpu: "100m"
