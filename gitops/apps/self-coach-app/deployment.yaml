@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fitness-self-coach-deployment
+  labels:
+    app: fitness-self-coach-app 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fitness-self-coach-app
+  template:
+    metadata:
+      labels:
+        app: fitness-self-coach-app
+    spec:
+      containers:
+      - name: fitness-app-self-coach-container
+        image: "tudormiron/fitness-app-self-coach:latest"
+        ports:
+        - containerPort: 8081
