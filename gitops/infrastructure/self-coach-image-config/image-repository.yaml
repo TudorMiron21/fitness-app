@@ -1,0 +1,8 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: self-coach-app-img-conf
+  namespace: flux-system
+spec:
+  image: docker.io/tudormiron/fitness-app-self-coach
+  interval: 1m

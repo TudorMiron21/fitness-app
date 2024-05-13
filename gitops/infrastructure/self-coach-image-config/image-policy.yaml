@@ -1,0 +1,11 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: self-coach-app-img-conf
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: self-coach-app-img-conf
+  policy:
+    semver:
+      range: ">=1.0.0"

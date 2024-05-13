@@ -77,7 +77,7 @@ jobs:
         context: ./fittness-app
         file: ./fittness-app/Dockerfile.selfCoach
         push: true
-        tags: tudormiron/fitness-app-self-coach:latest
+        tags: tudormiron/fitness-app-self-coach:1.0.1
 
   deploy:
     needs: package

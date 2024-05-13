@@ -1,24 +1,3 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: fitness-self-coach-deployment
-#   labels:
-#     app: fitness-self-coach-app 
-# spec:
-#   replicas: 2
-#   selector:
-#     matchLabels:
-#       app: fitness-self-coach-app
-#   template:
-#     metadata:
-#       labels:
-#         app: fitness-self-coach-app
-#     spec:
-#       containers:
-#       - name: fitness-app-self-coach-container
-#         image: "tudormiron/fitness-app-self-coach:latest"
-#         ports:
-#         - containerPort: 8081
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -49,7 +28,7 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-self-coach-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image:  "tudormiron/fitness-app-self-coach:latest"
+        image:  docker.io/tudormiron/fitness-app-self-coach:1.0.0 #{$imagepolicy: "flux-system:self-coach-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
