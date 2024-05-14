@@ -1,0 +1,8 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: api-gateway-app-img-conf
+  namespace: flux-system
+spec:
+  image: docker.io/tudormiron/fitness-app-api-gateway
+  interval: 1m

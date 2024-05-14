@@ -1,0 +1,11 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: api-gateway-app-img-conf
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: api-gateway-app-img-conf
+  policy:
+    semver:
+      range: ">=1.0.0"

@@ -1,0 +1,24 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: authorization-app-img-conf
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: master
+    commit:
+      author:
+        email: tudormiron19@gmail.com
+        name: TudorMiron21
+      messageTemplate: "updated image tag for authorization app"
+    push:
+      branch: flux-automated-upgrade-authorization #master
+  update:
+    path: ./gitops/apps/authorization-app
+    strategy: Setters

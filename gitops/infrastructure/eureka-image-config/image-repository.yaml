@@ -1,0 +1,8 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: eureka-app-img-conf
+  namespace: flux-system
+spec:
+  image: docker.io/tudormiron/fitness-app-eureka
+  interval: 1m
