@@ -79,7 +79,7 @@ jobs:
         context: ./fittness-app
         file: ./fittness-app/Dockerfile.authorization
         push: true
-        tags: tudormiron/fitness-app-authorization:latest
+        tags: tudormiron/fitness-app-authorization:1.0.0
         
         
   deploy:
