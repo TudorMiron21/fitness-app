@@ -13,10 +13,10 @@ spec:
   ports:
   # - port: {{ .Values.port }}
     - port: 8081
-    protocol: TCP
-    name: springboot-server
-    # targetPort: {{ .Values.targetPort }}
-    targetPort: 8081
+      protocol: TCP
+      name: springboot-server
+      # targetPort: {{ .Values.targetPort }}
+      targetPort: 8081
   selector:
     # app: {{ .Values.appName }}
     app: fitness-self-coach-app
