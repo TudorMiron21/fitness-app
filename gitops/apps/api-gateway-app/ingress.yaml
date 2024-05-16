@@ -4,7 +4,7 @@ metadata:
   name: fitness-api-gateway-ingress
   namespace: default
 spec:
-  ingressClassName: azure-application-gateway
+  ingressClassName: nginx
   rules:
   - http:
       paths:
