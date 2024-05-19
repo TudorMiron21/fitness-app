@@ -18,9 +18,13 @@ jobs:
         with:
           node-version: "14"
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd ./admin_coach_frontend/admin-coach-frontend
+          npm install
       - name: Build the project
-        run: npm run build
+        run: |
+          cd ./admin_coach_frontend/admin-coach-frontend
+          npm run build
 
     # - name: Archive production artifacts
     #   uses: actions/upload-artifact@v2
