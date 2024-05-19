@@ -29,6 +29,12 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
 
+minio:
+  accessKey: Ca35QVZhTt0KkbBDDlBr
+  secretKey: aIfFF61WQzDvKGSoAJOhYzMcZkwR3CDqCJGGj0Wd
+  endpoint: https://68.219.42.92:443
+  put-object-part-size: 5242880
+
 app:
   streaming:
     default-chunk-size: 3145728

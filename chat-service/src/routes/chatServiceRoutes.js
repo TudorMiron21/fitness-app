@@ -10,5 +10,5 @@ router.get('/api/v1/chatService/',testController);
 
 router.get(`/chatService/getMessages/:email1/:email2`, getMessages);
 router.get(`/chatService/getLastMessage/:email1/:email2`, getLastMessage);
-router.put(`/chatService/readLastMessage/:objectId`,objectId);
+// router.put(`/chatService/readLastMessage/:objectId`,objectId);
 module.exports = router;

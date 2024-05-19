@@ -1,14 +1,26 @@
 const { Server } = require("socket.io");
 const { validateToken } = require("../utils/auth");
-const MessageModel = require('../model/message'); 
+const MessageModel = require("../model/message");
+// const { useAzureSocketIO } = require("@azure/web-pubsub-socket.io");
 
-function initializeSocket(server) {
+async function initializeSocket(server) {
+  // const connectionString = process.argv[2];
+  // if (!connectionString) {
+  //   throw new Error(
+  //     "Azure Web PubSub connection string is required as a command-line argument."
+  //   );
+  // }
   const io = new Server(server, {
     cors: {
       origin: "http://localhost:3000",
       methods: "*",
     },
   });
+
+  // await useAzureSocketIO(io, {
+  //   hub: "chat_hub",
+  //   connectionString: connectionString,
+  // });
 
   io.engine.use(async (req, res, next) => {
     const isHandshake = req._query.sid === undefined;
@@ -40,8 +52,8 @@ function initializeSocket(server) {
       console.error(`Error on socket ${socket.id}:`, error);
     });
 
-    socket.on("join_private_chat", (data) => {
-      socket.join(data);
+    socket.on("join_private_chat", async (data) => {
+      await socket.join(data);
       console.log(`User with ID: ${socket.id} joined room: ${data}`);
     });
 
@@ -50,17 +62,16 @@ function initializeSocket(server) {
         source_email: data.source_email,
         destination_email: data.destination_email,
         text_content: data.text_content,
-        image_content:"",
+        image_content: "",
         timeStamp: data.timeStamp,
-        read:false,
+        read: false,
       });
-    
-      try {
-        await newMessage.save();        
-        socket.to(data.room).emit("receive_message", data);
 
+      try {
+        await newMessage.save();
+        socket.to(data.room).emit("receive_message", data);
       } catch (error) {
-        console.error('Error saving message to MongoDB:', error);
+        console.error("Error saving message to MongoDB:", error);
       }
     });
 
