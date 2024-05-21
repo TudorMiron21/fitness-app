@@ -79,6 +79,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./chat-service
-          file: Dockerfile
+          file:  ./chat-service/Dockerfile
           push: true
           tags: tudormiron/chat-service:1.0.0
