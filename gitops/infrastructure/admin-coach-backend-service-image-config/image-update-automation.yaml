@@ -1,0 +1,27 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: fitness-app-admin-coach-backend
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: master
+    commit:
+      author:
+        email: tudormiron19@gmail.com
+        name: TudorMiron21
+      messageTemplate: "updated image tag for admin coach backend app"
+    push:
+      branch: flux-automated-upgrade-admin-coach-backend #master
+  update:
+    path: ./gitops/apps/admin-coach-backend-app
+    strategy: Setters
+
+  
+

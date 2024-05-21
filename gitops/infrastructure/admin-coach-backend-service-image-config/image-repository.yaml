@@ -1,0 +1,8 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: admin-coach-backend-service-app-img-conf
+  namespace: flux-system
+spec:
+  image: docker.io/tudormiron/fitness-app-admin-coach-backend
+  interval: 1m

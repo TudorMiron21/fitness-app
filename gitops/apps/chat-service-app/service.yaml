@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # name: {{ .Values.serviceName }}
+  name: fitness-chat-service
+  # namespace: {{ .Values.namespace }}
+  namespace: default
+  labels:
+    # app: {{ .Values.appName }}
+    app: fitness-chat-app
+
+spec:
+  ports:
+  # - port: {{ .Values.port }}
+    - port: 8084
+      protocol: TCP
+      name: springboot-server
+      # targetPort: {{ .Values.targetPort }}
+      targetPort: 8084
+  selector:
+    # app: {{ .Values.appName }}
+    app: fitness-chat-app
+    tier: backend
+  type: ClusterIP

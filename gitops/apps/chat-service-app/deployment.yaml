@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # name: {{ .Values.deploymentName }}
+  name: fitness-chat-deployment
+  # namespace: {{ .Values.namespace }}
+  namespace: default
+  labels:
+    # app: {{ .Values.appName }}
+    app: fitness-chat-app
+spec:
+  # replicas: {{ .Values.replicas }}
+  replicas: 2
+  selector:
+    matchLabels:
+      # app: {{ .Values.appName }}
+      app: fitness-chat-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        # app: {{ .Values.appName }}
+        app: fitness-chat-app
+        tier: frontend
+    spec: # Pod spec
+      containers:
+      # - name: fitness-app-auth-container
+      - name: fitness-app-chat-container
+        # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: docker.io/tudormiron/fitness-app-chat-service:1.0.0 #{"$imagepolicy": "flux-system:chat-service-app-img-conf"}
+        imagePullPolicy: Always
+        ports:
+        # - containerPort: {{ .Values.port }}
+        - containerPort: 8084
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+      restartPolicy: Always
