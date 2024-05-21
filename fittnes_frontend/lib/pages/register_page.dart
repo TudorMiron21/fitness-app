@@ -52,7 +52,7 @@ class _RegisterState extends State<Register> {
           String loginDataJson = json.encode(registerData);
 
           Uri url =
-              Uri.parse('http://172.205.42.172:8080/api/v1/auth/registerGoogle');
+              Uri.parse('http://192.168.54.182:8080:8080/api/v1/auth/registerGoogle');
 
           Response response =
               await post(url, headers: headers, body: loginDataJson);
@@ -131,7 +131,7 @@ class _RegisterState extends State<Register> {
 
       String loginDataJson = json.encode(registerData);
 
-      Uri url = Uri.parse('http://172.205.42.172:8080/api/v1/auth/register');
+      Uri url = Uri.parse('http://192.168.54.182:8080:8080/api/v1/auth/register');
 
       Response response =
           await post(url, headers: headers, body: loginDataJson);

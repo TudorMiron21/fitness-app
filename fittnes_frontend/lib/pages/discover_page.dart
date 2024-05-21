@@ -34,7 +34,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     String email = JwtUtils.extractSubject(accessToken);
 
     final response = await http.get(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/getStartedWorkouts/' +
+      Uri.parse('http://192.168.54.182:8080/api/selfCoach/user/getStartedWorkouts/' +
           email),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -95,7 +95,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     String email = JwtUtils.extractSubject(accessToken);
 
     final response = await http.get(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/getPersonalWorkouts'),
+      Uri.parse('http://192.168.54.182:8080/api/selfCoach/user/getPersonalWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -154,7 +154,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     }
 
     final response = await http.put(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/likeWorkout/' +
+      Uri.parse('http://192.168.54.182:8080/api/selfCoach/user/likeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -185,7 +185,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     // Use the workout.id to identify the workout to unlike
 
     final response = await http.delete(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/unlikeWorkout/' +
+      Uri.parse('http://192.168.54.182:8080/api/selfCoach/user/unlikeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',

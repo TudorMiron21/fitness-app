@@ -44,7 +44,7 @@ class _GlobalLeaderBoardState extends State<GlobalLeaderBoard> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getLeaderBoardEntries'),
+          'http://192.168.54.182:8080/api/selfCoach/user/getLeaderBoardEntries'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',

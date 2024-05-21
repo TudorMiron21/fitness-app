@@ -11,20 +11,22 @@ jobs:
     runs-on: ubuntu-latest # The type of runner that the job will run on
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: "20"
+          cache: 'npm'
+
       - name: Install dependencies
         run: |
           cd ./admin_coach_frontend/admin-coach-frontend
-          npm install
+          npm ci
       - name: Build the project
         run: |
           cd ./admin_coach_frontend/admin-coach-frontend
-          npm run build
+          npm run build --if-pressent
 
     # - name: Archive production artifacts
     #   uses: actions/upload-artifact@v2

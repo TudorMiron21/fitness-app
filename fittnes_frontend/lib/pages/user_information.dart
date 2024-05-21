@@ -60,7 +60,7 @@ class _UserInformationState extends State<UserInformation> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getLeaderBoardEntryForUser'),
+          'http://192.168.54.182:8080/api/selfCoach/user/getLeaderBoardEntryForUser'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -88,7 +88,7 @@ class _UserInformationState extends State<UserInformation> {
     }
 
     final response = await http.get(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/getUserAchievements'),
+      Uri.parse('http://192.168.54.182:8080/api/selfCoach/user/getUserAchievements'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -221,7 +221,7 @@ class _UserInformationState extends State<UserInformation> {
                       ),
                       onPressed: () async {
                         const url =
-                            'http://localhost:8080/api/selfCoach/paypal/getPayPalSubscriptionButton';
+                            'http://192.168.54.182:8080/api/selfCoach/paypal/getPayPalSubscriptionButton';
                         await _launchAsInAppWebViewWithCustomHeaders(
                             Uri.parse(url));
                       },

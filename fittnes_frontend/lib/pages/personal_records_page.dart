@@ -42,7 +42,7 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getPersonalRecordsForUser'),
+          'http://192.168.54.182:8080/api/selfCoach/user/getPersonalRecordsForUser'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',

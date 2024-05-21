@@ -67,7 +67,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getUserHistoryModuleDetails/$userHistoryModuleId'),
+          'http://192.168.54.182:8080/api/selfCoach/user/getUserHistoryModuleDetails/$userHistoryModuleId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -96,7 +96,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getUserHistoryExerciseDetails/$userHistoryExerciseId'),
+          'http://192.168.54.182:8080/api/selfCoach/user/getUserHistoryExerciseDetails/$userHistoryExerciseId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -126,7 +126,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
     final workoutExistsInUserHistoryResponse = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
+          'http://192.168.54.182:8080/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
               workoutId.toString() +
               '/' +
               JwtUtils.extractSubject(accessToken)),
@@ -165,7 +165,7 @@ class _ExercisePageState extends State<ExercisePage> {
       if (widget.programId == -1) {
         response = await http.post(
           Uri.parse(
-              'http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId'),
+              'http://192.168.54.182:8080/api/selfCoach/user/startWorkout/$workoutId'),
           headers: {
             'Authorization': 'Bearer $accessToken',
           },
@@ -173,7 +173,7 @@ class _ExercisePageState extends State<ExercisePage> {
       } else {
         response = await http.put(
           Uri.parse(
-              'http://localhost:8080/api/selfCoach/payingUser/addWorkoutToProgram/$workoutId/${widget.programId}'),
+              'http://192.168.54.182:8080/api/selfCoach/payingUser/addWorkoutToProgram/$workoutId/${widget.programId}'),
           headers: {
             'Authorization': 'Bearer $accessToken',
           },
@@ -185,7 +185,7 @@ class _ExercisePageState extends State<ExercisePage> {
         userHistoryWorkoutId = int.parse(response.body);
       } else {
         print(
-            'http://localhost:8080/api/selfCoach/user/startWorkout/$workoutId');
+            'http://192.168.54.182:8080/api/selfCoach/user/startWorkout/$workoutId');
         throw Exception(
             'Failed to save workout to history. Status code: ${response.statusCode}');
       }
@@ -202,7 +202,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
     final workoutExistsInUserHistoryResponse = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
+          'http://192.168.54.182:8080/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
               workoutId.toString() +
               '/' +
               JwtUtils.extractSubject(accessToken)),
@@ -239,32 +239,48 @@ class _ExercisePageState extends State<ExercisePage> {
               tileColor: Colors.grey.withOpacity(0.3),
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              leading: InkWell(
-                child: SizedBox(
-                  width: 56.0,
-                  height: 56.0,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.network(
-                      exercise.exerciseImageStartUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Icon(Icons.error),
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${index + 1}', // Display the index here
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                  SizedBox(
+                      width:
+                          8.0), // Add some space between the index and the image
+                  InkWell(
+                    child: SizedBox(
+                      width: 56.0,
+                      height: 56.0,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          exercise.exerciseImageStartUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Icon(Icons.error),
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               title: Text(
                 exercise.name,
@@ -290,6 +306,7 @@ class _ExercisePageState extends State<ExercisePage> {
           );
         },
       ),
+
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await saveWorkoutToHistory(widget.workoutId);

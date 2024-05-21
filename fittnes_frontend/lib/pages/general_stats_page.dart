@@ -109,7 +109,7 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
 
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8080/api/selfCoach/user/getGeneralWorkoutInformation/10'),
+            'http://192.168.54.182:8080/api/selfCoach/user/getGeneralWorkoutInformation/10'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
