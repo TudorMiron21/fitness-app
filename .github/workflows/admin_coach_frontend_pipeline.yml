@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd ./admin_coach_frontend/admin-coach-frontend
-          npm install
+          npm ci
       - name: Build the project
         run: |
           cd ./admin_coach_frontend/admin-coach-frontend
