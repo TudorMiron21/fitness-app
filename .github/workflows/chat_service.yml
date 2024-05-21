@@ -30,11 +30,11 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Archive node_modules
-        uses: actions/upload-artifact@v2
-        with:
-          name: node_modules
-          path: ./chat-service/node_modules
+      # - name: Archive node_modules
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: node_modules
+      #     path: ./chat-service/node_modules
 
   test:
     needs: build
@@ -48,11 +48,15 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Download node_modules
-        uses: actions/download-artifact@v2
-        with:
-          name: node_modules
-          path: ./chat-service
+      # - name: Download node_modules
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: node_modules
+      #     path: ./chat-service
+      - name: Install dependencies
+        run: |
+          cd ./chat-service
+          npm install
 
       - name: Run tests
         run: |
@@ -79,6 +83,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./chat-service
-          file:  ./chat-service/Dockerfile
+          file: ./chat-service/Dockerfile
           push: true
           tags: tudormiron/chat-service:1.0.0
