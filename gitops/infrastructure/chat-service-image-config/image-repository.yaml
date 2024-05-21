@@ -4,5 +4,5 @@ metadata:
   name: chat-service-app-img-conf
   namespace: flux-system
 spec:
-  image: docker.io/tudormiron/fitness-app-chat
+  image: docker.io/tudormiron/chat-service
   interval: 1m
