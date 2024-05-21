@@ -10,7 +10,7 @@ metadata:
     app: fitness-eureka-app
 spec:
   # replicas: {{ .Values.replicas }}
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       # app: {{ .Values.appName }}

@@ -14,7 +14,7 @@ spec:
   # - port: {{ .Values.port }}
     - port: 8084
       protocol: TCP
-      name: springboot-server
+      name: node-server
       # targetPort: {{ .Values.targetPort }}
       targetPort: 8084
   selector:
