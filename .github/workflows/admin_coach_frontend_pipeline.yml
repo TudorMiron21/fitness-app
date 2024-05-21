@@ -8,7 +8,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -17,21 +18,17 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "20"
+
       - name: Install dependencies
         run: |
           cd ./admin_coach_frontend/admin-coach-frontend
           npm ci
+
       - name: Build the project
         run: |
           cd ./admin_coach_frontend/admin-coach-frontend
-          echo "CI=false" >> .env
-          npm run build --if-present
+          CI=false npm run build --if-present
 
-    # - name: Archive production artifacts
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: frontend-build
-    #     path: path/to/your/build/directory
   package:
     needs: build
     runs-on: ubuntu-latest
