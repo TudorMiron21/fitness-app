@@ -17,16 +17,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "20"
-          cache: "npm"
-
       - name: Install dependencies
-        working-directory: ./admin_coach_frontend/admin-coach-frontend
         run: |
-          ls -la
-          npm ci
+          cd ./admin_coach_frontend/admin-coach-frontend
+          npm install
       - name: Build the project
-        working-directory: ./admin_coach_frontend/admin-coach-frontend
-        run: npm run build --if-pressent
+        run: |
+          cd ./admin_coach_frontend/admin-coach-frontend
+          npm run build
 
     # - name: Archive production artifacts
     #   uses: actions/upload-artifact@v2
