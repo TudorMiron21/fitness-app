@@ -21,7 +21,7 @@ spec:
       labels:
         # app: {{ .Values.appName }}
         app: fitness-chat-app
-        tier: frontend
+        tier: backend
     spec: # Pod spec
       containers:
       # - name: fitness-app-auth-container
