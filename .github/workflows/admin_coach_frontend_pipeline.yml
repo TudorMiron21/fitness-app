@@ -20,14 +20,13 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
+        working-directory: ./admin_coach_frontend/admin-coach-frontend
         run: |
-          cd ./admin_coach_frontend/admin-coach-frontend
           ls -la
           npm ci
       - name: Build the project
-        run: |
-          cd ./admin_coach_frontend/admin-coach-frontend
-          npm run build --if-pressent
+        working-directory: ./admin_coach_frontend/admin-coach-frontend
+        run: npm run build --if-pressent
 
     # - name: Archive production artifacts
     #   uses: actions/upload-artifact@v2
