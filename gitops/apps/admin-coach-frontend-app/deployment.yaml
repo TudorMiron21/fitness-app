@@ -15,13 +15,13 @@ spec:
     matchLabels:
       # app: {{ .Values.appName }}
       app: fitness-admin-coach-frontend-app
-      tier: frontend
+      tier: backend
   template:
     metadata:
       labels:
         # app: {{ .Values.appName }}
         app: fitness-admin-coach-frontend-app
-        tier: frontend
+        tier: backend
     spec: # Pod spec
       containers:
       # - name: fitness-app-auth-container

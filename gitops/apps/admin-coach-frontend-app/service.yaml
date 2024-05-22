@@ -20,5 +20,5 @@ spec:
   selector:
     # app: {{ .Values.appName }}
     app: fitness-admin-coach-frontend-app
-    tier: frontend
+    tier: backend
   type: ClusterIP
