@@ -6,7 +6,7 @@ metadata:
   labels:
     app: fitness-admin-coach-frontend-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: fitness-admin-coach-frontend-app
