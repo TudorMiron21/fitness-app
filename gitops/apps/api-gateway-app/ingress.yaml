@@ -6,7 +6,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - http:
+  - host: www.fit-stack.online
+    http:
       paths:
       - path: /api
         pathType: Prefix
