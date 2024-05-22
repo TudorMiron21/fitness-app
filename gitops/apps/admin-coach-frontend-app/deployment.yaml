@@ -1,42 +1,46 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  # name: {{ .Values.deploymentName }}
   name: fitness-admin-coach-frontend-deployment
-  # namespace: {{ .Values.namespace }}
   namespace: default
   labels:
-    # app: {{ .Values.appName }}
     app: fitness-admin-coach-frontend-app
 spec:
-  # replicas: {{ .Values.replicas }}
   replicas: 1
   selector:
     matchLabels:
-      # app: {{ .Values.appName }}
       app: fitness-admin-coach-frontend-app
       tier: backend
   template:
     metadata:
       labels:
-        # app: {{ .Values.appName }}
         app: fitness-admin-coach-frontend-app
         tier: backend
-    spec: # Pod spec
+    spec:
+      tolerations:
+        - key: node.kubernetes.io/memory-pressure
+          operator: Exists
+          effect: NoSchedule
+          tolerationSeconds: 600 # Increase the toleration period to 600 seconds (10 minutes)
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 600 # Increase the toleration period to 600 seconds (10 minutes)
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 600 # Increase the toleration period to 600 seconds (10 minutes)
       containers:
-      # - name: fitness-app-auth-container
-      - name: fitness-app-admin-coach-frontend-container
-        # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/fitness-app-admin-coach-frontend:1.0.0 #{"$imagepolicy": "flux-system:admin-coach-frontend-service-app-img-conf"}
-        imagePullPolicy: Always
-        ports:
-        # - containerPort: {{ .Values.port }}
-        - containerPort: 3000
-        resources:
-          requests:
-            memory: "3072Mi"
-            cpu: "100m"
-          limits:
-            memory: "5120Mi"
-            cpu: "200m"
+        - name: fitness-app-admin-coach-frontend-container
+          image: docker.io/tudormiron/fitness-app-admin-coach-frontend:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "3072Mi"
+              cpu: "100m"
+            limits:
+              memory: "5120Mi"
+              cpu: "200m"
       restartPolicy: Always
