@@ -12,29 +12,29 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 
-@Configuration
-public class FirebaseNotificationConfig {
-
-    @Value("${app.firebase-configuration-file}")
-    private String adminSdkPrivateKeyPath;
-
-    @Value("${app.firebase-app-name")
-    private String firebaseAppName;
-    @Bean
-    FirebaseMessaging firebaseMessaging() throws IOException {
-        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
-                new ClassPathResource(adminSdkPrivateKeyPath).getInputStream()
-        );
-
-        FirebaseOptions firebaseOptions = FirebaseOptions
-                .builder()
-                .setCredentials(googleCredentials)
-                .build();
-
-        FirebaseApp firebaseApp = FirebaseApp.initializeApp(firebaseOptions,firebaseAppName);
-
-        return FirebaseMessaging.getInstance(firebaseApp);
-
-    }
-
-}
+//@Configuration
+//public class FirebaseNotificationConfig {
+//
+//    @Value("${app.firebase-configuration-file}")
+//    private String adminSdkPrivateKeyPath;
+//
+//    @Value("${app.firebase-app-name")
+//    private String firebaseAppName;
+//    @Bean
+//    FirebaseMessaging firebaseMessaging() throws IOException {
+//        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
+//                new ClassPathResource(adminSdkPrivateKeyPath).getInputStream()
+//        );
+//
+//        FirebaseOptions firebaseOptions = FirebaseOptions
+//                .builder()
+//                .setCredentials(googleCredentials)
+//                .build();
+//
+//        FirebaseApp firebaseApp = FirebaseApp.initializeApp(firebaseOptions,firebaseAppName);
+//
+//        return FirebaseMessaging.getInstance(firebaseApp);
+//
+//    }
+//
+//}
