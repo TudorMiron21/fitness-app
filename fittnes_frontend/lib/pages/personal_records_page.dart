@@ -42,7 +42,7 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/getPersonalRecordsForUser'),
+          'https://www.fit-stack.online/api/selfCoach/user/getPersonalRecordsForUser'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',

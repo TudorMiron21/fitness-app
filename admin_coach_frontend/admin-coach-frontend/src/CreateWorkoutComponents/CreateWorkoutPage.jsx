@@ -114,10 +114,10 @@ export const CreateWorkoutPage = () => {
 
     try {
       console.log(
-        `https://fit-stack.online/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`
+        `https://www.fit-stack.online/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`
       );
       const response = await axios.get(
-        `https://fit-stack.online/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`,
+        `https://www.fit-stack.online/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -202,7 +202,7 @@ export const CreateWorkoutPage = () => {
     );
     try {
       const response = await axios.post(
-        "https://fit-stack.online/api/v1/adminCoachService/coach/createWorkout",
+        "https://www.fit-stack.online/api/v1/adminCoachService/coach/createWorkout",
         formDataToSend,
         {
           headers: {

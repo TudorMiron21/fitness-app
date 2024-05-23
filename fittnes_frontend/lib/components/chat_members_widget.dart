@@ -38,7 +38,7 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/payingUser/getFollowingCoaches'),
+          'https://www.fit-stack.online/api/selfCoach/payingUser/getFollowingCoaches'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },

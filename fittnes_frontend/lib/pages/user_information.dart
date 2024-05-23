@@ -60,7 +60,7 @@ class _UserInformationState extends State<UserInformation> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/getLeaderBoardEntryForUser'),
+          'https://www.fit-stack.online/api/selfCoach/user/getLeaderBoardEntryForUser'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -88,7 +88,7 @@ class _UserInformationState extends State<UserInformation> {
     }
 
     final response = await http.get(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/getUserAchievements'),
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getUserAchievements'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -221,7 +221,7 @@ class _UserInformationState extends State<UserInformation> {
                       ),
                       onPressed: () async {
                         const url =
-                            'https://fit-stack.online/api/selfCoach/paypal/getPayPalSubscriptionButton';
+                            'https://www.fit-stack.online/api/selfCoach/paypal/getPayPalSubscriptionButton';
                         await _launchAsInAppWebViewWithCustomHeaders(
                             Uri.parse(url));
                       },
