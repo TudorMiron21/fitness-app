@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 import pandas as pd
 
-DATABASE_URI = 'postgresql://postgres:root@localhost:5432/authorization'
+DATABASE_URI = 'postgresql://postgres:root@localhost:5433/authorization'
 
 # Establish the connection to the database
 engine = create_engine(DATABASE_URI)
