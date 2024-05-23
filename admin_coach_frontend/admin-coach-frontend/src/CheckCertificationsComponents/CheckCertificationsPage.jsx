@@ -33,7 +33,7 @@ export const CheckCertificationsPage = () => {
   const getAllNonValidatedCertifications = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/v1/adminCoachService/admin/getAllInvalidatedCoachRequests",
+        "https://fit-stack.online/api/v1/adminCoachService/admin/getAllInvalidatedCoachRequests",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -75,7 +75,7 @@ export const CheckCertificationsPage = () => {
           navigate("/login");
         } else {
           const response = await axios.put(
-            `http://localhost:8080/api/v1/adminCoachService/admin/validateCoachRequest/${certificationId}`,
+            `https://fit-stack.online/api/v1/adminCoachService/admin/validateCoachRequest/${certificationId}`,
             {},
             {
               headers: {
@@ -112,7 +112,7 @@ export const CheckCertificationsPage = () => {
           navigate("/login");
         } else {
           const response = await axios.put(
-            `http://localhost:8080/api/v1/adminCoachService/admin/invalidateCoachRequest/${certificationId}`,
+            `https://fit-stack.online/api/v1/adminCoachService/admin/invalidateCoachRequest/${certificationId}`,
             {},
             {
               headers: {

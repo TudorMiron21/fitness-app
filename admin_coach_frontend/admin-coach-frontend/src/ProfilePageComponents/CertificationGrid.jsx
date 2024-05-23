@@ -11,7 +11,7 @@ export const CertificationGrid = () => {
     const fetchCertifications = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/adminCoachService/coach/getAllCertificationsForCoach",
+          "https://fit-stack.online/api/v1/adminCoachService/coach/getAllCertificationsForCoach",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,

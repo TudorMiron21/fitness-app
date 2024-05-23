@@ -26,7 +26,7 @@ export const HomePage = () => {
         }
         if (role === "ROLE_COACH") {
           const response = await axios.get(
-            "http://localhost:8080/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
+            "https://fit-stack.online/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
             {
               headers: {
                 Authorization: `Bearer ${token}`,

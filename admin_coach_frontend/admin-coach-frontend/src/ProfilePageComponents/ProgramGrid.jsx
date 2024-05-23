@@ -14,7 +14,7 @@ export const ProgramGrid = () => {
     }
     try {
       const response = await axios.delete(
-        `http://localhost:8080/api/v1/adminCoachService/coach/deleteProgram/${programId}`,
+        `https://fit-stack.online/api/v1/adminCoachService/coach/deleteProgram/${programId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -33,7 +33,7 @@ export const ProgramGrid = () => {
     const fetchWorkouts = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/adminCoachService/coach/getAllProgramsForCoach",
+          "https://fit-stack.online/api/v1/adminCoachService/coach/getAllProgramsForCoach",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,

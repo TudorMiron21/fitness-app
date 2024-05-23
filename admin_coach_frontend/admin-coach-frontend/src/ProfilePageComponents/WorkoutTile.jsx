@@ -62,7 +62,7 @@ export const WorkoutTile = ({ workout, onEdit, onDelete }) => {
   const fetchDetailedWorkoutData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/adminCoachService/coach/getDetailedWorkout/${workout.id}`,
+        `https://fit-stack.online/api/v1/adminCoachService/coach/getDetailedWorkout/${workout.id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
