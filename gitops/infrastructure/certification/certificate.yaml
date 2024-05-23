@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: fitness-cert
+  namespace: default
+spec:
+  secretName: fitness-tls
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  commonName: www.fit-stack.online
+  dnsNames:
+    - www.fit-stack.online

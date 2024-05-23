@@ -3,8 +3,16 @@ kind: Ingress
 metadata:
   name: fitness-api-gateway-ingress
   namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-nginx
+    cert-manager.io/acme-challenge-type: http01
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - www.fit-stack.online
+    secretName: fitness-tls
   rules:
   - host: www.fit-stack.online
     http:
