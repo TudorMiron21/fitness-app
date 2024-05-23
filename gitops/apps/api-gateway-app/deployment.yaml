@@ -27,7 +27,7 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-api-gateway-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/fitness-app-api-gateway:1.0.2 #{"$imagepolicy": "flux-system:api-gateway-app-img-conf"}
+        image: docker.io/tudormiron/fitness-app-api-gateway:1.0.3 #{"$imagepolicy": "flux-system:api-gateway-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
