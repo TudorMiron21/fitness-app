@@ -15,10 +15,10 @@ spec:
   prune: true
   wait: true
   patches:
-    - target:
-        kind: ClusterIssuer
-        name: letsencryptflux-system
-      patch: |-
+    - patch: |
         - op: replace
           path: /spec/acme/server
-          value: https://acme-v02.api.letsencrypt.org/directory
+          value: https://acme-staging-v02.api.letsencrypt.org/directory
+      target:
+        kind: ClusterIssuer
+        name: letsencrypt
