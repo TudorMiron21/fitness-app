@@ -42,7 +42,7 @@ class _ProgramPageState extends State<ProgramPage> {
 
     final response = await http.post(
       Uri.parse(
-          'http://192.168.54.182:8080/api/selfCoach/payingUser/startProgram/$programId'),
+          'https://fit-stack.online/api/selfCoach/payingUser/startProgram/$programId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -65,7 +65,7 @@ class _ProgramPageState extends State<ProgramPage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.54.182:8080/api/selfCoach/payingUser/isProgramStarted/$programId'),
+          'https://fit-stack.online/api/selfCoach/payingUser/isProgramStarted/$programId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',

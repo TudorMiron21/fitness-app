@@ -110,7 +110,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.54.182:8080/api/selfCoach/payingUser/getFollowingCoaches'),
+          'https://fit-stack.online/api/selfCoach/payingUser/getFollowingCoaches'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.54.182:8080/api/selfCoach/payingUser/getAllPrograms'),
+          'https://fit-stack.online/api/selfCoach/payingUser/getAllPrograms'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.54.182:8080/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
+          'https://fit-stack.online/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -284,7 +284,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.54.182:8080/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
+          'https://fit-stack.online/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
               lowerLimit.toString() +
               '/' +
               upperLimit.toString()),
@@ -359,7 +359,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.put(
-      Uri.parse('http://192.168.54.182:8080/api/selfCoach/user/likeWorkout/' +
+      Uri.parse('https://fit-stack.online/api/selfCoach/user/likeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -390,7 +390,7 @@ class _HomePageState extends State<HomePage> {
     // Use the workout.id to identify the workout to unlike
 
     final response = await http.delete(
-      Uri.parse('http://192.168.54.182:8080/api/selfCoach/user/unlikeWorkout/' +
+      Uri.parse('https://fit-stack.online/api/selfCoach/user/unlikeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',

@@ -52,4 +52,4 @@ jobs:
           context: ./admin_coach_frontend/admin-coach-frontend
           file: ./admin_coach_frontend/admin-coach-frontend/Dockerfile
           push: true
-          tags: tudormiron/fitness-app-admin-coach-frontend:1.0.0
+          tags: tudormiron/fitness-app-admin-coach-frontend:1.0.1
