@@ -31,7 +31,7 @@ spec:
           tolerationSeconds: 600 # Increase the toleration period to 600 seconds (10 minutes)
       containers:
         - name: fitness-app-admin-coach-frontend-container
-          image: docker.io/tudormiron/fitness-app-admin-coach-frontend:1.0.0
+          image: docker.io/tudormiron/fitness-app-admin-coach-frontend:1.0.0 #{"$imagepolicy": "flux-system:admin-coach-frontend-service-app-img-conf"}
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
