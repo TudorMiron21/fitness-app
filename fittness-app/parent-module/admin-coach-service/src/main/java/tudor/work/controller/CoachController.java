@@ -156,7 +156,7 @@ public class CoachController {
         } catch (NotFoundException | IOException | ServerException | InsufficientDataException |
                  ErrorResponseException | NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException |
                  XmlParserException | InternalException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred while creating the workout.");
         }
     }
 
