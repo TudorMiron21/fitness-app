@@ -209,7 +209,7 @@ public class CoachService {
         return exercises.stream().mapToDouble(exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
     }
 
-    public Workout createWorkout(CreateWorkoutDto createWorkoutDto)
+    public Workout createWorkout(CreateWorkoutDto createWorkoutDto) throws NotFoundException
 //            throws NotFoundException, IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException
     {
 

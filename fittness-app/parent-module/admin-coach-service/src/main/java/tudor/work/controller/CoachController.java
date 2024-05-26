@@ -150,7 +150,11 @@ public class CoachController {
 
     @PostMapping("/createWorkout")
     public ResponseEntity<?> createWorkout(@ModelAttribute CreateWorkoutDto createWorkoutDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(coachService.createWorkout(createWorkoutDto));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(coachService.createWorkout(createWorkoutDto));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
     }
 
 
