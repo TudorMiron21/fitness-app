@@ -37,9 +37,9 @@ eureka:
       defaultZone: http://fitness-eureka-service:8761/eureka
 
 minio:
-  accessKey: lOTZpjM6oKrO7Xnm0Kw9
-  secretKey: 6VQHWsegY8EY9xpGmwbgNGJuTEnZujDA62heEXSs
-  endpoint: https://minio.minio-tenant.svc.cluster.local:443
+  accessKey: 95KWjoRV0WNhfjQ3u1oy
+  secretKey: GXTuHEaqhP8SxRI3PICbYtKIQTBb1rYer2a42odn
+  endpoint: http://4.207.32.91:80
 
 app:
   firebase-configuration-file: fitness-app-firebase-adminsdk.json

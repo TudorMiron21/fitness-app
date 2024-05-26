@@ -80,7 +80,7 @@ jobs:
           context: ./fittness-app
           file: ./fittness-app/Dockerfile.adminCoachService
           push: true
-          tags: tudormiron/fitness-app-admin-coach-backend:1.0.11
+          tags: tudormiron/fitness-app-admin-coach-backend:1.0.12
 
   # deploy:
   #   needs: package
