@@ -209,17 +209,24 @@ public class CoachService {
         return exercises.stream().mapToDouble(exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
     }
 
-    public Workout createWorkout(CreateWorkoutDto createWorkoutDto) throws NotFoundException, IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public Workout createWorkout(CreateWorkoutDto createWorkoutDto)
+//            throws NotFoundException, IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException
+    {
 
         String imgName = RandomString.make(45) + "." + this.getFileExtension(createWorkoutDto.getCoverPhoto().getOriginalFilename());
 
-        minioService.createBucket("workout-cover-photos");
-
-        minioService.uploadImageToObjectStorage(
-                createWorkoutDto.getCoverPhoto().getInputStream(),
-                imgName,
-                "workout-cover-photos"
-        );
+        try {
+            minioService.createBucket("workout-cover-photos");
+            minioService.uploadImageToObjectStorage(
+                    createWorkoutDto.getCoverPhoto().getInputStream(),
+                    imgName,
+                    "workout-cover-photos"
+            );
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
 
         String imgPath = "workout-cover-photos/" + imgName;
 

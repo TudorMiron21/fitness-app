@@ -150,14 +150,7 @@ public class CoachController {
 
     @PostMapping("/createWorkout")
     public ResponseEntity<?> createWorkout(@ModelAttribute CreateWorkoutDto createWorkoutDto) {
-
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(coachService.createWorkout(createWorkoutDto));
-        } catch (NotFoundException | IOException | ServerException | InsufficientDataException |
-                 ErrorResponseException | NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException |
-                 XmlParserException | InternalException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred while creating the workout.");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(coachService.createWorkout(createWorkoutDto));
     }
 
 
@@ -228,8 +221,7 @@ public class CoachController {
     }
 
     @GetMapping("/getAllCertificationsForCoach")
-    public ResponseEntity<?> getAllCertificationsForCoach()
-    {
+    public ResponseEntity<?> getAllCertificationsForCoach() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(coachService.getAllCertificationsForCoach());
         } catch (NotFoundException e) {
@@ -238,8 +230,7 @@ public class CoachController {
     }
 
     @GetMapping("/getDetailedWorkout/{workoutId}")
-    public ResponseEntity<?> getDetailedWorkout(@PathVariable(name = "workoutId")Long workoutId)
-    {
+    public ResponseEntity<?> getDetailedWorkout(@PathVariable(name = "workoutId") Long workoutId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(coachService.getDetailedWorkout(workoutId));
         } catch (NotFoundException e) {
@@ -248,8 +239,7 @@ public class CoachController {
     }
 
     @GetMapping("/getDetailedProgram/{programId}")
-    public ResponseEntity<?> getDetailedProgram(@PathVariable(name = "programId")Long programId)
-    {
+    public ResponseEntity<?> getDetailedProgram(@PathVariable(name = "programId") Long programId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(coachService.getDetailedProgram(programId));
         } catch (NotFoundException e) {
@@ -258,11 +248,10 @@ public class CoachController {
     }
 
     @DeleteMapping("/deleteExercise/{exerciseId}")
-    public ResponseEntity<?> deleteExercise(@PathVariable(name = "exerciseId") Long exerciseId)
-    {
+    public ResponseEntity<?> deleteExercise(@PathVariable(name = "exerciseId") Long exerciseId) {
         try {
             coachService.deleteExercise(exerciseId);
-            return ResponseEntity.status(HttpStatus.OK).body("exercise with id "+exerciseId+" deleted");
+            return ResponseEntity.status(HttpStatus.OK).body("exercise with id " + exerciseId + " deleted");
 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -270,11 +259,10 @@ public class CoachController {
     }
 
     @DeleteMapping("/deleteWorkout/{workoutId}")
-    public ResponseEntity<?> deleteWorkout(@PathVariable(name = "workoutId")Long workoutId)
-    {
+    public ResponseEntity<?> deleteWorkout(@PathVariable(name = "workoutId") Long workoutId) {
         try {
             coachService.deleteWorkout(workoutId);
-            return ResponseEntity.status(HttpStatus.OK).body("workout with id "+workoutId+" deleted");
+            return ResponseEntity.status(HttpStatus.OK).body("workout with id " + workoutId + " deleted");
 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -282,11 +270,10 @@ public class CoachController {
     }
 
     @DeleteMapping("/deleteProgram/{programId}")
-    public ResponseEntity<?> deleteProgram(@PathVariable(name = "programId")Long programId)
-    {
+    public ResponseEntity<?> deleteProgram(@PathVariable(name = "programId") Long programId) {
         try {
             coachService.deleteProgram(programId);
-            return ResponseEntity.status(HttpStatus.OK).body("program with id "+programId+" deleted");
+            return ResponseEntity.status(HttpStatus.OK).body("program with id " + programId + " deleted");
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
