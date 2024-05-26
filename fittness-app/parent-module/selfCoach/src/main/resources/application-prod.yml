@@ -32,7 +32,7 @@ spring:
 minio:
   accessKey: lOTZpjM6oKrO7Xnm0Kw9
   secretKey: 6VQHWsegY8EY9xpGmwbgNGJuTEnZujDA62heEXSs
-  endpoint: https://68.219.45.56:443
+  endpoint: https://minio.minio-tenant.svc.cluster.local:443
   put-object-part-size: 5242880
 
 app:
