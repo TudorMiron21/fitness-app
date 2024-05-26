@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import { validateToken } from "../utils/auth";
 import { NavBar } from "../NavBarComponents/NavBar.jsx";
@@ -8,7 +8,9 @@ import { jwtDecode } from "jwt-decode";
 import { Chat } from "./ChatContainer.jsx";
 import axios from "axios";
 import "./ChatPage.css";
-const SERVER_URL = "http://localhost:8084";
+// const SERVER_URL = "http://localhost:8084";
+const SERVER_URL = "https://chat-service.webpubsub.azure.com";
+
 let socket;
 export const ChatPage = () => {
   const navigate = useNavigate();
@@ -37,9 +39,10 @@ export const ChatPage = () => {
 
       // Connect to the socket after token validation
       socket = io.connect(SERVER_URL, {
-        extraHeaders: {
-          Authorization: `Bearer ${token}`,
-        },
+        path: "/clients/socketio/hubs/Hub",
+        // extraHeaders: {
+        //   Authorization: `Bearer ${token}`,
+        // },
       });
 
       socket.on("connect_error", (error) => {
@@ -58,7 +61,7 @@ export const ChatPage = () => {
     const getSubscribers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/adminCoachService/coach/getSubscribers",
+          "https://www.fit-stack.online/api/v1/adminCoachService/coach/getSubscribers",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,

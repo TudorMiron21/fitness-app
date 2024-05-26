@@ -25,7 +25,8 @@ const eurekaClient = new Eureka({
   },
   eureka: {
     // Eureka server's host & port
-    host: 'localhost', // Replace with your Eureka server's hostname
+    host: fitness-eureka-service,
+    // host: 'localhost', // Replace with your Eureka server's hostname
     port: 8761, // Replace with your Eureka server's port
     servicePath: '/eureka/apps/',
   },
