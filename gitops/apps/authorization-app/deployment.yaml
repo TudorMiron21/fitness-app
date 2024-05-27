@@ -27,7 +27,7 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-auth-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/fitness-app-authorization:1.0.1 #{"$imagepolicy": "flux-system:authorization-app-img-conf"}
+        image: docker.io/tudormiron/fitness-app-authorization:1.0.2 #{"$imagepolicy": "flux-system:authorization-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
