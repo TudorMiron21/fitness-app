@@ -1265,27 +1265,26 @@ public class UserService {
         }
     }
 
-    @Transactional
     public User upgradeUserRole(String email) throws NotFoundException {
         User user = this.getUserByEmail(email);
         user.setRole(Roles.PAYING_USER);
         return user;
     }
 
+    @Transactional
     public Long webhookResponse(Map<String, Object> requestBody) {
         String email = (String) ((Map<String, Object>) ((Map<String, Object>) requestBody.get("resource")).get("subscriber")).get("email_address");
         String eventType = (String) requestBody.get("event_type");
 
-        if(eventType.equals("BILLING.SUBSCRIPTION.ACTIVATED"))
-        {
+        if (eventType.equals("BILLING.SUBSCRIPTION.ACTIVATED")) {
             try {
-               return this.upgradeUserRole(email).getId();
+                User user = this.upgradeUserRole(email);
+                return user.getId();
             } catch (NotFoundException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
-            throw new RuntimeException("event type "+ eventType+" is NOT \"BILLING.SUBSCRIPTION.ACTIVATED\"");
+        } else {
+            throw new RuntimeException("event type " + eventType + " is NOT \"BILLING.SUBSCRIPTION.ACTIVATED\"");
         }
     }
 }

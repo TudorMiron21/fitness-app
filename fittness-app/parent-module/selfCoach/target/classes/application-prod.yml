@@ -30,9 +30,9 @@ spring:
     suffix: .html
 
 minio:
-  accessKey: sX992YF0FHu6v60w7kRy
-  secretKey: kekpfoyUyq59u8dv9qtdS2pZJ5TIbmCvudsBw3iQ
-  endpoint: https://20.223.251.131:443
+  accessKey: 95KWjoRV0WNhfjQ3u1oy
+  secretKey: GXTuHEaqhP8SxRI3PICbYtKIQTBb1rYer2a42odn
+  endpoint: http://4.207.32.91:80
   put-object-part-size: 5242880
 
 app:
