@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -428,6 +429,13 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @PostMapping("/webhookResponse")
+    public ResponseEntity<?> webhookResponse(@RequestBody Map<String, Object> requestBody)
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.webhookResponse(requestBody));
+    }
+
 
 
 }
