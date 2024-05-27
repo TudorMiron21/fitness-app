@@ -49,7 +49,7 @@ jobs:
         context: ./fittness-app
         file: ./fittness-app/Dockerfile.apiGateway
         push: true
-        tags: tudormiron/fitness-app-api-gateway:1.0.8
+        tags: tudormiron/fitness-app-api-gateway:1.0.9
 
   # deploy:
   #   needs: package
