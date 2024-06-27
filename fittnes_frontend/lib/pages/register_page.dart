@@ -7,6 +7,7 @@ import 'package:fittnes_frontend/components/my_textfield.dart';
 import 'package:fittnes_frontend/components/square_tile.dart';
 import 'package:fittnes_frontend/controller/user_controller.dart';
 import 'package:fittnes_frontend/models/user_details.dart';
+import 'package:fittnes_frontend/pages/details.dart';
 import 'package:fittnes_frontend/pages/home_page.dart';
 import 'package:fittnes_frontend/pages/login_page.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ class _RegisterState extends State<Register> {
           String loginDataJson = json.encode(registerData);
 
           Uri url =
-              Uri.parse('https://www.fit-stack.online/api/v1/auth/registerGoogle');
+              Uri.parse('http://localhost:8080/api/v1/auth/registerGoogle');
 
           Response response =
               await post(url, headers: headers, body: loginDataJson);
@@ -131,7 +132,7 @@ class _RegisterState extends State<Register> {
 
       String loginDataJson = json.encode(registerData);
 
-      Uri url = Uri.parse('https://www.fit-stack.online/api/v1/auth/register');
+      Uri url = Uri.parse('http://localhost:8080/api/v1/auth/register');
 
       Response response =
           await post(url, headers: headers, body: loginDataJson);
@@ -150,7 +151,7 @@ class _RegisterState extends State<Register> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NavBar(),
+            builder: (context) => Details(),
           ),
         );
       } else if (response.statusCode == 400) //bad request

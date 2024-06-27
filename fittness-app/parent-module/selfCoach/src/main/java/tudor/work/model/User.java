@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -37,6 +38,15 @@ public class User implements UserDetails {
 
     private String resetPasswordToken;
 
+    private Gender gender;
+
+    private Integer age;
+
+    private Integer height;
+
+    private Double currentWeight;
+
+    private Double goalWeight;
 
     @Enumerated(EnumType.STRING)
     private Roles role;
@@ -47,8 +57,6 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "id_workout"))
     @JsonIgnore
     private Set<Workout> likedWorkouts;
-
-
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(

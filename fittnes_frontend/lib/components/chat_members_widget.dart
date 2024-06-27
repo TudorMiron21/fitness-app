@@ -38,7 +38,7 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
 
     final response = await http.get(
       Uri.parse(
-          'https://www.fit-stack.online/api/selfCoach/payingUser/getFollowingCoaches'),
+          'http://localhost:8080/api/selfCoach/payingUser/getFollowingCoaches'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -106,7 +106,7 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
     for (final coach in followingCoaches) {
       final String coachEmail = coach.email;
       final Uri url = Uri.parse(
-          'https://www.fit-stack.online/chatService/getLastMessage/$sourceEmail/$coachEmail');
+          'http://localhost:8080/chatService/getLastMessage/$sourceEmail/$coachEmail');
 
       fetchTasks.add(http.get(url).then((response) {
         if (response.statusCode == 200) {

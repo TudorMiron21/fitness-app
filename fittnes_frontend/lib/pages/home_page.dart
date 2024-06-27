@@ -110,7 +110,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://www.fit-stack.online/api/selfCoach/payingUser/getFollowingCoaches'),
+          'http://localhost:8080/api/selfCoach/payingUser/getFollowingCoaches'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://www.fit-stack.online/api/selfCoach/payingUser/getAllPrograms'),
+          'http://localhost:8080/api/selfCoach/payingUser/getAllPrograms'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://www.fit-stack.online/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
+          'http://localhost:8080/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -284,7 +284,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://www.fit-stack.online/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
+          'http://localhost:8080/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
               lowerLimit.toString() +
               '/' +
               upperLimit.toString()),
@@ -359,7 +359,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.put(
-      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/likeWorkout/' +
+      Uri.parse('http://localhost:8080/api/selfCoach/user/likeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -390,7 +390,7 @@ class _HomePageState extends State<HomePage> {
     // Use the workout.id to identify the workout to unlike
 
     final response = await http.delete(
-      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/unlikeWorkout/' +
+      Uri.parse('http://localhost:8080/api/selfCoach/user/unlikeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -445,7 +445,7 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           if (index == 0) {
                             return buildPageBackground(
-                              'lib/images/background_top_workouts.jpg',
+                              'lib/images/homepage_background3.png',
                               'Top Workouts',
                             );
                           }
@@ -795,7 +795,7 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (context, index) {
         if (index == 0) {
           return buildPageBackground(
-            'lib/images/background_top_workouts.jpg',
+            'lib/images/homepage_background1.png',
             'Followed Coaches',
           );
         } else if (index == pageCount + 1) {
@@ -831,7 +831,7 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (context, index) {
         if (index == 0) {
           return buildPageBackground(
-            'lib/images/background_top_workouts.jpg',
+            'lib/images/homepage_background2.png',
             'Top Most Liked Programs',
           );
         }

@@ -51,7 +51,7 @@ class _ContactsLeaderBoardState extends State<ContactsLeaderBoard> {
     }
 
     final url = Uri.parse(
-      'https://www.fit-stack.online/api/selfCoach/user/getContactsLeaderBoard?email=${Uri.encodeComponent(requestParamEmails)}',
+      'http://localhost:8080/api/selfCoach/user/getContactsLeaderBoard?email=${Uri.encodeComponent(requestParamEmails)}',
     );
 
     print(url);

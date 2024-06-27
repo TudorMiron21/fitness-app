@@ -15,12 +15,14 @@ import tudor.work.exceptions.AuthorizationExceptionHandler;
 import tudor.work.exceptions.DuplicatesException;
 import tudor.work.exceptions.LeaderBoardEntryNotFoundException;
 import tudor.work.exceptions.UserAccessException;
+import tudor.work.model.Gender;
 import tudor.work.service.AuthorityService;
 import tudor.work.service.MinioService;
 import tudor.work.service.UserService;
 import tudor.work.service.VideoStreamingService;
 import tudor.work.utils.Range;
 
+import javax.ws.rs.Path;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -437,6 +439,21 @@ public class UserController {
     }
 
 
+    @PutMapping("/uploadUserDetails/{gender}/{age}/{height}/{currentWeight}/{goalWeight}")
+    public ResponseEntity<?>uploadUserDetails(
+            @PathVariable("gender")Gender gender,
+            @PathVariable("age") Integer age,
+            @PathVariable("height")Integer height,
+            @PathVariable("currentWeight")Double currentWeight,
+            @PathVariable("goalWeight")Double goalWeight
+            )
+    {
+        try {
+            userService.uploadUserDetails(gender,age,height,currentWeight,goalWeight);
+            return ResponseEntity.status(HttpStatus.OK).body("User details saved successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error while saving user details");        }
+    }
 
 }
 

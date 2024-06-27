@@ -1287,4 +1287,16 @@ public class UserService {
             throw new RuntimeException("event type " + eventType + " is NOT \"BILLING.SUBSCRIPTION.ACTIVATED\"");
         }
     }
+
+    @Transactional
+    public void uploadUserDetails(Gender gender, Integer age, Integer height, Double currentWeight, Double goalWeight) throws NotFoundException {
+
+        User user = authorityService.getUser();
+
+        user.setGender(gender);
+        user.setAge(age);
+        user.setHeight(height);
+        user.setCurrentWeight(currentWeight);
+        user.setGoalWeight(goalWeight);
+    }
 }

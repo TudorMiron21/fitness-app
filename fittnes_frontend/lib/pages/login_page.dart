@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final passwordController = TextEditingController();
 
-  //Sing user method
+  //Sing in user method
   void login(String email, password, BuildContext context) async {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       String loginDataJson = json.encode(loginData);
 
       Uri url =
-          Uri.parse('https://www.fit-stack.online/api/v1/auth/login'); // Use Uri.http
+          Uri.parse('http://localhost:8080/api/v1/auth/login'); // Use Uri.http
 
       Response response =
           await post(url, headers: headers, body: loginDataJson);
@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
           String loginDataJson = json.encode(loginData);
 
           Uri url =
-              Uri.parse('https://www.fit-stack.online/api/v1/auth/loginGoogle');
+              Uri.parse('http://localhost:8080/api/v1/auth/loginGoogle');
 
           Response response =
               await post(url, headers: headers, body: loginDataJson);

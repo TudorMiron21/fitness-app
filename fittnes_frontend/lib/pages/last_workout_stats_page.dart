@@ -29,7 +29,7 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
 
       final response = await http.get(
         Uri.parse(
-            'https://www.fit-stack.online/api/selfCoach/user/getLastWorkoutStatistics'),
+            'http://localhost:8080/api/selfCoach/user/getLastWorkoutStatistics'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },

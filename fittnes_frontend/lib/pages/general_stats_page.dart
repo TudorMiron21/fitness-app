@@ -109,7 +109,7 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
 
       final response = await http.get(
         Uri.parse(
-            'https://www.fit-stack.online/api/selfCoach/user/getGeneralWorkoutInformation/10'),
+            'http://localhost:8080/api/selfCoach/user/getGeneralWorkoutInformation/10'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },

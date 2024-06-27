@@ -20,7 +20,7 @@ class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
-
+  List<Widget> pages = [];
   @override
   void initState() {
     super.initState();
@@ -49,8 +49,24 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
+
+    bool showContactsLeaderBoard = false; // Example condition
+      pages.add(UserInformation());
+    
+      pages.add(LastWorkoutStatsPage());
+    
+      pages.add(GeneralStatsPage());
+      pages.add(PersonalRecordPage());
+
+      pages.add(GlobalLeaderBoard());
+    
+    if (showContactsLeaderBoard) {
+      pages.add(ContactsLeaderBoard());
+    }
+
     return Scaffold(
       body: Column(
         children: [
@@ -58,15 +74,7 @@ class _ProfilePageState extends State<ProfilePage>
             child: PageView(
               controller: _pageController,
               onPageChanged: _onPageChanged,
-              children: [
-                UserInformation(),
-                LastWorkoutStatsPage(),
-                GeneralStatsPage(),
-                PersonalRecordPage(),
-                GlobalLeaderBoard(),
-                ContactsLeaderBoard(),
-                // Add more pages as needed
-              ],
+              children: pages
             ),
           ),
           Padding(
@@ -74,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List<Widget>.generate(
-                6, // Replace with the actual number of pages
+                pages.length, // Replace with the actual number of pages
                 (int index) => _buildPageIndicator(index == _currentPage),
               ),
             ),

@@ -63,8 +63,6 @@ class CaloriesExercisesDatasetMultipleFeature(torch.utils.data.Dataset):
                 'labels': torch.tensor([item['Calories']],dtype=torch.float32)}
         
                
-
-
 train_set = CaloriesExercisesDatasetOneFeature(train_frame)
 test_set = CaloriesExercisesDatasetOneFeature(test_frame)
 
@@ -138,17 +136,17 @@ for epoch in range(NR_EPOCHS):
         epoch_losses.append(loss.item()) 
     log_info.append((epoch, np.mean(epoch_losses)))
     
-X = [x for x, loss in log_info]
-Y = [loss for x, loss in log_info]
-plt.plot(X,Y)
-plt.xlabel("Epoch")
-plt.ylabel("LOSS")
+# X = [x for x, loss in log_info]
+# Y = [loss for x, loss in log_info]
+# plt.plot(X,Y)
+# plt.xlabel("Epoch")
+# plt.ylabel("LOSS")
 
-X = [x for x, loss in log_info]
-Y = [loss for x, loss in log_info]
-plt.plot(X,Y)
-plt.xlabel("Epoch")
-plt.ylabel("LOSS")
+# X = [x for x, loss in log_info]
+# Y = [loss for x, loss in log_info]
+# plt.plot(X,Y)
+# plt.xlabel("Epoch")
+# plt.ylabel("LOSS")
 
 # plt.show()
 

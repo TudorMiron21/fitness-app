@@ -7,8 +7,11 @@ import 'package:fittnes_frontend/models/achievement.dart';
 import 'package:fittnes_frontend/models/leader_board.dart';
 import 'package:fittnes_frontend/models/user.dart';
 import 'package:fittnes_frontend/pages/create_workout_page.dart';
+import 'package:fittnes_frontend/pages/details.dart';
+import 'package:fittnes_frontend/pages/login_page.dart';
 import 'package:fittnes_frontend/pages/paypal_subscription_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,7 +26,6 @@ class UserInformation extends StatefulWidget {
 
 class _UserInformationState extends State<UserInformation> {
   File? _profileImage;
-
   List<Achievement> userAchievements = [];
   LeaderBoard leaderBoardEntry = LeaderBoard(
       id: -1,
@@ -60,7 +62,7 @@ class _UserInformationState extends State<UserInformation> {
 
     final response = await http.get(
       Uri.parse(
-          'https://www.fit-stack.online/api/selfCoach/user/getLeaderBoardEntryForUser'),
+          'http://localhost:8080/api/selfCoach/user/getLeaderBoardEntryForUser'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -88,7 +90,7 @@ class _UserInformationState extends State<UserInformation> {
     }
 
     final response = await http.get(
-      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getUserAchievements'),
+      Uri.parse('http://localhost:8080/api/selfCoach/user/getUserAchievements'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -198,9 +200,10 @@ class _UserInformationState extends State<UserInformation> {
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .spaceBetween, // Distribute space evenly between buttons
+                Wrap(
+                  spacing: 10.0,
+                  runSpacing: 10.0,
+                  alignment: WrapAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () {
@@ -214,6 +217,32 @@ class _UserInformationState extends State<UserInformation> {
                       ),
                     ),
                     ElevatedButton(
+                      onPressed: () async {
+                        final storage = FlutterSecureStorage();
+                        await storage.delete(key: 'access_token');
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
+                      child: Text('Log out'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
+                      ),
+                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     Navigator.of(context).push(
+                    //         MaterialPageRoute(builder: (context) => Details()));
+                    //   },
+                    //   child: Text('Details'),
+                    //   style: ElevatedButton.styleFrom(
+                    //     foregroundColor: Colors.white,
+                    //     backgroundColor: Colors.green,
+                    //   ),
+                    // ),
+                    ElevatedButton(
                       child: Text('Go Premium'),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -221,7 +250,7 @@ class _UserInformationState extends State<UserInformation> {
                       ),
                       onPressed: () async {
                         const url =
-                            'https://www.fit-stack.online/api/selfCoach/paypal/getPayPalSubscriptionButton';
+                            'http://localhost:8080/api/selfCoach/paypal/getPayPalSubscriptionButton';
                         await _launchAsInAppWebViewWithCustomHeaders(
                             Uri.parse(url));
                       },
@@ -235,7 +264,7 @@ class _UserInformationState extends State<UserInformation> {
                     child: Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color:Colors.white.withOpacity(0.8),
+                        color: Colors.white.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
