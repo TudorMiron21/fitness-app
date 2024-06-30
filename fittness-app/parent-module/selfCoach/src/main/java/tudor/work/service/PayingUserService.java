@@ -10,6 +10,7 @@ import tudor.work.exceptions.NotSubscribedException;
 import tudor.work.exceptions.UserHistoryProgramNotFoundException;
 import tudor.work.model.*;
 
+import javax.swing.*;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.List;
 
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -132,8 +134,42 @@ public class PayingUserService {
 
     public Set<ProgramDto> getTopPrograms() {
 
-        return programService.findAllPrograms()
+//        return programService.findAllPrograms()
+//                .stream()
+//                .map(
+//                        program ->
+//                                ProgramDto
+//                                        .builder()
+//                                        .id(program.getId())
+//                                        .name(program.getName())
+//                                        .description(program.getDescription())
+//                                        .durationInDays(program.getDurationInDays())
+//                                        .coverPhotoUrl(program.getCoverPhotoUrl())
+//                                        .workoutProgramSet(program.getWorkoutPrograms())
+//                                        .build()
+//                ).collect(Collectors.toSet());
+
+        List<Program> allPrograms = programService.findAllPrograms();
+
+        Predicate<Program> isProgramAddedByAdmin = program -> {
+            User programAdder = program.getAdder();
+            return programAdder.getRole().equals(Roles.ADMIN);
+        };
+
+        Predicate<Program> isProgramAddedByFollowingCoach  = program ->
+        {
+            try {
+                User payingUser = authorityService.getUser();
+                if(payingUser.getRole().equals(Roles.USER)) return false;
+                return payingUser.getFollowing().contains(program.getAdder());
+            } catch (NotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        return allPrograms
                 .stream()
+                .filter(isProgramAddedByAdmin.or(isProgramAddedByFollowingCoach))
                 .map(
                         program ->
                                 ProgramDto

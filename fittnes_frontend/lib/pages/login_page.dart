@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   //Sing in user method
-  void login(String email, password, BuildContext context) async {
+  Future<void> login(String email, password, BuildContext context) async {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
     };
@@ -71,6 +71,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else if (response.statusCode == 403) //FORBIDDEN
       {
+        print('Status code is 403, showing snackbar');
         final snackBar = SnackBar(
           content: Text('wrong username/password'),
           backgroundColor: Colors.red,
@@ -218,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 MyButton(
                     buttonText: "Sign in",
-                    onTap: () {
+                    onTap: () async{
                       login(usernameController.text.toString(),
                           passwordController.text.toString(), context);
                     }),

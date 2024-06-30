@@ -6,6 +6,7 @@ import 'dart:io'; // For File
 import 'package:fittnes_frontend/models/achievement.dart';
 import 'package:fittnes_frontend/models/leader_board.dart';
 import 'package:fittnes_frontend/models/user.dart';
+import 'package:fittnes_frontend/models/user_details.dart';
 import 'package:fittnes_frontend/pages/create_workout_page.dart';
 import 'package:fittnes_frontend/pages/details.dart';
 import 'package:fittnes_frontend/pages/login_page.dart';
@@ -16,7 +17,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
-
+import '../models/user_details.dart';
 class UserInformation extends StatefulWidget {
   const UserInformation({super.key});
 
@@ -140,16 +141,16 @@ class _UserInformationState extends State<UserInformation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            'User Information',
-            style: TextStyle(),
-          ),
-          centerTitle: true,
-          toolbarHeight: 30,
-          backgroundColor: Colors.blue,
-          elevation: 4,
-          automaticallyImplyLeading: false),
+      // appBar: AppBar(
+      //     title: Text(
+      //       'User Information',
+      //       style: TextStyle(),
+      //     ),
+      //     centerTitle: true,
+      //     toolbarHeight: 30,
+      //     backgroundColor: Colors.blue,
+      //     elevation: 4,
+      //     automaticallyImplyLeading: false),
       body: Stack(
         fit: StackFit.expand, // Ensure the stack fills the screen
         children: <Widget>[
@@ -158,7 +159,7 @@ class _UserInformationState extends State<UserInformation> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
-                    'lib/images/fittness_background.jpg'), // Replace with your image path
+                    'lib/images/pattern_background.png'), // Replace with your image path
                 fit: BoxFit.cover,
               ),
             ),
@@ -168,7 +169,7 @@ class _UserInformationState extends State<UserInformation> {
                 sigmaX: 3.0, sigmaY: 3.0), // Adjust the blur intensity
             child: Container(
               color:
-                  Colors.black.withOpacity(0.5), // Darken the background a bit
+                  Colors.black.withOpacity(0.6), // Darken the background a bit
             ),
           ),
           // Content
@@ -220,6 +221,7 @@ class _UserInformationState extends State<UserInformation> {
                       onPressed: () async {
                         final storage = FlutterSecureStorage();
                         await storage.delete(key: 'access_token');
+                        await signOut();
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (context) => LoginPage()),
                           (Route<dynamic> route) => false,

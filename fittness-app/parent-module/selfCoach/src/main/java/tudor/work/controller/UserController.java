@@ -11,15 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.*;
-import tudor.work.exceptions.AuthorizationExceptionHandler;
-import tudor.work.exceptions.DuplicatesException;
-import tudor.work.exceptions.LeaderBoardEntryNotFoundException;
-import tudor.work.exceptions.UserAccessException;
+import tudor.work.exceptions.*;
 import tudor.work.model.Gender;
-import tudor.work.service.AuthorityService;
-import tudor.work.service.MinioService;
-import tudor.work.service.UserService;
-import tudor.work.service.VideoStreamingService;
+import tudor.work.service.*;
 import tudor.work.utils.Range;
 
 import javax.ws.rs.Path;
@@ -41,6 +35,8 @@ public class UserController {
     private final UserService userService;
     private final AuthorityService authorityService;
     private final VideoStreamingService videoService;
+
+    private final PayingUserService payingUserService;
 
 
     @Value("${app.streaming.default-chunk-size}")
@@ -140,9 +136,16 @@ public class UserController {
 
     @GetMapping("/workouts/getFirstSixMostLikedWorkouts")
     public ResponseEntity<?> getFirstSixMostLikedWorkouts() {
-        List<WorkoutDto> workoutDtoList = userService.getFirstSixMostLikedWorkouts();
+//        List<WorkoutDto> workoutDtoList = userService.getFirstSixMostLikedWorkouts();
+        List<WorkoutDto> workoutDtoList = null;
+        try {
+            workoutDtoList = userService.getHomePageWorkouts();
+            return ResponseEntity.status(HttpStatus.OK).body(workoutDtoList);
 
-        return ResponseEntity.status(HttpStatus.OK).body(workoutDtoList);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(workoutDtoList);
+        }
+
     }
 
     @GetMapping("/workouts/getTopWorkoutsForDifficultyLevel/{lowerLimit}/{upperLimit}")
@@ -455,5 +458,41 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error while saving user details");        }
     }
 
+
+    @GetMapping("/getAllPrograms")
+    public ResponseEntity<?> getAllPrograms() {
+        Set<ProgramDto> programs = payingUserService.getTopPrograms();
+        return ResponseEntity.status(HttpStatus.OK).body(programs);
+    }
+
+
+    @PostMapping("/startProgram/{programId}")
+    public ResponseEntity<?> startProgram(@PathVariable(name = "programId") Long programId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.startProgram(programId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+    @PutMapping("/addWorkoutToProgram/{workoutId}/{userHistoryProgramId}")
+    public ResponseEntity<?> addWorkoutToProgram(@PathVariable("workoutId") Long workoutId, @PathVariable("userHistoryProgramId") Long userHistoryProgramId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.addWorkoutToProgram(userHistoryProgramId, workoutId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+    @GetMapping("/isProgramStarted/{programId}")
+    public ResponseEntity<?> isProgramStarted(@PathVariable(name = "programId") Long programId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.isProgramStarted(programId));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        } catch (UserHistoryProgramNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(e);
+        }
+    }
 }
 

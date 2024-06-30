@@ -42,7 +42,7 @@ class _ProgramPageState extends State<ProgramPage> {
 
     final response = await http.post(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/payingUser/startProgram/$programId'),
+          'http://localhost:8080/api/selfCoach/user/startProgram/$programId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -65,7 +65,7 @@ class _ProgramPageState extends State<ProgramPage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/payingUser/isProgramStarted/$programId'),
+          'http://localhost:8080/api/selfCoach/user/isProgramStarted/$programId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',

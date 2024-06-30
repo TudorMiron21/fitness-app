@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+//import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import tudor.work.dto.AuthResponse;
@@ -133,10 +133,10 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/googleAuth")
-    public Map<String, Object> googleAuth(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-        return oAuth2AuthenticationToken.getPrincipal().getAttributes();
-    }
+//    @GetMapping("/googleAuth")
+//    public Map<String, Object> googleAuth(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+//        return oAuth2AuthenticationToken.getPrincipal().getAttributes();
+//    }
 
 
 }

@@ -31,7 +31,6 @@ class _DetailsState extends State<Details> {
       String url =
           'http://localhost:8080/api/selfCoach/user/uploadUserDetails/$gender/$age/$height/$currentWeight/$goalWeight';
 
-      print('http://localhost:8080/api/selfCoach/user/uploadUserDetails/$gender/$age/$height/$currentWeight/$goalWeight');
       try {
         final response = await http.put(
           Uri.parse(url),

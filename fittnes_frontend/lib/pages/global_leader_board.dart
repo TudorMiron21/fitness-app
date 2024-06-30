@@ -63,6 +63,7 @@ class _GlobalLeaderBoardState extends State<GlobalLeaderBoard> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Global Leaderboard'),
+        automaticallyImplyLeading: false
       ),
       body: FutureBuilder<List<LeaderBoard>>(
         future: getLeaderBoardEntries(),

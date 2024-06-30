@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/payingUser/getAllPrograms'),
+          'http://localhost:8080/api/selfCoach/user/getAllPrograms'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },

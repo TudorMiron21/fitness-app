@@ -206,15 +206,15 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            'Your Workouts',
-          ),
-          centerTitle: true,
-          toolbarHeight: 30,
-          backgroundColor: Colors.blue,
-          elevation: 4,
-          automaticallyImplyLeading: false),
+      // appBar: AppBar(
+      //     title: Text(
+      //       'Your Workouts',
+      //     ),
+      //     centerTitle: true,
+      //     toolbarHeight: 30,
+      //     backgroundColor: Colors.blue,
+      //     elevation: 4,
+      //     automaticallyImplyLeading: false),
       body: Column(
         children: [
           // SizedBox(
@@ -375,7 +375,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(workout.coverPhotoUrl),
+            image: workout.coverPhotoUrl.isNotEmpty? NetworkImage(workout.coverPhotoUrl):const NetworkImage("https://i.ytimg.com/vi/gey73xiS8F4/maxresdefault.jpg"),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black

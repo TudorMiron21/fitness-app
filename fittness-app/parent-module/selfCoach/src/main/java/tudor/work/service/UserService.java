@@ -210,7 +210,6 @@ public class UserService {
 
         return workoutService.getAllWorkouts()
                 .stream()
-
                 .map(
                         workout -> {
                             try {
@@ -233,6 +232,70 @@ public class UserService {
                 .sorted(Comparator.comparing(WorkoutDto::getNoLikes))
                 .limit(6)
                 .toList();
+    }
+
+    public List<WorkoutDto> getHomePageWorkouts() throws NotFoundException {
+        List<Workout> allWorkouts = workoutService.getAllWorkouts();
+
+        if (authorityService.isUser()) {
+            return allWorkouts
+                    .stream()
+                    .filter(Workout::isGlobal)
+                    .map(
+                            workout -> {
+                                try {
+                                    return WorkoutDto.
+                                            builder().
+                                            id(workout.getId()).
+                                            name(workout.getName()).
+                                            description(workout.getDescription()).
+                                            coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                            difficultyLevel(workout.getDifficultyLevel()).
+                                            isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
+                                            noLikes(workoutService.getNoLikes(workout)).
+                                            exercises(workout.getExercises())
+                                            .build();
+                                } catch (NotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                    ).sorted(Comparator.comparing(WorkoutDto::getNoLikes))
+                    .toList();
+        }
+        else
+            if (authorityService.isPayingUser()) {
+            User payingUser = authorityService.getUser();
+            Predicate<Workout> isWorkoutAddedByFollowingCoach = workout -> {
+                return payingUser.getFollowing().contains(workout.getAdder());
+            };
+
+            Predicate<Workout> isWorkoutAddedByAdmin = Workout::isGlobal;
+
+            return allWorkouts
+                    .stream()
+                    .filter(isWorkoutAddedByFollowingCoach.or(isWorkoutAddedByAdmin))
+                    .map(
+                            workout -> {
+                                try {
+                                    return WorkoutDto.
+                                            builder().
+                                            id(workout.getId()).
+                                            name(workout.getName()).
+                                            description(workout.getDescription()).
+                                            coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                            difficultyLevel(workout.getDifficultyLevel()).
+                                            isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
+                                            noLikes(workoutService.getNoLikes(workout)).
+                                            exercises(workout.getExercises())
+                                            .build();
+                                } catch (NotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                    ).sorted(Comparator.comparing(WorkoutDto::getNoLikes))
+                    .toList();
+        }
+        return new ArrayList<>();
     }
 
     public List<WorkoutDto> getTopWorkoutsForDifficultyLevel(Double lowerLimit, Double upperLimit) {

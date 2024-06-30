@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-
+import 'dart:ui';
 import 'package:fittnes_frontend/models/WorkoutStatistics.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -74,8 +74,7 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
             toolbarHeight: 30,
             backgroundColor: Colors.blue,
             elevation: 4,
-            automaticallyImplyLeading: false
-            ),
+            automaticallyImplyLeading: false),
         body: const Center(
           child: CircularProgressIndicator(),
         ),
@@ -93,59 +92,74 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
         '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
 
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            'Last Workout Statistics',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
+      // appBar: AppBar(
+      //     title: Text(
+      //       'Last Workout Statistics',
+      //       style: TextStyle(
+      //         fontSize: 20,
+      //         fontWeight: FontWeight.w500,
+      //       ),
+      //     ),
+      //     centerTitle: true,
+      //     toolbarHeight: 30,
+      //     backgroundColor: Colors.blue,
+      //     elevation: 4),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                    'lib/images/pattern_background.png'), // Replace with your asset image path
+                fit: BoxFit
+                    .cover, // This will fill the background of the SingleChildScrollView
+              ),
+            ),
+          ), 
+          BackdropFilter(
+            filter: ImageFilter.blur(
+                sigmaX: 3.0, sigmaY: 3.0), // Adjust the blur intensity
+            child: Container(
+              color:
+                  Colors.black.withOpacity(0.6), // Darken the background a bit
             ),
           ),
-          centerTitle: true,
-          toolbarHeight: 30,
-          backgroundColor: Colors.blue,
-          elevation: 4),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                'lib/images/fitness_background.png'), // Replace with your asset image path
-            fit: BoxFit
-                .cover, // This will fill the background of the SingleChildScrollView
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8.0, // space between cards horizontally
-              runSpacing: 8.0, // space between cards vertically
-              children: <Widget>[
-                _buildStatisticCard(context, 'Total Volume', '$totalVolume'),
-                _buildStatisticCard(
-                    context, 'Calories Burned', '$totalCaloriesBurned kcal'),
-                _buildStatisticCard(context, 'Total Time', formattedTime),
-                _buildPieChartSection(
-                  context,
-                  'Category Percentage',
-                  workoutStatistics.categoryPercentage,
+             SingleChildScrollView(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8.0, // space between cards horizontally
+                  runSpacing: 8.0, // space between cards vertically
+                  children: <Widget>[
+                    _buildStatisticCard(
+                        context, 'Total Volume', '$totalVolume'),
+                    _buildStatisticCard(context, 'Calories Burned',
+                        '$totalCaloriesBurned kcal'),
+                    _buildStatisticCard(context, 'Total Time', formattedTime),
+                    _buildPieChartSection(
+                      context,
+                      'Category Percentage',
+                      workoutStatistics.categoryPercentage,
+                    ),
+                    _buildPieChartSection(
+                      context,
+                      'Muscle Group Percentage',
+                      workoutStatistics.muscleGroupPercentage,
+                    ),
+                    _buildPieChartSection(
+                      context,
+                      'Difficulty Percentage',
+                      workoutStatistics.difficultyPercentage,
+                    ),
+                    // ... other widgets you may want to display
+                  ],
                 ),
-                _buildPieChartSection(
-                  context,
-                  'Muscle Group Percentage',
-                  workoutStatistics.muscleGroupPercentage,
-                ),
-                _buildPieChartSection(
-                  context,
-                  'Difficulty Percentage',
-                  workoutStatistics.difficultyPercentage,
-                ),
-                // ... other widgets you may want to display
-              ],
+              ),
             ),
-          ),
-        ),
+        
+        ],
       ),
     );
   }

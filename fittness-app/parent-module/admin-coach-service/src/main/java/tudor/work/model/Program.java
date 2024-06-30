@@ -37,4 +37,6 @@ public class Program {
     private User adder;
 
     private Double difficultyLevel;
+
+    private Boolean isGlobal;
 }

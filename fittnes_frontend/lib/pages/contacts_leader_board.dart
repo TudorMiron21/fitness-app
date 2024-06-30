@@ -162,6 +162,8 @@ class _ContactsLeaderBoardState extends State<ContactsLeaderBoard> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Google Contacts Leaderboard'),
+        automaticallyImplyLeading: false
+
       ),
       body: FutureBuilder<List<LeaderBoard>>(
         future: getContactsLeaderBoardEntries(),

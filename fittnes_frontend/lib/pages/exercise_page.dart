@@ -173,7 +173,7 @@ class _ExercisePageState extends State<ExercisePage> {
       } else {
         response = await http.put(
           Uri.parse(
-              'http://localhost:8080/api/selfCoach/payingUser/addWorkoutToProgram/$workoutId/${widget.programId}'),
+              'http://localhost:8080/api/selfCoach/user/addWorkoutToProgram/$workoutId/${widget.programId}'),
           headers: {
             'Authorization': 'Bearer $accessToken',
           },
