@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { validateToken } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 
+import image1 from "../assets/cover-profile1.jpg";
+import image2 from "../assets/cover-profile2.jpg";
+import image3 from "../assets/cover-profile3.jpg";
+
 import {
   AppBar,
   Tabs,
@@ -40,24 +44,38 @@ export const ProfilePage = () => {
     };
     checkTokenValid();
   }, []);
+  const imagePaths = [image1, image2, image3];
+
+  const getRandomImagePath = () => {
+    const randomIndex = Math.floor(Math.random() * imagePaths.length);
+    return `url(${imagePaths[randomIndex]})`;
+  };
+
   return (
     <Box>
       <NavBar />
       <Box
         sx={{
-          backgroundImage: `url('https://via.placeholder.com/1000x400')`,
+          backgroundImage: getRandomImagePath(), // Dynamically set background image
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           height: "400px",
         }}
       />
       <Box sx={{ position: "relative", top: "-50px", textAlign: "center" }}>
         <Avatar
-          sx={{ width: "200px", height: "200px", border: "2px solid white" }}
+          sx={{
+            width: "200px",
+            height: "200px",
+            border: "2px solid white",
+            margin: "0 auto", // Center the Avatar horizontally
+            marginBottom: "20px", // Optional: Add margin at the bottom for spacing
+          }}
           src="https://via.placeholder.com/200"
         />
         <Typography variant="h5">Coach Name</Typography>
         <Typography variant="body2">Coach's tagline or brief info</Typography>
       </Box>
-
       {/* Tabs */}
       <AppBar
         position="static"

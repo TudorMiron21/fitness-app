@@ -180,7 +180,7 @@ export const CreateExercise = () => {
 
       console.log(formData);
       const response = await axios.post(
-        "https://www.fit-stack.online/api/v1/adminCoachService/coach/uploadExerciseDetails",
+        "http://localhost:8080/api/v1/adminCoachService/coach/uploadExerciseDetails",
 
         formData,
 
@@ -230,7 +230,7 @@ export const CreateExercise = () => {
   async function completeMultipartUpload(uploadId, exerciseId, filename) {
     // console.log(exerciseId)
     const response = await axios.put(
-      "https://www.fit-stack.online/api/v1/adminCoachService/coach/completeMultipartUpload",
+      "http://localhost:8080/api/v1/adminCoachService/coach/completeMultipartUpload",
       {
         exerciseId,
         uploadId,
@@ -256,6 +256,8 @@ export const CreateExercise = () => {
     <div>
       <NavBar />
       <form className="exercise-form" onSubmit={handleSubmit}>
+      <h2>Create Exercise</h2>
+
         <label htmlFor="name">Exercise Name:</label>
         <input
           type="text"
@@ -427,7 +429,7 @@ export const CreateExercise = () => {
         <div className="completion-message">{completionMessage}</div>
       )}
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

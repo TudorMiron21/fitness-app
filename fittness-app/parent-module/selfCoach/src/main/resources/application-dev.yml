@@ -33,8 +33,15 @@ spring:
 minio:
   accessKey: dAh2wTxgKQK3B6TPi20p
   secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
-  endpoint: http://192.168.147.140:9000
+#  endpoint: http://192.168.147.140:9000
+  endpoint: https://5622-82-77-78-40.ngrok-free.app
   put-object-part-size: 5242880
+
+#minio:
+#  accessKey: qhxiwuBBB2D3LeJhIr8I
+#  secretKey: iSgJZkaZZaV4zYVaPPVlmqjJmXdAwRCr1K64kCnF
+#  endpoint: https://172.205.120.186:443
+#  put-object-part-size: 5242880
 
 app:
   streaming:

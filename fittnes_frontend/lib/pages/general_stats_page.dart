@@ -278,7 +278,21 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
       averagePercentageMap[category] = totalPercent / count;
     });
 
-    return averagePercentageMap;
+    // Calculate the normalization factor
+    double normalizationFactor = 0.0;
+    totalPercentageMap.values.forEach((percent) {
+      normalizationFactor += percent;
+    });
+
+    normalizationFactor = 1 / normalizationFactor;
+
+    // Create a new map for normalized percentages
+    Map<String, double> normalizedPercentageMap = {};
+    totalPercentageMap.forEach((category, totalPercent) {
+      normalizedPercentageMap[category] = totalPercent * normalizationFactor;
+    });
+
+    return normalizedPercentageMap;
   }
 
   Map<String, double> calculateAverageMuscleGroupPercentages(
@@ -308,7 +322,21 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
       averagePercentageMap[muscleGroup] = totalPercent / count;
     });
 
-    return averagePercentageMap;
+    // Calculate the normalization factor
+    double normalizationFactor = 0.0;
+    totalPercentageMap.values.forEach((percent) {
+      normalizationFactor += percent;
+    });
+
+    normalizationFactor = 1 / normalizationFactor;
+
+    // Create a new map for normalized percentages
+    Map<String, double> normalizedPercentageMap = {};
+    totalPercentageMap.forEach((muscleGroup, totalPercent) {
+      normalizedPercentageMap[muscleGroup] = totalPercent * normalizationFactor;
+    });
+
+    return normalizedPercentageMap;
   }
 
   Map<String, double> calculateDifficultyPercentages(
@@ -338,7 +366,21 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
       averagePercentageMap[difficulty] = totalPercent / count;
     });
 
-    return averagePercentageMap;
+    // Calculate the normalization factor
+    double normalizationFactor = 0.0;
+    totalPercentageMap.values.forEach((percent) {
+      normalizationFactor += percent;
+    });
+
+    normalizationFactor = 1 / normalizationFactor;
+
+    // Create a new map for normalized percentages
+    Map<String, double> normalizedPercentageMap = {};
+    totalPercentageMap.forEach((difficulty, totalPercent) {
+      normalizedPercentageMap[difficulty] = totalPercent * normalizationFactor;
+    });
+
+    return normalizedPercentageMap;
   }
 
   Widget _buildPieChartSection(

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -50,6 +51,7 @@ public class WorkoutResultService {
     public List<WorkoutResult> findLastEntriesByUser(String userEmail,Integer noWorkoutResults){
         List<WorkoutResult>  workoutResultsByEmail = findByUserEmail(userEmail);
 
+        workoutResultsByEmail = workoutResultsByEmail.stream().map(this::transformNullFields).toList();
         Integer workoutResultsByEmailCount = workoutResultsByEmail.size();
 
         if(!workoutResultsByEmail.isEmpty())
@@ -61,6 +63,16 @@ public class WorkoutResultService {
         }
         return  Collections.emptyList();
 
+    }
+
+    public WorkoutResult transformNullFields(WorkoutResult workoutResult){
+        if(workoutResult.getTotalTime() == null)
+            workoutResult.setTotalTime(0L);
+        if(workoutResult.getTotalVolume() == null)
+            workoutResult.setTotalVolume((double)0);
+        if(workoutResult.getTotalCaloriesBurned() == null)
+            workoutResult.setTotalCaloriesBurned((double)0);
+        return workoutResult;
     }
 
 }

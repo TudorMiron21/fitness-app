@@ -51,7 +51,8 @@ void main() async {
 
   // Determine the initial route based on token validity
   //String initialRoute = isTokenValid ? AppPage.getNavbar() : AppPage.getLogin();
-  String initialRoute = AppPage.getLogin();
+  // String initialRoute = AppPage.getLogin();
+  String initialRoute = isTokenValid ? AppPage.getNavbar() : AppPage.getLogin();
 
   HttpOverrides.global = MyHttpOverrides();
 

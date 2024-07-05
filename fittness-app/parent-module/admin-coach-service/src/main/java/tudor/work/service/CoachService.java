@@ -309,7 +309,7 @@ public class CoachService {
         return program;
     }
 
-    public Set<WorkoutDto> getFilteredWorkouts(WorkoutFilteredRequestDto workoutFilteredRequestDto) throws NotFoundException {
+    public Set<WorkoutDto> getFilteredWorkouts(WorkoutFilteredRequestDto workoutFilteredRequestDto)  throws NotFoundException{
 
 
         Set<Workout> workouts = workoutService.getFilteredWorkouts(workoutFilteredRequestDto);

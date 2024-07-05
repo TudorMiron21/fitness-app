@@ -186,8 +186,6 @@ public class AuthControllerTest {
                         .content(requestBodyJson))
                 .andExpect(status().isOk())
                 .andExpect(content().string(resetPasswordLink));
-
-
     }
 
     @Test

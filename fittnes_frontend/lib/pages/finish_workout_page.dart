@@ -85,7 +85,7 @@ class _FinishWorkoutPageState extends State<FinishWorkoutPage>
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'You earned ${widget.workoutRewards.numberOfPoints} points!',
+                    'You earned ${widget.workoutRewards.numberOfPoints.ceil()} points!',
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 16),

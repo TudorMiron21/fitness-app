@@ -81,7 +81,7 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
       );
     }
     final double totalVolume = workoutStatistics.totalVolume;
-    final double totalCaloriesBurned = workoutStatistics.totalCaloriesBurned;
+    final String totalCaloriesBurned = workoutStatistics.totalCaloriesBurned.toStringAsFixed(2);
     final int totalTimeInSeconds = workoutStatistics.totalTime;
 
     // Convert total time in seconds to hours:minutes:seconds format

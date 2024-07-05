@@ -391,6 +391,7 @@ public class UserService {
                 .exercise(requestUserHistoryExercise.getExercise())
                 .userHistoryModule(requestUserHistoryExercise.getUserHistoryModule())
                 .currNoSeconds(requestUserHistoryExercise.getCurrNoSeconds())
+                .caloriesBurned(requestUserHistoryExercise.getCaloriesBurned())
                 .isDone(requestUserHistoryExercise.isDone())
                 .build();
 
@@ -548,7 +549,6 @@ public class UserService {
             }
 
         }
-
         userHistoryModule.addExerciseToUserHistoryExercises(
                 userHistoryExercise
         );
@@ -1361,5 +1361,18 @@ public class UserService {
         user.setHeight(height);
         user.setCurrentWeight(currentWeight);
         user.setGoalWeight(goalWeight);
+    }
+
+    public UserDetailsResponseDto getUserDetails() throws NotFoundException {
+
+        User user = authorityService.getUser();
+        return
+                UserDetailsResponseDto
+                        .builder()
+                        .gender(user.getGender())
+                        .age(user.getAge())
+                        .height(user.getHeight())
+                        .weight(user.getCurrentWeight())
+                        .build();
     }
 }

@@ -1,3 +1,9 @@
+body{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 ::-webkit-scrollbar {
     width: 12px; /* Width of the scrollbar */
   }
@@ -15,3 +21,5 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #555; /* Color of the scrollbar thumb on hover */
   }
+
+  

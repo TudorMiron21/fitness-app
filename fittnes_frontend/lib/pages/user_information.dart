@@ -284,7 +284,7 @@ class _UserInformationState extends State<UserInformation> {
                             'User: ${leaderBoardEntry!.user.firstName} ${leaderBoardEntry!.user.lastName}',
                           ),
                           Text(
-                            'Total Points: ${leaderBoardEntry!.numberOfPoints}',
+                            'Total Points: ${leaderBoardEntry!.numberOfPoints.ceil()}',
                           ),
                           Text(
                             'Done Exercises: ${leaderBoardEntry!.numberOfDoneExercises}',

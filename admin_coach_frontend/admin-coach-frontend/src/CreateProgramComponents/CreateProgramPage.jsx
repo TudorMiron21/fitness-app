@@ -109,7 +109,7 @@ export const CreateProgramPage = () => {
     queryParams.append("minDifficultyLevel", filters.minDifficultyLevel);
 
     const response = await axios.get(
-      `https://www.fit-stack.online/api/v1/adminCoachService/coach/getFilteredWorkouts?${queryParams.toString()}`,
+      `http://localhost:8080/api/v1/adminCoachService/coach/getFilteredWorkouts?${queryParams.toString()}`,
 
       {
         headers: {
@@ -181,7 +181,7 @@ export const CreateProgramPage = () => {
 
     try {
       const response = await axios.post(
-        "https://www.fit-stack.online/api/v1/adminCoachService/coach/createProgram",
+        "http://localhost:8080/api/v1/adminCoachService/coach/createProgram",
         createProgramForm,
         {
           headers: {
@@ -198,7 +198,7 @@ export const CreateProgramPage = () => {
           const formData = new FormData();
           formData.append("coverPhoto", programForm.coverPhoto);
           const responseCoverPhotoUpload = await axios.put(
-            `https://www.fit-stack.online/api/v1/adminCoachService/coach/uploadProgramCoverPhoto/${programId}`,
+            `http://localhost:8080/api/v1/adminCoachService/coach/uploadProgramCoverPhoto/${programId}`,
             formData,
             {
               headers: {
@@ -406,7 +406,7 @@ export const CreateProgramPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

@@ -15,7 +15,7 @@ export const Login = () => {
 
     try {
       const response = await axios.post(
-        "https://www.fit-stack.online/api/v1/auth/login",
+        "http://localhost:8080/api/v1/auth/login",
         {
           email,
           password,

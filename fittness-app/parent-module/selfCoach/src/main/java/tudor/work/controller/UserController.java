@@ -494,5 +494,16 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(e);
         }
     }
+
+    @GetMapping("/getUserDetails")
+    public ResponseEntity<?> getUserDetails()
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getUserDetails());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }
 

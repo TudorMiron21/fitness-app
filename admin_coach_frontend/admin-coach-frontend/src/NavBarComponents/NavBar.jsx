@@ -33,9 +33,7 @@ export const NavBar = () => {
           <li>
             <a href="/profile-page">Profile</a>
           </li>
-          <li>
-            <a href="/forum-page">Forum</a>
-          </li>
+
           {userRole === "ROLE_ADMIN" && (
             <li>
               <a href="/certifications">Certifications</a>

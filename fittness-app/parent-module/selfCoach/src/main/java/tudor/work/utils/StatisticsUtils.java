@@ -45,9 +45,9 @@ public class StatisticsUtils {
         List<Double> calories = userHistoryWorkoutService
                 .findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(userHistoryWorkoutId);
 
-//        return calories.stream().reduce((double) 0,Double::sum);
+        return calories.stream().reduce((double) 0, Double::sum);
 
-        return (double) 0;
+//        return (double) 0;
     }
 
     public Double getTotalVolume(Long userHistoryWorkoutId) {
@@ -234,11 +234,11 @@ public class StatisticsUtils {
             if (uhe.getExercise().getCategory().getName().equals("Cardio")) {
                 isCaloriesOriented = true;
             } else if (uhe.getExercise().getCategory().getName().equals("Stretching")) {
-              isTimeOriented = true;
+                isTimeOriented = true;
             } else if (uhe.getExercise().getCategory().getName().equals("Plyometrics")) {
                 isNoRepsOriented = true;
             } else {
-               isWeightOriented = true;
+                isWeightOriented = true;
             }
 
             if (matchingRecord != null) {

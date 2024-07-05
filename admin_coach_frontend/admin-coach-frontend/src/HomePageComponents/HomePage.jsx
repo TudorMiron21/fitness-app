@@ -26,7 +26,7 @@ export const HomePage = () => {
         }
         if (role === "ROLE_COACH") {
           const response = await axios.get(
-            "https://www.fit-stack.online/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
+            "http://localhost:8080/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -58,10 +58,6 @@ export const HomePage = () => {
     navigate("/create-program-page");
   };
 
-  const handleCreateChallenge = () => {
-    // Implement the logic to navigate to the create challenge page or open a modal
-  };
-
   if (!isTokenValid) {
     navigate("/login");
     return;
@@ -79,40 +75,31 @@ export const HomePage = () => {
               title="Create Exercise"
               description="Define new exercises to include in workouts."
               onClick={handleCreateExercise}
-              hoverContent="more content"
+              hoverContent="You can add a variety of exercises tailored to meet the specific needs of all your clients. Offering options across various categories such as muscle groups, equipment usage, and difficulty levels ensures comprehensive fitness customization. This approach empowers users with diverse choices to achieve their fitness goals effectively and enjoyably."
               backgroundImage={
-                "https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg"
+                "https://e1.pxfuel.com/desktop-wallpaper/91/297/desktop-wallpaper-pose-muscle-muscle-rod-press-athlete-gym-bodybuilder-abs-gym-bodybuilder-gym-section-%D1%81%D0%BF%D0%BE%D1%80%D1%82-abs-workout.jpg"
               }
             />
             <ActionCard
               title="Create Workout"
               description="Build a workout session for your trainees."
               onClick={handleCreateWorkout}
-              hoverContent="more content"
+              hoverContent="Enhance your app by integrating a diverse array of workout routines tailored to meet each client's unique needs. Utilize efficient filtering capabilities to swiftly add exercises to workouts, whether they are custom exercises or ones already available on the platform. This flexibility allows users to curate personalized workouts quickly and effectively, ensuring a seamless and customizable fitness experience."
               backgroundImage={
-                "https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg"
+                "https://e1.pxfuel.com/desktop-wallpaper/271/312/desktop-wallpaper-man-gym-muscle-workout-sport-dumbbells-720x1280-bodybuilding-gym.jpg"
               }
             />
             <ActionCard
               title="Create Program"
               description="Design a comprehensive training program."
               onClick={handleCreateProgram}
-              hoverContent="more content"
+              hoverContent="You can elevate your fitness program by incorporating a versatile array of workout routines that cater to individual needs and preferences. Utilize intuitive tools for seamlessly adding workouts, whether they are tailored exercises or those already available within the program. This flexibility empowers users to create personalized fitness plans efficiently, ensuring they can achieve their goals effectively while enjoying a tailored and engaging fitness experience.more content"
               backgroundImage={
-                "https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg"
-              }
-            />
-            <ActionCard
-              title="Create Challenge"
-              description="Set up challenges to motivate your trainees."
-              onClick={handleCreateChallenge}
-              hoverContent="more content"
-              backgroundImage={
-                "https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg"
+                "https://e0.pxfuel.com/wallpapers/48/814/desktop-wallpaper-bodybuilder-world-s-strongest-man-workout-fitness-bodybuilding-cartoon.jpg"
               }
             />
           </div>
-          <Footer />
+          {/* <Footer /> */}
         </div>
       );
     } else {

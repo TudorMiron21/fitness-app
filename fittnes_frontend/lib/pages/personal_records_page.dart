@@ -20,6 +20,7 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
     loadPersonalRecords();
   }
 
+
   Future<void> loadPersonalRecords() async {
     try {
       List<PersonalRecord> fetchedRecords = await getPersonalRecordsForUser();
@@ -57,6 +58,14 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
     }
   }
 
+  String getFormatedTime(int totalTimeInSeconds)
+  {
+        final int hours = totalTimeInSeconds ~/ 3600;
+    final int minutes = (totalTimeInSeconds % 3600) ~/ 60;
+    final int seconds = totalTimeInSeconds % 60;
+    return
+        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
   @override
   @override
   Widget build(BuildContext context) {
@@ -203,7 +212,7 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
                                 height: 54,
                                 child: Center(
                                     child: Text(
-                                  record.maxTime.toString(),
+                                  getFormatedTime(record.maxTime),
                                   style: TextStyle(
                                     fontSize: 12, // Specify the font size here
                                   ),
@@ -223,7 +232,7 @@ class _PersonalRecordPageState extends State<PersonalRecordPage> {
                                 height: 54,
                                 child: Center(
                                     child: Text(
-                                  record.maxCalories?.toString() ?? 'N/A',
+                                  record.maxCalories?.toStringAsFixed(2) ?? 'N/A',
                                   style: TextStyle(
                                     fontSize: 12, // Specify the font size here
                                   ),
