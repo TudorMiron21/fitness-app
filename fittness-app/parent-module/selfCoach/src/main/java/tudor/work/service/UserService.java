@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tudor.work.dto.*;
 import tudor.work.exceptions.*;
 import tudor.work.model.*;
@@ -1374,5 +1375,32 @@ public class UserService {
                         .height(user.getHeight())
                         .weight(user.getCurrentWeight())
                         .build();
+    }
+
+
+    @Transactional
+    public void uploadProfilePicture(MultipartFile file) throws IOException, NotFoundException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        User user = authorityService.getUser();
+
+        String objectName = user.getId().toString();
+
+        if(minioService.objectExists(objectName,"user-profile-picture"))
+             minioService.deleteObject(objectName,"user-profile-picture");
+
+        minioService.uploadImageToObjectStorage(file.getInputStream(),objectName,"user-profile-picture");
+
+        String imgPath = "user-profile-picture/" + objectName;
+
+        user.setProfilePictureLocation(imgPath);
+    }
+
+    public String getProfilePicture() throws NotFoundException, ServerException, InsufficientDataException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException, ErrorResponseException {
+        User user = authorityService.getUser();
+        String objectName = user.getId().toString();
+
+        if(minioService.objectExists(objectName,"user-profile-picture"))
+            return minioService.generatePreSignedUrl(user.getProfilePictureLocation());
+        else
+            throw new NotFoundException("user has no profile picture");
     }
 }

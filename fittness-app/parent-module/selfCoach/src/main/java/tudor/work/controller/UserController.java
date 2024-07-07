@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tudor.work.dto.*;
 import tudor.work.exceptions.*;
 import tudor.work.model.Gender;
@@ -502,6 +503,29 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(userService.getUserDetails());
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/uploadProfilePicture")
+    public ResponseEntity<?> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
+        try {
+            userService.uploadProfilePicture(file);
+            return ResponseEntity.status(HttpStatus.OK).body("Profile picture added successfully");
+        } catch (IOException | NotFoundException | ServerException | InsufficientDataException |
+                 ErrorResponseException | NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException |
+                 XmlParserException | InternalException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error during picture upload");
+        }
+    }
+
+    @GetMapping("/getProfilePicture")
+    public ResponseEntity<?> getProfilePicture(){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getProfilePicture());
+        } catch (NotFoundException | ServerException | InsufficientDataException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException | ErrorResponseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
     }
 

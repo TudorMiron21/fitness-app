@@ -19,7 +19,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: selfCoach
-
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
   thymeleaf:
     cache: false # true for production
     mode: HTML

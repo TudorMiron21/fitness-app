@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 // import 'dart:ffi';
 import 'dart:ui'; // For ImageFilter
 import 'dart:io'; // For File
@@ -18,6 +19,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import '../models/user_details.dart';
+import 'package:http_parser/http_parser.dart'; // Import for MediaType
+
 class UserInformation extends StatefulWidget {
   const UserInformation({super.key});
 
@@ -27,6 +30,7 @@ class UserInformation extends StatefulWidget {
 
 class _UserInformationState extends State<UserInformation> {
   File? _profileImage;
+  String profilePictureUrl = '';
   List<Achievement> userAchievements = [];
   LeaderBoard leaderBoardEntry = LeaderBoard(
       id: -1,
@@ -41,6 +45,36 @@ class _UserInformationState extends State<UserInformation> {
   void initState() {
     super.initState();
     fetchUserData(); // Fetch data on initialization
+    _fetchUserProfilePicture();
+  }
+
+Future<void> _fetchUserProfilePicture() async {
+  await fetchUserProfilePicture();
+  setState(() {
+  });
+}
+
+  Future<void> fetchUserProfilePicture() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.get(
+      Uri.parse(
+          'http://192.168.54.182:8080/api/selfCoach/user/getProfilePicture'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      profilePictureUrl = response.body;
+    }
+
+    if (response.statusCode == 400)
+      throw Exception("User has no profile picture");
   }
 
   Future<void> fetchUserData() async {
@@ -108,6 +142,44 @@ class _UserInformationState extends State<UserInformation> {
     }
   }
 
+  Future<void> uploadProfilePicture(File imageFile) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    var request = http.MultipartRequest(
+      'PUT',
+      Uri.parse(
+          'http://192.168.54.182:8080/api/selfCoach/user/uploadProfilePicture'),
+    );
+
+    request.headers.addAll({
+      'Authorization': 'Bearer $accessToken',
+    });
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file',
+        imageFile.path,
+        contentType: MediaType('image', 'png'), // Adjust as needed
+      ),
+    );
+
+    // Send request
+    var response = await request.send();
+
+    // Check response
+    if (response.statusCode == 200) {
+      print('Profile picture uploaded successfully');
+    } else {
+      print(
+          'Failed to upload profile picture. Status code: ${response.statusCode}');
+    }
+  }
+
   Future<void> _pickImage() async {
     try {
       final pickedFile =
@@ -116,6 +188,7 @@ class _UserInformationState extends State<UserInformation> {
         setState(() {
           _profileImage = File(pickedFile.path);
         });
+        await uploadProfilePicture(File(pickedFile.path));
       }
     } catch (e) {
       // Handle any errors that occur during image selection
@@ -180,20 +253,26 @@ class _UserInformationState extends State<UserInformation> {
               children: [
                 GestureDetector(
                   onTap: _pickImage,
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.grey.shade200,
-                    backgroundImage: _profileImage != null
-                        ? FileImage(_profileImage!)
-                        : null,
-                    child: _profileImage == null
-                        ? const Icon(
-                            Icons.camera_alt,
-                            color: Colors.grey,
-                            size: 50,
-                          )
-                        : null,
-                  ),
+                  child: profilePictureUrl.isEmpty
+                      ? CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.grey.shade200,
+                          backgroundImage: _profileImage != null
+                              ? FileImage(_profileImage!)
+                              : null,
+                          child: _profileImage == null
+                              ? const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.grey,
+                                  size: 50,
+                                )
+                              : null,
+                        )
+                      : CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.grey.shade200,
+                          backgroundImage: NetworkImage(profilePictureUrl),
+                        ),
                 ),
                 const SizedBox(height: 24),
                 Text(

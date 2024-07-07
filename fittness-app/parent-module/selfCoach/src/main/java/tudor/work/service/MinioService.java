@@ -30,7 +30,7 @@ public class MinioService {
     }
 
     public StatObjectResponse getFileMetadata(String bucketName, String objectName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        return  minioClient.statObject(
+        return minioClient.statObject(
                 StatObjectArgs.builder()
                         .bucket(bucketName)
                         .object(objectName)
@@ -56,5 +56,50 @@ public class MinioService {
                         .expiry(1800)
                         .build()
         );
+    }
+
+    public void createBucket(String bucketName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+
+
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
+            minioClient.makeBucket(
+                    MakeBucketArgs
+                            .builder()
+                            .bucket(bucketName)
+                            .build()
+            );
+        }
+    }
+
+    public void deleteObject(String objectName, String bucketName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
+    }
+
+    public Boolean objectExists(String objectName, String bucketName) throws ServerException, InsufficientDataException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        try {
+            minioClient.statObject(
+                    StatObjectArgs
+                            .builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .build());
+            return true;
+        } catch (ErrorResponseException e) {
+            return false;
+        }
+    }
+
+    public String uploadImageToObjectStorage(InputStream imgStream, String object, String bucket) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        createBucket(bucket);
+        minioClient.putObject(
+                PutObjectArgs
+                        .builder()
+                        .bucket(bucket)
+                        .object(object)
+                        .stream(imgStream, -1, 10485760)
+                        .contentType("image/png")
+                        .build()
+        );
+        return bucket + "/" + object;
     }
 }

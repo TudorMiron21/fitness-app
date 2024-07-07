@@ -48,6 +48,8 @@ public class User implements UserDetails {
 
     private Double goalWeight;
 
+    private String profilePictureLocation;
+
     @Enumerated(EnumType.STRING)
     private Roles role;
 
