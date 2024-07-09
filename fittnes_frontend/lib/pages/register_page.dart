@@ -310,15 +310,7 @@ class _RegisterState extends State<Register> {
                       child: AuthButtonTile(
                           imagePath: 'lib/images/google_logo.png'),
                     ),
-                    const SizedBox(width: 10),
-                    InkWell(
-                      onTap: () {
-                        // Handle Apple login
-                        print("Apple login tapped");
-                      },
-                      child: AuthButtonTile(
-                          imagePath: 'lib/images/apple_logo.png'),
-                    ),
+ 
                   ],
                 ),
                 const SizedBox(height: 10),

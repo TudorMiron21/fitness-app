@@ -252,7 +252,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
 
     final response = await http.post(
-      Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/saveModule'),
+      Uri.parse('http://localhost:8080/api/selfCoach/user/saveModule'),
       body: jsonEncode({
         "parentUserHistoryWorkoutId": widget.userHistoryWorkoutId.toString(),
         "noSets": numberOfSets
@@ -285,7 +285,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
 
     final response = await http.get(
-      Uri.parse('http://192.168.0.229:8080/api/selfCoach/user/getUserDetails'),
+      Uri.parse('http://localhost:8080/api/selfCoach/user/getUserDetails'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -329,7 +329,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
       // Send POST request to predict API
       final response = await http.post(
-        Uri.parse('http://192.168.0.229:5000/predict'),
+        Uri.parse('http://localhost:5000/predict'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -365,7 +365,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
     final response = await http.put(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
+          'http://localhost:8080/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
       body: jsonEncode({
         "exercise": widget.exercises[widget.exerciseIndex].id,
         "userHistoryModule": userHistoryModuleId.toString(),
@@ -398,7 +398,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
     final response = await http.put(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
+          'http://localhost:8080/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -432,7 +432,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     String email = JwtUtils.extractSubject(accessToken);
     final response = await http.get(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email'),
+          'http://localhost:8080/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -455,7 +455,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
       return lastEntryUserHistoryExerciseDto;
     } else {
       print(
-          'http://192.168.0.229:8080/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email');
+          'http://localhost:8080/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email');
       throw Exception("workout with id $workoutId is finished");
     }
   }
@@ -472,7 +472,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
     final response = await http.put(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId'),
+          'http://localhost:8080/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
@@ -486,7 +486,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
     if (response.statusCode != 200) {
       print(
-          'http://192.168.0.229:8080/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId');
+          'http://localhost:8080/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId');
       throw Exception(
           'Failed to update user history exercise. Status code: ${response.statusCode}');
     }
@@ -502,7 +502,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
     final response = await http.put(
       Uri.parse(
-          'http://192.168.0.229:8080/api/selfCoach/user/updateUserHistoryModule/$userHistoryModuleId'),
+          'http://localhost:8080/api/selfCoach/user/updateUserHistoryModule/$userHistoryModuleId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
@@ -857,7 +857,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
             ],
 
             if(exercise.exerciseVideoUrl.isNotEmpty)
-              _buildVideoSection('http://192.168.0.229:8080/api/selfCoach/user/videoStreaming/${exercise.id}')
+              _buildVideoSection('http://localhost:8080/api/selfCoach/user/videoStreaming/${exercise.id}')
           ],
         ),
       ),

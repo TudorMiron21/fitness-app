@@ -6,6 +6,7 @@ import axios from "axios";
 import { Spinner } from "../SpinnerComponents/Spinner";
 import { validateToken } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import { WaitForApprovalPage } from "../WaitForApprovalPageComponents/WaitForApprovalPage.jsx"; // Assuming this is in the same directory
 
 export const CreateExercise = () => {
   const initialState = {
@@ -24,6 +25,9 @@ export const CreateExercise = () => {
 
   const [exercise, setExercise] = useState(initialState);
 
+  const [areCoachDetailsValid, setAreCoachDetailsValid] = useState(null);
+  const [isTokenValid, setIsTokenValid] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   const [imagePreviews, setImagePreviews] = useState({
@@ -37,20 +41,36 @@ export const CreateExercise = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkTokenValid = async () => {
+    const checkCoachDetails = async () => {
       try {
+        const role = localStorage.getItem("role");
+
         const token = localStorage.getItem("access_token");
 
         if (token) {
-          // setIsTokenValid(await validateToken(token));
-          const isTokenValid = await validateToken(token);
-          if (!isTokenValid) navigate("/login");
-        } else navigate("/login");
+          setIsTokenValid(await validateToken(token));
+        }
+        if (role === "ROLE_COACH") {
+          const response = await axios.get(
+            "http://localhost:8080/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setAreCoachDetailsValid(response.data);
+        } else if (role === "ROLE_ADMIN") {
+          setAreCoachDetailsValid(true);
+        }
       } catch (error) {
         console.error("Error fetching coach details status", error);
+        // Handle the error state as needed, perhaps setting the state to false
+        setAreCoachDetailsValid(false);
       }
     };
-    checkTokenValid();
+
+    checkCoachDetails();
   }, []);
   // Handlers for the form inputs
   const handleInputChange = (event) => {
@@ -252,184 +272,197 @@ export const CreateExercise = () => {
     return response.data;
   }
 
-  return (
-    <div>
-      <NavBar />
-      <form className="exercise-form" onSubmit={handleSubmit}>
-      <h2>Create Exercise</h2>
+  if (!isTokenValid) {
+    navigate("/login");
+    return;
+  } else {
+    if (areCoachDetailsValid === null) {
+      return <Spinner />;
+    } else if (areCoachDetailsValid) {
+      return (
+        <div>
+          <NavBar />
+          <form className="exercise-form" onSubmit={handleSubmit}>
+            <h2>Create Exercise</h2>
 
-        <label htmlFor="name">Exercise Name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={exercise.name}
-          onChange={handleInputChange}
-          required
-        />
-
-        <label htmlFor="description">Description:</label>
-        <textarea
-          id="description"
-          name="description"
-          value={exercise.description}
-          onChange={handleInputChange}
-          required
-        ></textarea>
-
-        <label htmlFor="muscleGroup">Muscle Group:</label>
-        <select
-          type="text"
-          id="muscleGroup"
-          name="muscleGroup"
-          value={exercise.muscleGroup}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Muscle Group</option>
-          <option value="Forearms">Forearms</option>
-          <option value="Quadriceps">Quadriceps</option>
-          <option value="Abdominals">Abdominals</option>
-          <option value="Lats">Lats</option>
-          <option value="Middle Back">Middle Back</option>
-          <option value="Lower Back">Lower Back</option>
-          <option value="Shoulders">Shoulders</option>
-          <option value="Biceps">Biceps</option>
-          <option value="Glutes">Glutes</option>
-          <option value="Triceps">Triceps</option>
-          <option value="Hamstrings">Hamstrings</option>
-          <option value="Neck">Neck</option>
-          <option value="Chest">Chest</option>
-          <option value="Traps">Traps</option>
-          <option value="Calves">Calves</option>
-          <option value="Adductors">Adductors</option>
-          <option value="Abductors">Abductors</option>
-        </select>
-
-        <label htmlFor="category">Category:</label>
-        <select
-          type="text"
-          id="category"
-          name="category"
-          value={exercise.category}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Category</option>
-          <option value="Strongman">Strongman</option>
-          <option value="Strength">Strength</option>
-          <option value="Olympic Weightlifting">Olympic Weightlifting</option>
-          <option value="Powerlifting">Powerlifting</option>
-          <option value="Cardio">Cardio</option>
-          <option value="Plyometrics">Plyometrics</option>
-          <option value="Stretching">Stretching</option>
-        </select>
-
-        <label htmlFor="difficulty">Difficulty Level:</label>
-        <select
-          id="difficulty"
-          name="difficulty"
-          value={exercise.difficulty}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Difficulty</option>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Expert">Expert</option>
-        </select>
-
-        <label htmlFor="equipment">Equipment Required:</label>
-        <select
-          type="text"
-          id="equipment"
-          name="equipment"
-          value={exercise.equipment}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Equipment</option>
-          <option value="Other">Other</option>
-          <option value="Machine">Machine</option>
-          <option value="Barbell">Barbell</option>
-          <option value="Dumbbell">Dumbbell</option>
-          <option value="Body Only">Body Only</option>
-          <option value="Kettlebells">Kettlebells</option>
-          <option value="Cable">Cable</option>
-          <option value="E-Z Curl Bar">E-Z Curl Bar</option>
-          <option value="Bands">Bands</option>
-          <option value="Medicine Ball">Medicine Ball</option>
-          <option value="Exercise Ball">Exercise Ball</option>
-        </select>
-
-        <label htmlFor="photos-before">Before Photo:</label>
-        <input
-          type="file"
-          id="photos-before"
-          name="before"
-          onChange={handlePhotoChange}
-          accept="image/*"
-          required
-        />
-        {imagePreviews.before && (
-          <div>
-            <label>Before Photo Preview:</label>
-            <img
-              src={imagePreviews.before}
-              alt="Before Preview"
-              style={{ width: "100%", height: "auto" }}
+            <label htmlFor="name">Exercise Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={exercise.name}
+              onChange={handleInputChange}
+              required
             />
-          </div>
-        )}
 
-        <label htmlFor="photos-after">After Photo:</label>
-        <input
-          type="file"
-          id="photos-after"
-          name="after"
-          onChange={handlePhotoChange}
-          accept="image/*"
-          required
-        />
+            <label htmlFor="description">Description:</label>
+            <textarea
+              id="description"
+              name="description"
+              value={exercise.description}
+              onChange={handleInputChange}
+              required
+            ></textarea>
 
-        {imagePreviews.after && (
-          <div>
-            <label>After Photo Preview:</label>
-            <img
-              src={imagePreviews.after}
-              alt="After Preview"
-              style={{ width: "100%", height: "auto" }}
+            <label htmlFor="muscleGroup">Muscle Group:</label>
+            <select
+              type="text"
+              id="muscleGroup"
+              name="muscleGroup"
+              value={exercise.muscleGroup}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Muscle Group</option>
+              <option value="Forearms">Forearms</option>
+              <option value="Quadriceps">Quadriceps</option>
+              <option value="Abdominals">Abdominals</option>
+              <option value="Lats">Lats</option>
+              <option value="Middle Back">Middle Back</option>
+              <option value="Lower Back">Lower Back</option>
+              <option value="Shoulders">Shoulders</option>
+              <option value="Biceps">Biceps</option>
+              <option value="Glutes">Glutes</option>
+              <option value="Triceps">Triceps</option>
+              <option value="Hamstrings">Hamstrings</option>
+              <option value="Neck">Neck</option>
+              <option value="Chest">Chest</option>
+              <option value="Traps">Traps</option>
+              <option value="Calves">Calves</option>
+              <option value="Adductors">Adductors</option>
+              <option value="Abductors">Abductors</option>
+            </select>
+
+            <label htmlFor="category">Category:</label>
+            <select
+              type="text"
+              id="category"
+              name="category"
+              value={exercise.category}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Category</option>
+              <option value="Strongman">Strongman</option>
+              <option value="Strength">Strength</option>
+              <option value="Olympic Weightlifting">
+                Olympic Weightlifting
+              </option>
+              <option value="Powerlifting">Powerlifting</option>
+              <option value="Cardio">Cardio</option>
+              <option value="Plyometrics">Plyometrics</option>
+              <option value="Stretching">Stretching</option>
+            </select>
+
+            <label htmlFor="difficulty">Difficulty Level:</label>
+            <select
+              id="difficulty"
+              name="difficulty"
+              value={exercise.difficulty}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Difficulty</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Expert">Expert</option>
+            </select>
+
+            <label htmlFor="equipment">Equipment Required:</label>
+            <select
+              type="text"
+              id="equipment"
+              name="equipment"
+              value={exercise.equipment}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Equipment</option>
+              <option value="Other">Other</option>
+              <option value="Machine">Machine</option>
+              <option value="Barbell">Barbell</option>
+              <option value="Dumbbell">Dumbbell</option>
+              <option value="Body Only">Body Only</option>
+              <option value="Kettlebells">Kettlebells</option>
+              <option value="Cable">Cable</option>
+              <option value="E-Z Curl Bar">E-Z Curl Bar</option>
+              <option value="Bands">Bands</option>
+              <option value="Medicine Ball">Medicine Ball</option>
+              <option value="Exercise Ball">Exercise Ball</option>
+            </select>
+
+            <label htmlFor="photos-before">Before Photo:</label>
+            <input
+              type="file"
+              id="photos-before"
+              name="before"
+              onChange={handlePhotoChange}
+              accept="image/*"
+              required
             />
-          </div>
-        )}
-        <label htmlFor="video">Video:</label>
-        <input
-          type="file"
-          id="video"
-          name="video"
-          onChange={handleVideoChange}
-          accept="video/*"
-        />
+            {imagePreviews.before && (
+              <div>
+                <label>Before Photo Preview:</label>
+                <img
+                  src={imagePreviews.before}
+                  alt="Before Preview"
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </div>
+            )}
 
-        {videoPreview && (
-          <div>
-            <label>Video Preview:</label>
-            <video
-              src={videoPreview}
-              controls
-              style={{ width: "100%", height: "auto" }}
+            <label htmlFor="photos-after">After Photo:</label>
+            <input
+              type="file"
+              id="photos-after"
+              name="after"
+              onChange={handlePhotoChange}
+              accept="image/*"
+              required
             />
-          </div>
-        )}
-        <button type="submit">Add Exercise</button>
-      </form>
-      {loading && <Spinner />}
 
-      {completionMessage && (
-        <div className="completion-message">{completionMessage}</div>
-      )}
+            {imagePreviews.after && (
+              <div>
+                <label>After Photo Preview:</label>
+                <img
+                  src={imagePreviews.after}
+                  alt="After Preview"
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </div>
+            )}
+            <label htmlFor="video">Video:</label>
+            <input
+              type="file"
+              id="video"
+              name="video"
+              onChange={handleVideoChange}
+              accept="video/*"
+            />
 
-      {/* <Footer /> */}
-    </div>
-  );
+            {videoPreview && (
+              <div>
+                <label>Video Preview:</label>
+                <video
+                  src={videoPreview}
+                  controls
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </div>
+            )}
+            <button type="submit">Add Exercise</button>
+          </form>
+          {loading && <Spinner />}
+
+          {completionMessage && (
+            <div className="completion-message">{completionMessage}</div>
+          )}
+
+          {/* <Footer /> */}
+        </div>
+      );
+    } else {
+      return <WaitForApprovalPage />;
+    }
+  }
 };

@@ -50,6 +50,17 @@ public class PayingUserController {
         }
     }
 
+    @GetMapping("/getNonFollowingCoaches")
+    public ResponseEntity<?> getNonFollowingCoaches() {
+        try {
+            Set<UserDto> followingCoaches = payingUserService.getNonFollowingCoaches();
+            return ResponseEntity.status(HttpStatus.OK).body(followingCoaches);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+
 //    @GetMapping("/getAllPrograms")
 //    public ResponseEntity<?> getAllPrograms() {
 //        Set<ProgramDto> programs = payingUserService.getTopPrograms();

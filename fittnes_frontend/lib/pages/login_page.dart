@@ -266,17 +266,6 @@ class _LoginPageState extends State<LoginPage> {
                       child: AuthButtonTile(
                           imagePath: 'lib/images/google_logo.png'),
                     ),
-
-                    const SizedBox(width: 10),
-                    //apple button
-                    InkWell(
-                      onTap: () {
-                        // Handle Apple login
-                        print("Apple login tapped");
-                      },
-                      child: AuthButtonTile(
-                          imagePath: 'lib/images/apple_logo.png'),
-                    ),
                   ],
                 ),
 

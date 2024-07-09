@@ -150,14 +150,6 @@ const Form = ({
           Register
         </button>
 
-        <button
-          type="button"
-          className="form-button google-register"
-          onClick={handleGmailRegister}
-        >
-          <i className="fab fa-google"></i> Register with Gmail
-        </button>
-
         <p className="login-link">
           Already have an account? <Link to="/login">Log in</Link>
         </p>

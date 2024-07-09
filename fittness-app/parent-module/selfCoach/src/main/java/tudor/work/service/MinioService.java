@@ -40,6 +40,9 @@ public class MinioService {
 
 
     public String generatePreSignedUrl(String imgPath) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+
+        if(imgPath == null)
+            return null;
         String[] parts = imgPath.split("/", 2);
         if (parts.length < 2) {
             throw new IllegalArgumentException("Invalid image path");

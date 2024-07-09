@@ -1,5 +1,6 @@
 package tudor.work.service;
 
+import io.minio.errors.*;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,9 @@ import tudor.work.model.*;
 
 import javax.swing.*;
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -33,6 +37,7 @@ public class PayingUserService {
     private final UserHistoryWorkoutService userHistoryWorkoutService;
     private final ExerciseService exerciseService;
     private final WorkoutService workoutService;
+    private final MinioService minioService;
 
     @Transactional
     public void subscribeToCoach(Long coachId) throws NotFoundException, DuplicateCoachSubscription {
@@ -68,18 +73,58 @@ public class PayingUserService {
                         .stream()
                         .map(
                                 coach ->
-                                        UserDto
+                                {
+                                    try {
+                                        return UserDto
                                                 .builder()
                                                 .id(coach.getId())
                                                 .email(coach.getEmail())
                                                 .firstName(coach.getFirstname())
                                                 .lastName(coach.getLastname())
-//                                     .profilePictureUrl()
-                                                .build()
+                                                .profilePictureUrl(minioService.generatePreSignedUrl(coach.getProfilePictureLocation()))
+                                                .build();
+                                    } catch (ServerException | InsufficientDataException | ErrorResponseException |
+                                             IOException | NoSuchAlgorithmException | InvalidKeyException |
+                                             InvalidResponseException | XmlParserException | InternalException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
                         ).collect(Collectors.toSet());
 
 
     }
+
+    public Set<UserDto> getNonFollowingCoaches() throws NotFoundException {
+        User payingUser = authorityService.getUser();
+
+        Set<User> followingCoaches = payingUser.getFollowing();
+
+        Set<User> nonFollowingCoaches = userService.getAllByRole(Roles.COACH);
+
+        nonFollowingCoaches = nonFollowingCoaches.stream().filter(coach -> !followingCoaches.contains(coach)).collect(Collectors.toSet());
+
+        return nonFollowingCoaches.stream()
+                .map(
+                        coach ->
+                        {
+                            try {
+                                return UserDto
+                                        .builder()
+                                        .id(coach.getId())
+                                        .email(coach.getEmail())
+                                        .firstName(coach.getFirstname())
+                                        .lastName(coach.getLastname())
+                                        .profilePictureUrl(minioService.generatePreSignedUrl(coach.getProfilePictureLocation()))
+                                        .build();
+                            } catch (ServerException | InsufficientDataException | ErrorResponseException |
+                                     IOException | NoSuchAlgorithmException | InvalidKeyException |
+                                     InvalidResponseException | XmlParserException | InternalException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                ).collect(Collectors.toSet());
+    }
+
 
     public UserHistoryProgram startProgram(Long programId) throws NotFoundException {
         Program program = programService.findById(programId);
@@ -156,11 +201,11 @@ public class PayingUserService {
             return programAdder.getRole().equals(Roles.ADMIN);
         };
 
-        Predicate<Program> isProgramAddedByFollowingCoach  = program ->
+        Predicate<Program> isProgramAddedByFollowingCoach = program ->
         {
             try {
                 User payingUser = authorityService.getUser();
-                if(payingUser.getRole().equals(Roles.USER)) return false;
+                if (payingUser.getRole().equals(Roles.USER)) return false;
                 return payingUser.getFollowing().contains(program.getAdder());
             } catch (NotFoundException e) {
                 throw new RuntimeException(e);

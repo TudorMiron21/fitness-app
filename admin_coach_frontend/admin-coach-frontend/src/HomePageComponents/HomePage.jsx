@@ -61,7 +61,9 @@ export const HomePage = () => {
   if (!isTokenValid) {
     navigate("/login");
     return;
-  } else {
+  } 
+  else 
+  {
     // Conditional rendering based on the 'isCoachDetailsValid' state
     if (areCoachDetailsValid === null) {
       return <Spinner />;

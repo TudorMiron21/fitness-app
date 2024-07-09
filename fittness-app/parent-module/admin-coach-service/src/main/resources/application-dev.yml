@@ -43,7 +43,7 @@ minio:
   accessKey: dAh2wTxgKQK3B6TPi20p
   secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
 #  endpoint: http://192.168.147.140:9000
-  endpoint: https://5622-82-77-78-40.ngrok-free.app
+  endpoint: https://b31f-109-166-130-164.ngrok-free.app
 
 #minio:
 #  accessKey: qhxiwuBBB2D3LeJhIr8I

@@ -1403,4 +1403,8 @@ public class UserService {
         else
             throw new NotFoundException("user has no profile picture");
     }
+
+    public Set<User> getAllByRole(Roles role){
+        return userRepository.findAllByRole(role);
+    }
 }

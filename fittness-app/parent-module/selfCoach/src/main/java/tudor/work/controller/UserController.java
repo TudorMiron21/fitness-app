@@ -525,7 +525,7 @@ public class UserController {
         } catch (NotFoundException | ServerException | InsufficientDataException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
                  InternalException | ErrorResponseException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
