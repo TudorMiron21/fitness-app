@@ -42,7 +42,7 @@ export const ProfilePage = () => {
     const fetchImage = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/selfCoach/user/getProfilePicture",
+          "https://www.fit-stack.online/api/selfCoach/user/getProfilePicture",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -70,7 +70,7 @@ export const ProfilePage = () => {
 
     try {
       await axios.put(
-        "http://localhost:8080/api/selfCoach/user/uploadProfilePicture",
+        "https://www.fit-stack.online/api/selfCoach/user/uploadProfilePicture",
         formData,
         {
           headers: {
@@ -113,7 +113,7 @@ export const ProfilePage = () => {
         }
         if (role === "ROLE_COACH") {
           const response = await axios.get(
-            "http://localhost:8080/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
+            "https://www.fit-stack.online/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
             {
               headers: {
                 Authorization: `Bearer ${token}`,

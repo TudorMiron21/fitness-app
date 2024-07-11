@@ -82,7 +82,7 @@ export const CoachDetails = () => {
       // Send the request with the form data
       const response = await axios.post(
         // "https://www.fit-stack.online/api/v1/adminCoachService/coach/uploadCoachDetails",
-        "http://localhost:8080/api/v1/adminCoachService/coach/uploadCoachDetails",
+        "https://www.fit-stack.online/api/v1/adminCoachService/coach/uploadCoachDetails",
 
         formDataToSend,
         {

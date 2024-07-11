@@ -22,7 +22,7 @@ export const Register = () => {
     try {
       // const response = await axios.post("https://www.fit-stack.online/api/v1/auth/register", {
 
-      const response = await axios.post("http://localhost:8080/api/v1/auth/register", {
+      const response = await axios.post("https://www.fit-stack.online/api/v1/auth/register", {
         firstName,
         lastName,
         email,

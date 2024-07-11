@@ -58,7 +58,7 @@ export const CreateProgramPage = () => {
         }
         if (role === "ROLE_COACH") {
           const response = await axios.get(
-            "http://localhost:8080/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
+            "https://www.fit-stack.online/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -131,7 +131,7 @@ export const CreateProgramPage = () => {
     queryParams.append("minDifficultyLevel", filters.minDifficultyLevel);
 
     const response = await axios.get(
-      `http://localhost:8080/api/v1/adminCoachService/coach/getFilteredWorkouts?${queryParams.toString()}`,
+      `https://www.fit-stack.online/api/v1/adminCoachService/coach/getFilteredWorkouts?${queryParams.toString()}`,
 
       {
         headers: {
@@ -203,7 +203,7 @@ export const CreateProgramPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/adminCoachService/coach/createProgram",
+        "https://www.fit-stack.online/api/v1/adminCoachService/coach/createProgram",
         createProgramForm,
         {
           headers: {
@@ -220,7 +220,7 @@ export const CreateProgramPage = () => {
           const formData = new FormData();
           formData.append("coverPhoto", programForm.coverPhoto);
           const responseCoverPhotoUpload = await axios.put(
-            `http://localhost:8080/api/v1/adminCoachService/coach/uploadProgramCoverPhoto/${programId}`,
+            `https://www.fit-stack.online/api/v1/adminCoachService/coach/uploadProgramCoverPhoto/${programId}`,
             formData,
             {
               headers: {

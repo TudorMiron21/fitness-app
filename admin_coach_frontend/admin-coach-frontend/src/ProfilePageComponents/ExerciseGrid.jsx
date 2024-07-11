@@ -14,7 +14,7 @@ export const ExerciseGrid = () => {
     }
     try {
       const response = await axios.delete(
-        `http://localhost:8080/api/v1/adminCoachService/coach/deleteExercise/${exerciseId}`,
+        `https://www.fit-stack.online/api/v1/adminCoachService/coach/deleteExercise/${exerciseId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -33,7 +33,7 @@ export const ExerciseGrid = () => {
     const fetchWorkouts = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/adminCoachService/coach/getAllExercisesForCoach",
+          "https://www.fit-stack.online/api/v1/adminCoachService/coach/getAllExercisesForCoach",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
