@@ -52,7 +52,7 @@ export const CreateExercise = () => {
         }
         if (role === "ROLE_COACH") {
           const response = await axios.get(
-            "http://localhost:8080/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
+            "https://www.fit-stack.online/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -200,7 +200,7 @@ export const CreateExercise = () => {
 
       console.log(formData);
       const response = await axios.post(
-        "http://localhost:8080/api/v1/adminCoachService/coach/uploadExerciseDetails",
+        "https://www.fit-stack.online/api/v1/adminCoachService/coach/uploadExerciseDetails",
 
         formData,
 
@@ -250,7 +250,7 @@ export const CreateExercise = () => {
   async function completeMultipartUpload(uploadId, exerciseId, filename) {
     // console.log(exerciseId)
     const response = await axios.put(
-      "http://localhost:8080/api/v1/adminCoachService/coach/completeMultipartUpload",
+      "https://www.fit-stack.online/api/v1/adminCoachService/coach/completeMultipartUpload",
       {
         exerciseId,
         uploadId,

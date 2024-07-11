@@ -71,7 +71,6 @@ export const HomePage = () => {
       return (
         <div>
           <NavBar />
-          <h1>Greetings, Coach!</h1>
           <div className="actions-container">
             <ActionCard
               title="Create Exercise"
