@@ -38,6 +38,8 @@ public class User implements UserDetails {
 
     private String resetPasswordToken;
 
+    private String profilePictureLocation;
+
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,

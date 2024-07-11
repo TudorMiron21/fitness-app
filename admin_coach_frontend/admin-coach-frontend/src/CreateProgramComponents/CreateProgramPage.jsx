@@ -5,10 +5,15 @@ import { Footer } from "../FooterComponent/Footer";
 import { validateToken } from "../utils/auth";
 import { WorkoutCard } from "../WorkoutCardComponent/WorkoutCard";
 import { WorkoutCardDraggable } from "../WorkoutCardComponent/WorkoutCardDraggable";
+import { WaitForApprovalPage } from "../WaitForApprovalPageComponents/WaitForApprovalPage.jsx"; // Assuming this is in the same directory
+import { Spinner } from "../SpinnerComponents/Spinner.jsx";
+
 import "./CreateProgramPage.css";
 import axios from "axios";
 
 export const CreateProgramPage = () => {
+  const [areCoachDetailsValid, setAreCoachDetailsValid] = useState(null);
+  const [isTokenValid, setIsTokenValid] = useState(false);
   const initialProgramState = {
     programName: "",
     description: "",
@@ -29,7 +34,8 @@ export const CreateProgramPage = () => {
 
   const [programForm, setProgramForm] = useState(initialProgramState);
 
-  const [isSetDurationPressed, setIsSetDurationPressed] = useState(false);
+  // const [isSetDurationPressed, setIsSetDurationPressed] = useState(false);
+  const [completionMessage, setCompletionMessage] = useState("");
 
   const [isWorkoutContainerVisible, setIsWorkoutContainerVisible] =
     useState(false);
@@ -41,20 +47,36 @@ export const CreateProgramPage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const checkTokenValid = async () => {
+    const checkCoachDetails = async () => {
       try {
+        const role = localStorage.getItem("role");
+
         const token = localStorage.getItem("access_token");
 
         if (token) {
-          // setIsTokenValid(await validateToken(token));
-          const isTokenValid = await validateToken(token);
-          if (!isTokenValid) navigate("/login");
-        } else navigate("/login");
+          setIsTokenValid(await validateToken(token));
+        }
+        if (role === "ROLE_COACH") {
+          const response = await axios.get(
+            "https://www.fit-stack.online/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setAreCoachDetailsValid(response.data);
+        } else if (role === "ROLE_ADMIN") {
+          setAreCoachDetailsValid(true);
+        }
       } catch (error) {
         console.error("Error fetching coach details status", error);
+        // Handle the error state as needed, perhaps setting the state to false
+        setAreCoachDetailsValid(false);
       }
     };
-    checkTokenValid();
+
+    checkCoachDetails();
   }, []);
 
   const handleInputChange = (e) => {
@@ -109,7 +131,7 @@ export const CreateProgramPage = () => {
     queryParams.append("minDifficultyLevel", filters.minDifficultyLevel);
 
     const response = await axios.get(
-      `https://fit-stack.online/api/v1/adminCoachService/coach/getFilteredWorkouts?${queryParams.toString()}`,
+      `https://www.fit-stack.online/api/v1/adminCoachService/coach/getFilteredWorkouts?${queryParams.toString()}`,
 
       {
         headers: {
@@ -181,7 +203,7 @@ export const CreateProgramPage = () => {
 
     try {
       const response = await axios.post(
-        "https://fit-stack.online/api/v1/adminCoachService/coach/createProgram",
+        "https://www.fit-stack.online/api/v1/adminCoachService/coach/createProgram",
         createProgramForm,
         {
           headers: {
@@ -198,7 +220,7 @@ export const CreateProgramPage = () => {
           const formData = new FormData();
           formData.append("coverPhoto", programForm.coverPhoto);
           const responseCoverPhotoUpload = await axios.put(
-            `https://fit-stack.online/api/v1/adminCoachService/coach/uploadProgramCoverPhoto/${programId}`,
+            `https://www.fit-stack.online/api/v1/adminCoachService/coach/uploadProgramCoverPhoto/${programId}`,
             formData,
             {
               headers: {
@@ -216,10 +238,19 @@ export const CreateProgramPage = () => {
               responseCoverPhotoUpload.status
             );
           }
+          setCompletionMessage("Program added successfully!");
+          setProgramForm(initialProgramState);
+          setWorkoutMap(new Map());
+          setImagePreview([]);
+          setIsWorkoutContainerVisible(false);
+        
         } catch (error) {
+          setCompletionMessage("Failed to add program. Please try again.");
+
           console.error("Error uploading cover photo:", error);
         }
-      } else {
+      } else {          
+        setCompletionMessage("Failed to add program. Please try again.");
         console.error("Program creation failed with status:", response.status);
       }
     } catch (error) {
@@ -229,184 +260,202 @@ export const CreateProgramPage = () => {
     }
   };
 
-  return (
-    <div>
-      <NavBar />
-      <div
-        className={`create-program-page ${
-          isWorkoutContainerVisible ? "workouts-visible" : ""
-        }`}
-      >
-        <div className="program-form-container">
-          <h2>Create Program</h2>
+  if (!isTokenValid) {
+    navigate("/login");
+    return;
+  } else {
+    // Conditional rendering based on the 'isCoachDetailsValid' state
+    if (areCoachDetailsValid === null) {
+      return <Spinner />;
+    } else if (areCoachDetailsValid) {
+      return (
+        <div>
+          <NavBar />
+          <div
+            className={`create-program-page ${
+              isWorkoutContainerVisible ? "workouts-visible" : ""
+            }`}
+          >
+            <div className="program-form-container">
+              <h2>Create Program</h2>
 
-          <form onSubmit={handleProgramSubmit}>
-            <div className="program-input-group">
-              <label htmlFor="programName">Program Name:</label>
-              <input
-                type="text"
-                id="programName"
-                name="programName"
-                value={programForm.programName}
-                onChange={handleFormInputChange}
-                placeholder="Program Name"
-              />
-            </div>
-
-            <div className="program-input-group">
-              <label htmlFor="description">Description:</label>
-              <textarea
-                id="description"
-                name="description"
-                value={programForm.description}
-                onChange={handleFormInputChange}
-                placeholder="Program Description"
-              ></textarea>
-            </div>
-
-            <div className="program-input-group">
-              <label htmlFor="duration">Duration In Days :</label>
-              <input
-                type="number"
-                id="duration"
-                name="durationInDays"
-                value={programForm.durationInDays}
-                onChange={handleFormInputChange}
-                min="1"
-                step="1"
-              ></input>
-              <button
-                type="button"
-                onClick={handleSetDuration}
-                className="button"
-              >
-                Set Duration
-              </button>
-            </div>
-
-            <div className="workout-cards-container">
-              {Array.from(workoutMap.entries()).map(([dayIndex, workout]) => (
-                <div
-                  key={dayIndex}
-                  onDragOver={handleDragOver}
-                  onDrop={(event) => handleDrop(event, dayIndex)}
-                  className="drop-zone"
-                >
-                  <WorkoutCard
-                    key={dayIndex}
-                    dayIndex={dayIndex}
-                    workout={workout}
+              <form onSubmit={handleProgramSubmit}>
+                <div className="program-input-group">
+                  <label htmlFor="programName">Program Name:</label>
+                  <input
+                    type="text"
+                    id="programName"
+                    name="programName"
+                    value={programForm.programName}
+                    onChange={handleFormInputChange}
+                    placeholder="Program Name"
                   />
                 </div>
-              ))}
+
+                <div className="program-input-group">
+                  <label htmlFor="description">Description:</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={programForm.description}
+                    onChange={handleFormInputChange}
+                    placeholder="Program Description"
+                  ></textarea>
+                </div>
+
+                <div className="program-input-group">
+                  <label htmlFor="duration">Duration In Days :</label>
+                  <input
+                    type="number"
+                    id="duration"
+                    name="durationInDays"
+                    value={programForm.durationInDays}
+                    onChange={handleFormInputChange}
+                    min="1"
+                    step="1"
+                  ></input>
+                  <button
+                    type="button"
+                    onClick={handleSetDuration}
+                    className="button"
+                  >
+                    Set Duration
+                  </button>
+                </div>
+
+                <div className="workout-cards-container">
+                  {Array.from(workoutMap.entries()).map(
+                    ([dayIndex, workout]) => (
+                      <div
+                        key={dayIndex}
+                        onDragOver={handleDragOver}
+                        onDrop={(event) => handleDrop(event, dayIndex)}
+                        className="drop-zone"
+                      >
+                        <WorkoutCard
+                          key={dayIndex}
+                          dayIndex={dayIndex}
+                          workout={workout}
+                        />
+                      </div>
+                    )
+                  )}
+                </div>
+
+                <div className="program-input-group">
+                  <label htmlFor="cover-photo">Cover Photo:</label>
+                  <input
+                    type="file"
+                    id="cover-photo"
+                    name="coverPhoto"
+                    onChange={handlePhotoChange}
+                    accept="image/*"
+                  />
+                </div>
+                {imagePreview && (
+                  <div className="program-image-preview-container">
+                    <label>Cover Photo Preview:</label>
+                    <img src={imagePreview} alt="Cover Preview" />
+                  </div>
+                )}
+
+                <div className="program-input-group">
+                  <button className="button">Submit Program</button>
+                </div>
+              </form>
+              {loading && <Spinner />}
+              {completionMessage && (
+                <div className="completion-message">{completionMessage}</div>
+              )}
             </div>
 
-            <div className="program-input-group">
-              <label htmlFor="cover-photo">Cover Photo:</label>
-              <input
-                type="file"
-                id="cover-photo"
-                name="coverPhoto"
-                onChange={handlePhotoChange}
-                accept="image/*"
-              />
+            <div
+              className={`workouts-container :${
+                isWorkoutContainerVisible ? "visible" : ""
+              }`}
+            >
+              <div className="filters">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Search by name"
+                  value={filters.name}
+                  onChange={handleInputChange}
+                />
+
+                <label className="block">
+                  <input
+                    type="checkbox"
+                    name="isWorkoutPrivate"
+                    checked={filters.isWorkoutPrivate}
+                    onChange={handleCheckboxChange}
+                  />
+                  Private Workout
+                </label>
+
+                <label className="block">
+                  Min Difficulty Level
+                  <div className="difficulty-level">
+                    <span>1.0</span>
+                    <span>3.0</span>
+                  </div>
+                  <input
+                    type="range"
+                    name="minDifficultyLevel"
+                    min="1.0"
+                    max="3.0"
+                    step="0.1"
+                    value={filters.minDifficultyLevel}
+                    onChange={handleRangeChange}
+                  />
+                  <div className="difficulty-level">
+                    <span>{filters.minDifficultyLevel}</span>
+                  </div>
+                </label>
+
+                <label className="block">
+                  Max Difficulty Level
+                  <div className="difficulty-level">
+                    <span>1.0</span>
+                    <span>3.0</span>
+                  </div>
+                  <input
+                    type="range"
+                    name="maxDifficultyLevel"
+                    min="1.0"
+                    max="3.0"
+                    step="0.1"
+                    value={filters.maxDifficultyLevel}
+                    onChange={handleRangeChange}
+                  />
+                  <div className="difficulty-level">
+                    <span>{filters.maxDifficultyLevel}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="button"
+                    onClick={handleApplyFilter}
+                  >
+                    Apply Filters
+                  </button>
+                </label>
+              </div>
+
+              <div className="workout-draggable-container">
+                {workouts.map((workout) => (
+                  <WorkoutCardDraggable
+                    workout={workout}
+                    onDragOver={handleDragOver}
+                  />
+                ))}
+              </div>
             </div>
-            {imagePreview && (
-              <div className="program-image-preview-container">
-                <label>Cover Photo Preview:</label>
-                <img src={imagePreview} alt="Cover Preview" />
-              </div>
-            )}
-
-            <div className="program-input-group">
-              <button className="button">Submit Workout</button>
-            </div>
-          </form>
-        </div>
-
-        <div
-          className={`workouts-container :${
-            isWorkoutContainerVisible ? "visible" : ""
-          }`}
-        >
-          <div className="filters">
-            <input
-              type="text"
-              name="name"
-              placeholder="Search by name"
-              value={filters.name}
-              onChange={handleInputChange}
-            />
-
-            <label className="block">
-              <input
-                type="checkbox"
-                name="isWorkoutPrivate"
-                checked={filters.isWorkoutPrivate}
-                onChange={handleCheckboxChange}
-              />
-              Private Workout
-            </label>
-
-            <label className="block">
-              Min Difficulty Level
-              <div className="difficulty-level">
-                <span>1.0</span>
-                <span>3.0</span>
-              </div>
-              <input
-                type="range"
-                name="minDifficultyLevel"
-                min="1.0"
-                max="3.0"
-                step="0.1"
-                value={filters.minDifficultyLevel}
-                onChange={handleRangeChange}
-              />
-              <div className="difficulty-level">
-                <span>{filters.minDifficultyLevel}</span>
-              </div>
-            </label>
-
-            <label className="block">
-              Max Difficulty Level
-              <div className="difficulty-level">
-                <span>1.0</span>
-                <span>3.0</span>
-              </div>
-              <input
-                type="range"
-                name="maxDifficultyLevel"
-                min="1.0"
-                max="3.0"
-                step="0.1"
-                value={filters.maxDifficultyLevel}
-                onChange={handleRangeChange}
-              />
-              <div className="difficulty-level">
-                <span>{filters.maxDifficultyLevel}</span>
-              </div>
-              <button
-                type="button"
-                className="button"
-                onClick={handleApplyFilter}
-              >
-                Apply Filters
-              </button>
-            </label>
           </div>
-
-          <div className="workout-draggable-container">
-            {workouts.map((workout) => (
-              <WorkoutCardDraggable
-                workout={workout}
-                onDragOver={handleDragOver}
-              />
-            ))}
-          </div>
+          {/* <Footer /> */}
         </div>
-      </div>
-      <Footer />
-    </div>
-  );
+      );
+    } else {
+      return <WaitForApprovalPage />;
+    }
+  }
 };

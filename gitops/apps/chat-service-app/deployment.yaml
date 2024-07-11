@@ -27,7 +27,7 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-chat-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/chat-service:1.0.0 #{"$imagepolicy": "flux-system:chat-service-app-img-conf"}
+        image: docker.io/tudormiron/chat-service:1.0.3 #{"$imagepolicy": "flux-system:chat-service-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}

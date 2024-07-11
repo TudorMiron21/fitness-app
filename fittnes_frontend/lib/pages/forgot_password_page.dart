@@ -20,7 +20,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     });
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8080/api/v1/auth/forgotPassword'),
+        Uri.parse('https://www.fit-stack.online/api/v1/auth/forgotPassword'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

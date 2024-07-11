@@ -21,6 +21,9 @@ class _LeaderBoardWidgetState extends State<LeaderBoardWidget> {
   void initState() {
     super.initState();
     setState(() {
+      widget.leaderBoardList
+          .sort((a, b) => b.numberOfPoints.compareTo(a.numberOfPoints));
+
       print(widget.leaderBoardList.length);
       displayedItems = widget.leaderBoardList.length.clamp(0, 4);
     });

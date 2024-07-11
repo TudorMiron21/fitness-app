@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tudor.work.dto.*;
 import tudor.work.exceptions.*;
 import tudor.work.model.*;
@@ -210,7 +211,6 @@ public class UserService {
 
         return workoutService.getAllWorkouts()
                 .stream()
-
                 .map(
                         workout -> {
                             try {
@@ -233,6 +233,70 @@ public class UserService {
                 .sorted(Comparator.comparing(WorkoutDto::getNoLikes))
                 .limit(6)
                 .toList();
+    }
+
+    public List<WorkoutDto> getHomePageWorkouts() throws NotFoundException {
+        List<Workout> allWorkouts = workoutService.getAllWorkouts();
+
+        if (authorityService.isUser()) {
+            return allWorkouts
+                    .stream()
+                    .filter(Workout::isGlobal)
+                    .map(
+                            workout -> {
+                                try {
+                                    return WorkoutDto.
+                                            builder().
+                                            id(workout.getId()).
+                                            name(workout.getName()).
+                                            description(workout.getDescription()).
+                                            coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                            difficultyLevel(workout.getDifficultyLevel()).
+                                            isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
+                                            noLikes(workoutService.getNoLikes(workout)).
+                                            exercises(workout.getExercises())
+                                            .build();
+                                } catch (NotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                    ).sorted(Comparator.comparing(WorkoutDto::getNoLikes))
+                    .toList();
+        }
+        else
+            if (authorityService.isPayingUser()) {
+            User payingUser = authorityService.getUser();
+            Predicate<Workout> isWorkoutAddedByFollowingCoach = workout -> {
+                return payingUser.getFollowing().contains(workout.getAdder());
+            };
+
+            Predicate<Workout> isWorkoutAddedByAdmin = Workout::isGlobal;
+
+            return allWorkouts
+                    .stream()
+                    .filter(isWorkoutAddedByFollowingCoach.or(isWorkoutAddedByAdmin))
+                    .map(
+                            workout -> {
+                                try {
+                                    return WorkoutDto.
+                                            builder().
+                                            id(workout.getId()).
+                                            name(workout.getName()).
+                                            description(workout.getDescription()).
+                                            coverPhotoUrl(workout.getCoverPhotoUrl()).
+                                            difficultyLevel(workout.getDifficultyLevel()).
+                                            isLikedByUser(workoutService.isWorkoutLikedByUser(workout, authorityService.getUser())).
+                                            noLikes(workoutService.getNoLikes(workout)).
+                                            exercises(workout.getExercises())
+                                            .build();
+                                } catch (NotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                    ).sorted(Comparator.comparing(WorkoutDto::getNoLikes))
+                    .toList();
+        }
+        return new ArrayList<>();
     }
 
     public List<WorkoutDto> getTopWorkoutsForDifficultyLevel(Double lowerLimit, Double upperLimit) {
@@ -328,6 +392,7 @@ public class UserService {
                 .exercise(requestUserHistoryExercise.getExercise())
                 .userHistoryModule(requestUserHistoryExercise.getUserHistoryModule())
                 .currNoSeconds(requestUserHistoryExercise.getCurrNoSeconds())
+                .caloriesBurned(requestUserHistoryExercise.getCaloriesBurned())
                 .isDone(requestUserHistoryExercise.isDone())
                 .build();
 
@@ -485,7 +550,6 @@ public class UserService {
             }
 
         }
-
         userHistoryModule.addExerciseToUserHistoryExercises(
                 userHistoryExercise
         );
@@ -1263,5 +1327,84 @@ public class UserService {
         } else {
             throw new LeaderBoardEntryNotFoundException("leader board entry for user with id " + authorityService.getUser().getId() + " not found");
         }
+    }
+
+    public User upgradeUserRole(String email) throws NotFoundException {
+        User user = this.getUserByEmail(email);
+        user.setRole(Roles.PAYING_USER);
+        return user;
+    }
+
+    @Transactional
+    public Long webhookResponse(Map<String, Object> requestBody) {
+        String email = (String) ((Map<String, Object>) ((Map<String, Object>) requestBody.get("resource")).get("subscriber")).get("email_address");
+        String eventType = (String) requestBody.get("event_type");
+
+        if (eventType.equals("BILLING.SUBSCRIPTION.ACTIVATED")) {
+            try {
+                User user = this.upgradeUserRole(email);
+                return user.getId();
+            } catch (NotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new RuntimeException("event type " + eventType + " is NOT \"BILLING.SUBSCRIPTION.ACTIVATED\"");
+        }
+    }
+
+    @Transactional
+    public void uploadUserDetails(Gender gender, Integer age, Integer height, Double currentWeight, Double goalWeight) throws NotFoundException {
+
+        User user = authorityService.getUser();
+
+        user.setGender(gender);
+        user.setAge(age);
+        user.setHeight(height);
+        user.setCurrentWeight(currentWeight);
+        user.setGoalWeight(goalWeight);
+    }
+
+    public UserDetailsResponseDto getUserDetails() throws NotFoundException {
+
+        User user = authorityService.getUser();
+        return
+                UserDetailsResponseDto
+                        .builder()
+                        .gender(user.getGender())
+                        .age(user.getAge())
+                        .height(user.getHeight())
+                        .weight(user.getCurrentWeight())
+                        .build();
+    }
+
+
+    @Transactional
+    public void uploadProfilePicture(MultipartFile file) throws IOException, NotFoundException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        User user = authorityService.getUser();
+
+        String objectName = user.getId().toString();
+
+        if(minioService.objectExists(objectName,"user-profile-picture"))
+             minioService.deleteObject(objectName,"user-profile-picture");
+
+        minioService.uploadImageToObjectStorage(file.getInputStream(),objectName,"user-profile-picture");
+
+        String imgPath = "user-profile-picture/" + objectName;
+
+        user.setProfilePictureLocation(imgPath);
+    }
+
+    public String getProfilePicture() throws NotFoundException, ServerException, InsufficientDataException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException, ErrorResponseException {
+        User user = authorityService.getUser();
+        String objectName = user.getId().toString();
+
+        if(minioService.objectExists(objectName,"user-profile-picture"))
+            return minioService.generatePreSignedUrl(user.getProfilePictureLocation());
+        else
+            throw new NotFoundException("user has no profile picture");
+    }
+
+    public Set<User> getAllByRole(Roles role){
+        return userRepository.findAllByRole(role);
     }
 }

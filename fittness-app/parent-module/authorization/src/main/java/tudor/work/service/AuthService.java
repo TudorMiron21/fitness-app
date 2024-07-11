@@ -39,8 +39,8 @@ public class AuthService {
         if (userRepository.findByEmail(request.getEmail()).isEmpty()) {
             var user = new User(
                     null,
-                    request.getFirstname(),
-                    request.getLastname(),
+                    request.getFirstName(),
+                    request.getLastName(),
                     request.getEmail(),
                     passwordEncoder.encode(request.getPassword()),
                     request.getRole(),
@@ -61,8 +61,8 @@ public class AuthService {
 
         if (userRepository.findByEmail(request.getEmail()).isEmpty()) {
             var user = User.builder()
-                    .firstname(request.getFirstname())
-                    .lastname(request.getLastname())
+                    .firstname(request.getFirstName())
+                    .lastname(request.getLastName())
                     .email(request.getEmail())
                     .role(request.getRole())
                     .build();

@@ -50,7 +50,7 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
 
 
     @Query(
-            "SELECT uhe.caloriesBurned FROM UserHistoryWorkout uhw " +
+            "SELECT COALESCE(uhe.caloriesBurned, 0) FROM UserHistoryWorkout uhw " +
                     "JOIN uhw.user u " +
                     "JOIN uhw.userHistoryModules uhm " +
                     "JOIN uhm.userHistoryExercises uhe " +
@@ -59,11 +59,11 @@ public interface UserHistoryWorkoutRepository extends JpaRepository<UserHistoryW
     List<Double> findAllUserHistoryExercisesCaloriesByUserHistoryWorkoutId(@Param("workoutId") Long id);
 
     @Query(
-            "SELECT uhe.weight * uhe.noReps FROM UserHistoryWorkout uhw " +
+            "SELECT COALESCE(uhe.weight, 0) * COALESCE(uhe.noReps, 0) FROM UserHistoryWorkout uhw " +
                     "JOIN uhw.user u " +
                     "JOIN uhw.userHistoryModules uhm " +
                     "JOIN uhm.userHistoryExercises uhe " +
-                    "WHERE uhw.id = :workoutId "
+                    "WHERE uhw.id = :workoutId"
     )
     List<Double> findAllUserHistoryVolumesWeightsByUserHistoryWorkoutId(@Param("workoutId") Long userHistoryWorkoutId);
 

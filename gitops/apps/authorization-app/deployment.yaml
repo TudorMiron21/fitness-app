@@ -27,16 +27,16 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-auth-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/fitness-app-authorization:1.0.1 #{"$imagepolicy": "flux-system:authorization-app-img-conf"}
+        image: docker.io/tudormiron/fitness-app-authorization:1.0.4 #{"$imagepolicy": "flux-system:authorization-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
         - containerPort: 8082
         resources:
           requests:
-            memory: "64Mi"
-            cpu: "50m"
+            memory: "128Mi"
+            cpu: "100m"
           limits:
             memory: "256Mi"
-            cpu: "100m"
+            cpu: "200m"
       restartPolicy: Always

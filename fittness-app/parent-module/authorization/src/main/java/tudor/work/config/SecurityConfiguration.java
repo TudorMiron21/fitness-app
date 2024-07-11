@@ -28,7 +28,7 @@ public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {
              "/api/v1/auth/**",
-            "/login/oauth2/code/google",
+//            "/login/oauth2/code/google",
             "/resetPassword?token=*",
             "/v2/api-docs",
             "/v3/api-docs",
@@ -53,30 +53,11 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                                 req.antMatchers(WHITE_LIST_URL)
                                         .permitAll()
-////                                .antMatchers(GET,"/api/v1/admin/**").hasAnyAuthority(ADMIN_READ.name())
-//////                                .antMatchers(POST,"/api/v1/admin/**").hasAnyAuthority(ADMIN_WRITE.name())
-//////                                .antMatchers(PUT,"/api/v1/admin/**").hasAnyAuthority(ADMIN_UPDATE.name())
-//////                                .antMatchers(DELETE,"/api/v1/admin/**").hasAnyAuthority(ADMIN_DELETE.name())
-//                                .antMatchers("/api/v1/admin/**").hasRole(ADMIN.name())
-////                                .antMatchers(GET,"/api/v1/coach/**").hasAnyAuthority(ADMIN_READ.name(),COACH_READ.name())
-////                                .antMatchers(POST,"/api/v1/coach/**").hasAnyAuthority(ADMIN_WRITE.name(),COACH_WRITE.name())
-////                                .antMatchers(PUT,"/api/v1/coach/**").hasAnyAuthority(ADMIN_UPDATE.name(),COACH_UPDATE.name())
-////                                .antMatchers(DELETE,"/api/v1/coach/**").hasAnyAuthority(ADMIN_DELETE.name(),COACH_DELETE.name())
-//                                .antMatchers("/api/v1/coach/**").hasAnyRole(ADMIN.name(),COACH.name())
-////                                .antMatchers(GET,"/api/v1/payingUser/**").hasAnyAuthority(ADMIN_READ.name(),COACH_READ.name(),PAYING_USER_READ.name())
-////                                .antMatchers(POST,"/api/v1/payingUser/**").hasAnyAuthority(ADMIN_READ.name(),COACH_READ.name(),PAYING_USER_WRITE.name())
-////                                .antMatchers(PUT,"/api/v1/payingUser/**").hasAnyAuthority(ADMIN_READ.name(),COACH_READ.name(),PAYING_USER_UPDATE.name())
-////                                .antMatchers(DELETE,"/api/v1/payingUser/**").hasAnyAuthority(ADMIN_READ.name(),COACH_READ.name(),PAYING_USER_DELETE.name())
-//                                .antMatchers("/api/v1/payingUser/**").hasAnyRole(ADMIN.name(),COACH.name(), PAYING_USER.name())
                                         .anyRequest()
                                         .authenticated()
-
-
                 )
-                .oauth2Login().and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-
                 //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 ;
 

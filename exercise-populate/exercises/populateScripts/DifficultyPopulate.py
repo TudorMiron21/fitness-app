@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 
-DATABASE_URI = 'postgresql://postgres:root@localhost:5432/authorization'
+DATABASE_URI = 'postgresql://postgres:root@localhost:5433/authorization'
 
 # Establish the connection to the database
 engine = create_engine(DATABASE_URI)

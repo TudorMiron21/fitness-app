@@ -67,7 +67,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/getUserHistoryModuleDetails/$userHistoryModuleId'),
+          'https://www.fit-stack.online/api/selfCoach/user/getUserHistoryModuleDetails/$userHistoryModuleId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -96,7 +96,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/getUserHistoryExerciseDetails/$userHistoryExerciseId'),
+          'https://www.fit-stack.online/api/selfCoach/user/getUserHistoryExerciseDetails/$userHistoryExerciseId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -126,7 +126,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
     final workoutExistsInUserHistoryResponse = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
+          'https://www.fit-stack.online/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
               workoutId.toString() +
               '/' +
               JwtUtils.extractSubject(accessToken)),
@@ -165,7 +165,7 @@ class _ExercisePageState extends State<ExercisePage> {
       if (widget.programId == -1) {
         response = await http.post(
           Uri.parse(
-              'https://fit-stack.online/api/selfCoach/user/startWorkout/$workoutId'),
+              'https://www.fit-stack.online/api/selfCoach/user/startWorkout/$workoutId'),
           headers: {
             'Authorization': 'Bearer $accessToken',
           },
@@ -173,7 +173,7 @@ class _ExercisePageState extends State<ExercisePage> {
       } else {
         response = await http.put(
           Uri.parse(
-              'https://fit-stack.online/api/selfCoach/payingUser/addWorkoutToProgram/$workoutId/${widget.programId}'),
+              'https://www.fit-stack.online/api/selfCoach/user/addWorkoutToProgram/$workoutId/${widget.programId}'),
           headers: {
             'Authorization': 'Bearer $accessToken',
           },
@@ -185,7 +185,7 @@ class _ExercisePageState extends State<ExercisePage> {
         userHistoryWorkoutId = int.parse(response.body);
       } else {
         print(
-            'https://fit-stack.online/api/selfCoach/user/startWorkout/$workoutId');
+            'https://www.fit-stack.online/api/selfCoach/user/startWorkout/$workoutId');
         throw Exception(
             'Failed to save workout to history. Status code: ${response.statusCode}');
       }
@@ -202,7 +202,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
     final workoutExistsInUserHistoryResponse = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
+          'https://www.fit-stack.online/api/selfCoach/user/isWorkoutPresentInUserHistory/' +
               workoutId.toString() +
               '/' +
               JwtUtils.extractSubject(accessToken)),

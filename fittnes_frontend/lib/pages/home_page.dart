@@ -5,6 +5,7 @@ import 'package:fittnes_frontend/components/program_tile.dart';
 import 'package:fittnes_frontend/models/user.dart';
 import 'package:fittnes_frontend/models/program.dart';
 import 'package:fittnes_frontend/pages/coach_profile.dart';
+import 'package:fittnes_frontend/pages/follow_new_coaches.dart';
 import 'package:fittnes_frontend/security/jwt_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -110,7 +111,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/payingUser/getFollowingCoaches'),
+          'https://www.fit-stack.online/api/selfCoach/payingUser/getFollowingCoaches'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -148,8 +149,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.get(
-      Uri.parse(
-          'https://fit-stack.online/api/selfCoach/payingUser/getAllPrograms'),
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getAllPrograms'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
+          'https://www.fit-stack.online/api/selfCoach/user/workouts/getFirstSixMostLikedWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -284,7 +284,7 @@ class _HomePageState extends State<HomePage> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
+          'https://www.fit-stack.online/api/selfCoach/user/workouts/getTopWorkoutsForDifficultyLevel/' +
               lowerLimit.toString() +
               '/' +
               upperLimit.toString()),
@@ -359,7 +359,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.put(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/likeWorkout/' +
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/likeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -390,7 +390,7 @@ class _HomePageState extends State<HomePage> {
     // Use the workout.id to identify the workout to unlike
 
     final response = await http.delete(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/unlikeWorkout/' +
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/unlikeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -445,7 +445,7 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           if (index == 0) {
                             return buildPageBackground(
-                              'lib/images/background_top_workouts.jpg',
+                              'lib/images/homepage_background3.png',
                               'Top Workouts',
                             );
                           }
@@ -795,7 +795,7 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (context, index) {
         if (index == 0) {
           return buildPageBackground(
-            'lib/images/background_top_workouts.jpg',
+            'lib/images/homepage_background1.png',
             'Followed Coaches',
           );
         } else if (index == pageCount + 1) {
@@ -804,7 +804,10 @@ class _HomePageState extends State<HomePage> {
             child: ElevatedButton(
               onPressed: () {
                 // Implement the functionality to add more coaches
-                print("Follow more coaches");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FollowNewCoaches()),
+                );
               },
               child: Text("Follow More Coaches"),
             ),
@@ -831,7 +834,7 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (context, index) {
         if (index == 0) {
           return buildPageBackground(
-            'lib/images/background_top_workouts.jpg',
+            'lib/images/homepage_background2.png',
             'Top Most Liked Programs',
           );
         }

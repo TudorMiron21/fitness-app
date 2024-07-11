@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 import pandas as pd
 
-DATABASE_URI = 'postgresql://postgres:root@localhost:5432/authorization'
+DATABASE_URI = 'postgresql://postgres:root@localhost:5433/authorization'
 
 # Establish the connection to the database
 engine = create_engine(DATABASE_URI)
@@ -29,7 +29,7 @@ df = df.where(pd.notnull(df), None)
 
 try:
     for index, exercise in df.iterrows():
-        
+    # for index, exercise in df.head(10).iterrows():
         muscle_group_name = exercise['muscle_gp']
         query = select(muscle_group_table.c.id).where(muscle_group_table.c.name == muscle_group_name)
         result = session.execute(query).fetchone()  

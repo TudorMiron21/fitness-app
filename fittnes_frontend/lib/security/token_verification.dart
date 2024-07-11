@@ -11,7 +11,7 @@ class TokenChecker {
       return false;
     }
     Uri url = Uri.parse(
-        'http://localhost:8080/api/v1/auth/validateToken?token=$authToken');
+        'https://www.fit-stack.online/api/v1/auth/validateToken?token=$authToken');
 
     try {
       final response = await get(url);

@@ -21,7 +21,6 @@ public class UserHistoryExercise{
 
     @ManyToOne
     @JoinColumn(name = "id_exercise")
-
     private Exercise exercise;
 
     @ManyToOne

@@ -34,7 +34,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     String email = JwtUtils.extractSubject(accessToken);
 
     final response = await http.get(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/getStartedWorkouts/' +
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getStartedWorkouts/' +
           email),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -95,7 +95,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     String email = JwtUtils.extractSubject(accessToken);
 
     final response = await http.get(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/getPersonalWorkouts'),
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getPersonalWorkouts'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -154,7 +154,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     }
 
     final response = await http.put(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/likeWorkout/' +
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/likeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -185,7 +185,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     // Use the workout.id to identify the workout to unlike
 
     final response = await http.delete(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/unlikeWorkout/' +
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/unlikeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -206,15 +206,15 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            'Your Workouts',
-          ),
-          centerTitle: true,
-          toolbarHeight: 30,
-          backgroundColor: Colors.blue,
-          elevation: 4,
-          automaticallyImplyLeading: false),
+      // appBar: AppBar(
+      //     title: Text(
+      //       'Your Workouts',
+      //     ),
+      //     centerTitle: true,
+      //     toolbarHeight: 30,
+      //     backgroundColor: Colors.blue,
+      //     elevation: 4,
+      //     automaticallyImplyLeading: false),
       body: Column(
         children: [
           // SizedBox(
@@ -375,7 +375,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(workout.coverPhotoUrl),
+            image: workout.coverPhotoUrl.isNotEmpty? NetworkImage(workout.coverPhotoUrl):const NetworkImage("https://i.ytimg.com/vi/gey73xiS8F4/maxresdefault.jpg"),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black

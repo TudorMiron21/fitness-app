@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fittnes_frontend/components/bottom_nav.dart';
 import 'package:fittnes_frontend/models/exercise.dart';
 import 'package:fittnes_frontend/models/exerciseSimplified.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getAllNonExclusiveExercises'),
+          'https://www.fit-stack.online/api/selfCoach/user/getAllNonExclusiveExercises'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -62,6 +63,26 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
   Future<void> createUserWorkout(String workoutName, String description,
       List<ExerciseSimplified> exercises) async {
+    if (selectedExercises.isEmpty) {
+      final snackBar = SnackBar(
+        content: Text('Exercises not specified'),
+        backgroundColor: Colors.red,
+      ); // You can customize the appearance
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    if (workoutName.isEmpty) {
+      final snackBar = SnackBar(
+        content: Text('Workout name not specified'),
+        backgroundColor: Colors.red,
+      ); // You can customize the appearance
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
 
@@ -75,11 +96,11 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     String requestBody = jsonEncode({
       'workoutName': workoutName,
       'description': description,
-      'exercisesIds': exerciseIds, 
+      'exercisesIds': exerciseIds,
     });
 
     final response = await http.post(
-        Uri.parse('http://localhost:8080/api/selfCoach/user/createUserWorkout'),
+        Uri.parse('https://www.fit-stack.online/api/selfCoach/user/createUserWorkout'),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json'
@@ -88,6 +109,19 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
     if (response.statusCode == 200) {
       print("personal workout added successfully");
+
+      final snackBar = SnackBar(
+        content: Text('Personal workout added successfully'),
+        backgroundColor: Colors.green,
+      ); // You can customize the appearance
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NavBar(), // Ensure NavBar is properly imported
+        ),
+      );
+      return;
     } else {
       throw Exception(
           "error with status code ${response.statusCode} on create personal workout");
@@ -166,6 +200,13 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                   if (value != null && !selectedExercises.contains(value)) {
                     selectedExercises.add(value);
                     selectedExerciseName = '';
+                  } else if (selectedExercises.contains(value)) {
+                    final snackBar = SnackBar(
+                      content: Text('Exercise already selected'),
+                    ); // You can customize the appearance
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
                   }
                 });
               },
@@ -180,10 +221,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  await createUserWorkout(
-                    this._workoutNameController.text,
-                    this._descriptionController.text, 
-                    this.selectedExercises);
+                  await createUserWorkout(this._workoutNameController.text,
+                      this._descriptionController.text, this.selectedExercises);
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),

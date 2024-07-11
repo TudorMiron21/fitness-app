@@ -28,8 +28,9 @@ class _LoginPageState extends State<LoginPage> {
 
   final passwordController = TextEditingController();
 
-  //Sing user method
-  void login(String email, password, BuildContext context) async {
+  //Sing in user method
+  Future<void> login(String email, password, BuildContext context) async {
+    print("salut");
     Map<String, String> headers = {
       'Content-Type': 'application/json',
     };
@@ -43,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       String loginDataJson = json.encode(loginData);
 
       Uri url =
-          Uri.parse('https://fit-stack.online/api/v1/auth/login'); // Use Uri.http
+          Uri.parse('https://www.fit-stack.online/api/v1/auth/login'); // Use Uri.http
 
       Response response =
           await post(url, headers: headers, body: loginDataJson);
@@ -71,6 +72,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else if (response.statusCode == 403) //FORBIDDEN
       {
+        print('Status code is 403, showing snackbar');
         final snackBar = SnackBar(
           content: Text('wrong username/password'),
           backgroundColor: Colors.red,
@@ -98,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
           String loginDataJson = json.encode(loginData);
 
           Uri url =
-              Uri.parse('https://fit-stack.online/api/v1/auth/loginGoogle');
+              Uri.parse('https://www.fit-stack.online/api/v1/auth/loginGoogle');
 
           Response response =
               await post(url, headers: headers, body: loginDataJson);
@@ -218,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 MyButton(
                     buttonText: "Sign in",
-                    onTap: () {
+                    onTap: () async{
                       login(usernameController.text.toString(),
                           passwordController.text.toString(), context);
                     }),
@@ -263,17 +265,6 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       child: AuthButtonTile(
                           imagePath: 'lib/images/google_logo.png'),
-                    ),
-
-                    const SizedBox(width: 10),
-                    //apple button
-                    InkWell(
-                      onTap: () {
-                        // Handle Apple login
-                        print("Apple login tapped");
-                      },
-                      child: AuthButtonTile(
-                          imagePath: 'lib/images/apple_logo.png'),
                     ),
                   ],
                 ),

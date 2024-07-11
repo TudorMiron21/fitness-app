@@ -15,7 +15,8 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000"
+            allowedOrigins: ["http://localhost:3000","https://46cc-109-166-135-61.ngrok-free.app"]
+#            allowedOrigins: "*"
             allowedMethods: '*'
             allowedHeaders: "*"
             allowCredentials: true

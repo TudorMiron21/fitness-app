@@ -49,7 +49,7 @@ jobs:
         context: ./fittness-app
         file: ./fittness-app/Dockerfile.eureka
         push: true
-        tags: tudormiron/fitness-app-eureka:1.0.3
+        tags: tudormiron/fitness-app-eureka:1.0.5
 
   # deploy:
   #   needs: package

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 // import 'dart:ffi';
 import 'dart:ui'; // For ImageFilter
 import 'dart:io'; // For File
@@ -6,13 +7,19 @@ import 'dart:io'; // For File
 import 'package:fittnes_frontend/models/achievement.dart';
 import 'package:fittnes_frontend/models/leader_board.dart';
 import 'package:fittnes_frontend/models/user.dart';
+import 'package:fittnes_frontend/models/user_details.dart';
 import 'package:fittnes_frontend/pages/create_workout_page.dart';
+import 'package:fittnes_frontend/pages/details.dart';
+import 'package:fittnes_frontend/pages/login_page.dart';
 import 'package:fittnes_frontend/pages/paypal_subscription_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+import '../models/user_details.dart';
+import 'package:http_parser/http_parser.dart'; // Import for MediaType
 
 class UserInformation extends StatefulWidget {
   const UserInformation({super.key});
@@ -23,7 +30,7 @@ class UserInformation extends StatefulWidget {
 
 class _UserInformationState extends State<UserInformation> {
   File? _profileImage;
-
+  String profilePictureUrl = '';
   List<Achievement> userAchievements = [];
   LeaderBoard leaderBoardEntry = LeaderBoard(
       id: -1,
@@ -38,6 +45,36 @@ class _UserInformationState extends State<UserInformation> {
   void initState() {
     super.initState();
     fetchUserData(); // Fetch data on initialization
+    _fetchUserProfilePicture();
+  }
+
+Future<void> _fetchUserProfilePicture() async {
+  await fetchUserProfilePicture();
+  setState(() {
+  });
+}
+
+  Future<void> fetchUserProfilePicture() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.get(
+      Uri.parse(
+          'https://www.fit-stack.online/api/selfCoach/user/getProfilePicture'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      profilePictureUrl = response.body;
+    }
+
+    if (response.statusCode == 400)
+      throw Exception("User has no profile picture");
   }
 
   Future<void> fetchUserData() async {
@@ -60,7 +97,7 @@ class _UserInformationState extends State<UserInformation> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/getLeaderBoardEntryForUser'),
+          'https://www.fit-stack.online/api/selfCoach/user/getLeaderBoardEntryForUser'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -88,7 +125,7 @@ class _UserInformationState extends State<UserInformation> {
     }
 
     final response = await http.get(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/getUserAchievements'),
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getUserAchievements'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -105,6 +142,44 @@ class _UserInformationState extends State<UserInformation> {
     }
   }
 
+  Future<void> uploadProfilePicture(File imageFile) async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    var request = http.MultipartRequest(
+      'PUT',
+      Uri.parse(
+          'https://www.fit-stack.online/api/selfCoach/user/uploadProfilePicture'),
+    );
+
+    request.headers.addAll({
+      'Authorization': 'Bearer $accessToken',
+    });
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file',
+        imageFile.path,
+        contentType: MediaType('image', 'png'), // Adjust as needed
+      ),
+    );
+
+    // Send request
+    var response = await request.send();
+
+    // Check response
+    if (response.statusCode == 200) {
+      print('Profile picture uploaded successfully');
+    } else {
+      print(
+          'Failed to upload profile picture. Status code: ${response.statusCode}');
+    }
+  }
+
   Future<void> _pickImage() async {
     try {
       final pickedFile =
@@ -113,6 +188,7 @@ class _UserInformationState extends State<UserInformation> {
         setState(() {
           _profileImage = File(pickedFile.path);
         });
+        await uploadProfilePicture(File(pickedFile.path));
       }
     } catch (e) {
       // Handle any errors that occur during image selection
@@ -138,16 +214,16 @@ class _UserInformationState extends State<UserInformation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            'User Information',
-            style: TextStyle(),
-          ),
-          centerTitle: true,
-          toolbarHeight: 30,
-          backgroundColor: Colors.blue,
-          elevation: 4,
-          automaticallyImplyLeading: false),
+      // appBar: AppBar(
+      //     title: Text(
+      //       'User Information',
+      //       style: TextStyle(),
+      //     ),
+      //     centerTitle: true,
+      //     toolbarHeight: 30,
+      //     backgroundColor: Colors.blue,
+      //     elevation: 4,
+      //     automaticallyImplyLeading: false),
       body: Stack(
         fit: StackFit.expand, // Ensure the stack fills the screen
         children: <Widget>[
@@ -156,7 +232,7 @@ class _UserInformationState extends State<UserInformation> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
-                    'lib/images/fittness_background.jpg'), // Replace with your image path
+                    'lib/images/pattern_background.png'), // Replace with your image path
                 fit: BoxFit.cover,
               ),
             ),
@@ -166,7 +242,7 @@ class _UserInformationState extends State<UserInformation> {
                 sigmaX: 3.0, sigmaY: 3.0), // Adjust the blur intensity
             child: Container(
               color:
-                  Colors.black.withOpacity(0.5), // Darken the background a bit
+                  Colors.black.withOpacity(0.6), // Darken the background a bit
             ),
           ),
           // Content
@@ -177,20 +253,26 @@ class _UserInformationState extends State<UserInformation> {
               children: [
                 GestureDetector(
                   onTap: _pickImage,
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.grey.shade200,
-                    backgroundImage: _profileImage != null
-                        ? FileImage(_profileImage!)
-                        : null,
-                    child: _profileImage == null
-                        ? const Icon(
-                            Icons.camera_alt,
-                            color: Colors.grey,
-                            size: 50,
-                          )
-                        : null,
-                  ),
+                  child: profilePictureUrl.isEmpty
+                      ? CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.grey.shade200,
+                          backgroundImage: _profileImage != null
+                              ? FileImage(_profileImage!)
+                              : null,
+                          child: _profileImage == null
+                              ? const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.grey,
+                                  size: 50,
+                                )
+                              : null,
+                        )
+                      : CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.grey.shade200,
+                          backgroundImage: NetworkImage(profilePictureUrl),
+                        ),
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -198,9 +280,10 @@ class _UserInformationState extends State<UserInformation> {
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .spaceBetween, // Distribute space evenly between buttons
+                Wrap(
+                  spacing: 10.0,
+                  runSpacing: 10.0,
+                  alignment: WrapAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () {
@@ -214,6 +297,33 @@ class _UserInformationState extends State<UserInformation> {
                       ),
                     ),
                     ElevatedButton(
+                      onPressed: () async {
+                        final storage = FlutterSecureStorage();
+                        await storage.delete(key: 'access_token');
+                        await signOut();
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
+                      child: Text('Log out'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
+                      ),
+                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     Navigator.of(context).push(
+                    //         MaterialPageRoute(builder: (context) => Details()));
+                    //   },
+                    //   child: Text('Details'),
+                    //   style: ElevatedButton.styleFrom(
+                    //     foregroundColor: Colors.white,
+                    //     backgroundColor: Colors.green,
+                    //   ),
+                    // ),
+                    ElevatedButton(
                       child: Text('Go Premium'),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -221,7 +331,7 @@ class _UserInformationState extends State<UserInformation> {
                       ),
                       onPressed: () async {
                         const url =
-                            'https://fit-stack.online/api/selfCoach/paypal/getPayPalSubscriptionButton';
+                            'https://www.fit-stack.online/api/selfCoach/paypal/getPayPalSubscriptionButton';
                         await _launchAsInAppWebViewWithCustomHeaders(
                             Uri.parse(url));
                       },
@@ -235,7 +345,7 @@ class _UserInformationState extends State<UserInformation> {
                     child: Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color:Colors.white.withOpacity(0.8),
+                        color: Colors.white.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
@@ -253,7 +363,7 @@ class _UserInformationState extends State<UserInformation> {
                             'User: ${leaderBoardEntry!.user.firstName} ${leaderBoardEntry!.user.lastName}',
                           ),
                           Text(
-                            'Total Points: ${leaderBoardEntry!.numberOfPoints}',
+                            'Total Points: ${leaderBoardEntry!.numberOfPoints.ceil()}',
                           ),
                           Text(
                             'Done Exercises: ${leaderBoardEntry!.numberOfDoneExercises}',

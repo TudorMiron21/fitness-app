@@ -4,7 +4,7 @@
     max-width: 500px;
     margin: 50px auto; /* Increased margin for better centering */
     font-family: 'Arial', sans-serif; /* Modern, readable font */
-    background: linear-gradient( rgba(74, 78, 105,0.4),rgba(0, 123, 255, 0.4));
+    background: white;
     padding: 20px; /* Padding around the form */
     border-radius: 8px; /* Rounded corners for the form */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */

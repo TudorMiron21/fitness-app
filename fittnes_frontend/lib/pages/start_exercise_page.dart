@@ -15,6 +15,7 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ExerciseImageToggle extends StatefulWidget {
   final String startImageUrl;
@@ -251,7 +252,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
 
     final response = await http.post(
-      Uri.parse('https://fit-stack.online/api/selfCoach/user/saveModule'),
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/saveModule'),
       body: jsonEncode({
         "parentUserHistoryWorkoutId": widget.userHistoryWorkoutId.toString(),
         "noSets": numberOfSets
@@ -274,6 +275,80 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
   }
 
+  Future<Map<String, Object>> getUserDetails() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      // Handle the case where the authToken is missing or empty
+      throw Exception('Authentication token is missing or invalid.');
+    }
+
+    final response = await http.get(
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getUserDetails'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data.cast<String, Object>();
+    } else {
+      throw Exception(
+          'Failed to load user details. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<double> getNoCalories(double durationInMinutes) async {
+    try {
+      // Get user details
+      final userDetails = await getUserDetails();
+
+      // Extract required details
+
+      String gender = userDetails['gender'] as String;
+      int age = userDetails['age'] as int;
+      double weight = userDetails['weight'] as double;
+      int height = userDetails['height'] as int;
+
+      print(gender);
+      print(age);
+      print(weight);
+      print(height);
+      // Create JSON body
+      Map<String, dynamic> requestBody = {
+        'features': [
+          gender == 'Male' ? 1 : 0,
+          age,
+          weight,
+          height,
+          durationInMinutes
+        ]
+      };
+
+      // Send POST request to predict API
+      final response = await http.post(
+        Uri.parse('https://d273-109-166-130-164.ngrok-free.app/predict'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        print(responseData['prediction']);
+        return responseData['prediction'] as double;
+      } else {
+        throw Exception(
+            'Failed to predict calories. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
   Future<void> saveExerciseToModule(int userHistoryModuleId, int currNoSeconds,
       bool isDone, int noReps, double weight) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
@@ -284,9 +359,13 @@ class _StartExercisePageState extends State<StartExercisePage> {
       throw Exception('Authentication token is missing or invalid.');
     }
 
+    double caloriesBurned = 0;
+    if (widget.exercises[widget.exerciseIndex].category == "Cardio") {
+      caloriesBurned = await getNoCalories(myDuration.inSeconds / 60.0);
+    }
     final response = await http.put(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
+          'https://www.fit-stack.online/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
       body: jsonEncode({
         "exercise": widget.exercises[widget.exerciseIndex].id,
         "userHistoryModule": userHistoryModuleId.toString(),
@@ -294,6 +373,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
         "isDone": isDone.toString(),
         "noReps": noReps.toString(),
         "weight": weight.toString(),
+        "caloriesBurned": caloriesBurned.toString()
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -318,7 +398,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
     final response = await http.put(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
+          'https://www.fit-stack.online/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -352,7 +432,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     String email = JwtUtils.extractSubject(accessToken);
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email'),
+          'https://www.fit-stack.online/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -375,7 +455,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
       return lastEntryUserHistoryExerciseDto;
     } else {
       print(
-          'https://fit-stack.online/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email');
+          'https://www.fit-stack.online/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email');
       throw Exception("workout with id $workoutId is finished");
     }
   }
@@ -392,7 +472,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
     final response = await http.put(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId'),
+          'https://www.fit-stack.online/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
@@ -406,7 +486,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
     if (response.statusCode != 200) {
       print(
-          'https://fit-stack.online/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId');
+          'https://www.fit-stack.online/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId');
       throw Exception(
           'Failed to update user history exercise. Status code: ${response.statusCode}');
     }
@@ -422,7 +502,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
     final response = await http.put(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/updateUserHistoryModule/$userHistoryModuleId'),
+          'https://www.fit-stack.online/api/selfCoach/user/updateUserHistoryModule/$userHistoryModuleId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
@@ -775,6 +855,9 @@ class _StartExercisePageState extends State<StartExercisePage> {
               _buildDetail(Icons.link, 'More Details', ''),
               _buildLink(exercise.descriptionUrl),
             ],
+
+            if(exercise.exerciseVideoUrl.isNotEmpty)
+              _buildVideoSection('https://www.fit-stack.online/api/selfCoach/user/videoStreaming/${exercise.id}')
           ],
         ),
       ),
@@ -786,6 +869,30 @@ class _StartExercisePageState extends State<StartExercisePage> {
     return ExerciseImageToggle(
       startImageUrl: exerciseImageStartUrl,
       endImageUrl: exerciseImageEndUrl,
+    );
+  }
+
+  Widget _buildVideoSection(String videoUrl) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 20),
+        Text(
+          'Video',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 10),
+        Container(
+          height: 200, // Adjust height as needed
+          child: WebView(
+            initialUrl: videoUrl,
+            javascriptMode: JavascriptMode.unrestricted,
+            onPageFinished: (String url) {
+              // Perform actions when the page finishes loading
+            },
+          ),
+        ),
+      ],
     );
   }
 

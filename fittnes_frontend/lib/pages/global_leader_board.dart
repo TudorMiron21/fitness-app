@@ -44,7 +44,7 @@ class _GlobalLeaderBoardState extends State<GlobalLeaderBoard> {
 
     final response = await http.get(
       Uri.parse(
-          'https://fit-stack.online/api/selfCoach/user/getLeaderBoardEntries'),
+          'https://www.fit-stack.online/api/selfCoach/user/getLeaderBoardEntries'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -63,6 +63,7 @@ class _GlobalLeaderBoardState extends State<GlobalLeaderBoard> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Global Leaderboard'),
+        automaticallyImplyLeading: false
       ),
       body: FutureBuilder<List<LeaderBoard>>(
         future: getLeaderBoardEntries(),

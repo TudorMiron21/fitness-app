@@ -50,41 +50,52 @@ public class PayingUserController {
         }
     }
 
-    @GetMapping("/getAllPrograms")
-    public ResponseEntity<?> getAllPrograms() {
-        Set<ProgramDto> programs = payingUserService.getTopPrograms();
-        return ResponseEntity.status(HttpStatus.OK).body(programs);
-    }
-
-
-    @PostMapping("/startProgram/{programId}")
-    public ResponseEntity<?> startProgram(@PathVariable(name = "programId") Long programId) {
+    @GetMapping("/getNonFollowingCoaches")
+    public ResponseEntity<?> getNonFollowingCoaches() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.startProgram(programId));
+            Set<UserDto> followingCoaches = payingUserService.getNonFollowingCoaches();
+            return ResponseEntity.status(HttpStatus.OK).body(followingCoaches);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
     }
 
-    @PutMapping("/addWorkoutToProgram/{workoutId}/{userHistoryProgramId}")
-    public ResponseEntity<?> addWorkoutToProgram(@PathVariable("workoutId") Long workoutId, @PathVariable("userHistoryProgramId") Long userHistoryProgramId) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.addWorkoutToProgram(userHistoryProgramId, workoutId));
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-        }
-    }
 
-    @GetMapping("/isProgramStarted/{programId}")
-    public ResponseEntity<?> isProgramStarted(@PathVariable(name = "programId") Long programId) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.isProgramStarted(programId));
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-        } catch (UserHistoryProgramNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(e);
-        }
-    }
+//    @GetMapping("/getAllPrograms")
+//    public ResponseEntity<?> getAllPrograms() {
+//        Set<ProgramDto> programs = payingUserService.getTopPrograms();
+//        return ResponseEntity.status(HttpStatus.OK).body(programs);
+//    }
+//
+//
+//    @PostMapping("/startProgram/{programId}")
+//    public ResponseEntity<?> startProgram(@PathVariable(name = "programId") Long programId) {
+//        try {
+//            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.startProgram(programId));
+//        } catch (NotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+//        }
+//    }
+//
+//    @PutMapping("/addWorkoutToProgram/{workoutId}/{userHistoryProgramId}")
+//    public ResponseEntity<?> addWorkoutToProgram(@PathVariable("workoutId") Long workoutId, @PathVariable("userHistoryProgramId") Long userHistoryProgramId) {
+//        try {
+//            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.addWorkoutToProgram(userHistoryProgramId, workoutId));
+//        } catch (NotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+//        }
+//    }
+//
+//    @GetMapping("/isProgramStarted/{programId}")
+//    public ResponseEntity<?> isProgramStarted(@PathVariable(name = "programId") Long programId) {
+//        try {
+//            return ResponseEntity.status(HttpStatus.OK).body(payingUserService.isProgramStarted(programId));
+//        } catch (NotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+//        } catch (UserHistoryProgramNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.ACCEPTED).body(e);
+//        }
+//    }
 
     @GetMapping("/isCoachFollowedByUser/{coachId}")
     public ResponseEntity<?> isCoachFollowedByUser(@PathVariable("coachId") Long coachId) {

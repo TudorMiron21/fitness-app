@@ -15,7 +15,7 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000"
+            allowedOrigins: "https://www.fit-stack.online"
             allowedMethods: '*'
             allowedHeaders: "*"
             allowCredentials: true
@@ -24,12 +24,12 @@ spring:
           uri: http://fitness-self-coach-service:8081
           predicates:
             - Path=/api/selfCoach/**
-          filters:
-            - JwtAuthenticationFilter
+#          filters:
+#            - JwtAuthenticationFilter
 
 
         - id: adminCoachService
-          uri: http://fitness-admin-coach-service:8083
+          uri: http://fitness-admin-coach-backend-service:8083
           predicates:
             - Path=/api/v1/adminCoachService/**
           filters:

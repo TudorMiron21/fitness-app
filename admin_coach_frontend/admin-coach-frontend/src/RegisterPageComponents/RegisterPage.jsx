@@ -20,7 +20,9 @@ export const Register = () => {
       return;
     }
     try {
-      const response = await axios.post("https://fit-stack.online/api/v1/auth/register", {
+      // const response = await axios.post("https://www.fit-stack.online/api/v1/auth/register", {
+
+      const response = await axios.post("https://www.fit-stack.online/api/v1/auth/register", {
         firstName,
         lastName,
         email,
@@ -148,14 +150,6 @@ const Form = ({
         </div>
         <button type="submit" className="form-button">
           Register
-        </button>
-
-        <button
-          type="button"
-          className="form-button google-register"
-          onClick={handleGmailRegister}
-        >
-          <i className="fab fa-google"></i> Register with Gmail
         </button>
 
         <p className="login-link">

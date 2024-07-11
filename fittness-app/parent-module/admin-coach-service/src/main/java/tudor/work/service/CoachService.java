@@ -100,22 +100,44 @@ public class CoachService {
         if (uploadExerciseDetailsDto.getEquipmentName().equals("Body Only")) {
             hasWeight = false;
         }
+        Exercise savedExercise;
 
-        Exercise savedExercise = exerciseService.saveExercise(
-                Exercise.
-                        builder()
-                        .name(uploadExerciseDetailsDto.getExerciseName())
-                        .description(uploadExerciseDetailsDto.getDescription())
-                        .equipment(equipmentService.getEquipmentByName(uploadExerciseDetailsDto.getEquipmentName()))
-                        .muscleGroup(muscleGroupService.getMuscleGroupByName(uploadExerciseDetailsDto.getMuscleGroupName()))
-                        .difficulty(difficultyService.getDifficultyByName(uploadExerciseDetailsDto.getDifficultyName()))
-                        .category(categoryService.getCategoryByName(uploadExerciseDetailsDto.getCategoryName()))
-                        .adder(authorityService.getUser())
-                        .isExerciseExclusive(true)
-                        .hasWeight(hasWeight)
-                        .hasNoReps(hasReps)
-                        .build()
-        );
+        if(authorityService.isCoach()) {
+            savedExercise = exerciseService.saveExercise(
+                    Exercise.
+                            builder()
+                            .name(uploadExerciseDetailsDto.getExerciseName())
+                            .description(uploadExerciseDetailsDto.getDescription())
+                            .equipment(equipmentService.getEquipmentByName(uploadExerciseDetailsDto.getEquipmentName()))
+                            .muscleGroup(muscleGroupService.getMuscleGroupByName(uploadExerciseDetailsDto.getMuscleGroupName()))
+                            .difficulty(difficultyService.getDifficultyByName(uploadExerciseDetailsDto.getDifficultyName()))
+                            .category(categoryService.getCategoryByName(uploadExerciseDetailsDto.getCategoryName()))
+                            .adder(authorityService.getUser())
+                            .isExerciseExclusive(true)
+                            .hasWeight(hasWeight)
+                            .hasNoReps(hasReps)
+                            .build()
+            );
+        }
+        else if(authorityService.isAdmin())
+        {
+            savedExercise = exerciseService.saveExercise(
+                    Exercise.
+                            builder()
+                            .name(uploadExerciseDetailsDto.getExerciseName())
+                            .description(uploadExerciseDetailsDto.getDescription())
+                            .equipment(equipmentService.getEquipmentByName(uploadExerciseDetailsDto.getEquipmentName()))
+                            .muscleGroup(muscleGroupService.getMuscleGroupByName(uploadExerciseDetailsDto.getMuscleGroupName()))
+                            .difficulty(difficultyService.getDifficultyByName(uploadExerciseDetailsDto.getDifficultyName()))
+                            .category(categoryService.getCategoryByName(uploadExerciseDetailsDto.getCategoryName()))
+                            .isExerciseExclusive(false)
+                            .hasWeight(hasWeight)
+                            .hasNoReps(hasReps)
+                            .build()
+            );
+        }
+        else
+            throw new RuntimeException("user is not allowed");
 
         if (!uploadExerciseDetailsDto.getBeforeImage().isEmpty()) {
             minioService.createBucket("exercise-images");
@@ -209,17 +231,24 @@ public class CoachService {
         return exercises.stream().mapToDouble(exercise -> exercise.getDifficulty().getDifficultyLevelNumber()).average().orElse(0.0);
     }
 
-    public Workout createWorkout(CreateWorkoutDto createWorkoutDto) throws NotFoundException, IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public Workout createWorkout(CreateWorkoutDto createWorkoutDto) throws NotFoundException
+//            throws NotFoundException, IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException
+    {
 
         String imgName = RandomString.make(45) + "." + this.getFileExtension(createWorkoutDto.getCoverPhoto().getOriginalFilename());
 
-        minioService.createBucket("workout-cover-photos");
-
-        minioService.uploadImageToObjectStorage(
-                createWorkoutDto.getCoverPhoto().getInputStream(),
-                imgName,
-                "workout-cover-photos"
-        );
+        try {
+            minioService.createBucket("workout-cover-photos");
+            minioService.uploadImageToObjectStorage(
+                    createWorkoutDto.getCoverPhoto().getInputStream(),
+                    imgName,
+                    "workout-cover-photos"
+            );
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
 
         String imgPath = "workout-cover-photos/" + imgName;
 
@@ -234,6 +263,7 @@ public class CoachService {
                     }
                 }).collect(Collectors.toSet());
 
+        boolean isWorkoutGlobal = authorityService.isAdmin();
         return workoutService.saveWorkout(
                 Workout
                         .builder()
@@ -242,7 +272,7 @@ public class CoachService {
                         .adder(authorityService.getUser())
                         .exercises(exercisesToAdd)
                         .coverPhotoUrl(imgPath)
-                        .isGlobal(false)
+                        .isGlobal(isWorkoutGlobal)
                         .isDeleted(false)
                         .difficultyLevel(calculateDifficultyLevel(exercisesToAdd))
                         .build()
@@ -302,7 +332,7 @@ public class CoachService {
         return program;
     }
 
-    public Set<WorkoutDto> getFilteredWorkouts(WorkoutFilteredRequestDto workoutFilteredRequestDto) throws NotFoundException {
+    public Set<WorkoutDto> getFilteredWorkouts(WorkoutFilteredRequestDto workoutFilteredRequestDto)  throws NotFoundException{
 
 
         Set<Workout> workouts = workoutService.getFilteredWorkouts(workoutFilteredRequestDto);

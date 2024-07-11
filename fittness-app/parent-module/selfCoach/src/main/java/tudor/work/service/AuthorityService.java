@@ -38,7 +38,7 @@ public class AuthorityService {
     public boolean isUser() {
         List<? extends GrantedAuthority> authorities = getUserAuthorities().stream().toList();
 
-        return authorities.stream().anyMatch(authority -> authority.getAuthority().equals("USER"));
+        return authorities.stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
     }
 
     public boolean isCoach() {

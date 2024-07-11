@@ -55,8 +55,10 @@ Future<UserDetails?> retrieveGoogleUser() async {
   }
   return null;
 }
-
+ 
 Future<void> signOut() async {
-  await FirebaseAuth.instance.signOut();
-  await GoogleSignIn().signOut();
+  if (FirebaseAuth.instance.currentUser != null) {
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+  }
 }

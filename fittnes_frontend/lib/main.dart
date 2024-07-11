@@ -5,6 +5,8 @@ import 'package:fittnes_frontend/security/token_verification.dart';
 import 'package:flutter/material.dart';
 import 'pages/login_page.dart';
 import 'package:get/get.dart';
+import 'dart:io';
+
 // void main() {
 //   runApp(const MyApp());
 // }
@@ -30,6 +32,14 @@ import 'package:get/get.dart';
 //     getPages: AppPage.routes,
 //   ));
 // }
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +51,11 @@ void main() async {
 
   // Determine the initial route based on token validity
   //String initialRoute = isTokenValid ? AppPage.getNavbar() : AppPage.getLogin();
-  String initialRoute = AppPage.getLogin();
+  // String initialRoute = AppPage.getLogin();
+  String initialRoute = isTokenValid ? AppPage.getNavbar() : AppPage.getLogin();
+
+  HttpOverrides.global = MyHttpOverrides();
+
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
     initialRoute: initialRoute,

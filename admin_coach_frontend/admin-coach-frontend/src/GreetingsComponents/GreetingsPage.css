@@ -7,7 +7,7 @@ body, html {
   
   .greetings-page {
     height: 100vh;
-    background: url('https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg') no-repeat center center;
+    background: url('../assets/greetings_background.jpg') no-repeat center center;
     background-size: cover;
     display: flex;
     justify-content: space-between;
@@ -15,6 +15,18 @@ body, html {
     position: relative;
     padding: 20px;
     box-sizing: border-box;
+    overflow: hidden; /* Ensure the shadow does not overflow the container */
+  }
+  
+  .greetings-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Adjust the color and opacity of the shadow as needed */
+    pointer-events: none; /* Ensure the shadow does not interfere with any content interaction */
   }
   
   /* Positioning the button on the right */
@@ -41,12 +53,12 @@ body, html {
   
   /* Centering the typing message on the left */
   .typing-message {
-    background-color: rgba(255, 255, 255, 0.7);
-    padding: 10px;
+    /* background-color: rgba(255, 255, 255, 0.7); */
+    /* padding: 10px;
     border-radius: 5px;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-    font-size: 24px;
-    color: black;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); */
+    font-size: 75px;
+    color: rgb(217, 217, 217);
     position: absolute;
     left: 20px;
     top: 50%;

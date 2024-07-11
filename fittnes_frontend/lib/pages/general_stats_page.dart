@@ -109,7 +109,7 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
 
       final response = await http.get(
         Uri.parse(
-            'https://fit-stack.online/api/selfCoach/user/getGeneralWorkoutInformation/10'),
+            'https://www.fit-stack.online/api/selfCoach/user/getGeneralWorkoutInformation/10'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
@@ -149,20 +149,20 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading:false,
-            title: Text(
-              'General Workout Statistics',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            centerTitle: true,
-            toolbarHeight: 30,
-            backgroundColor: Colors.blue,
-            elevation: 4,
-            ),
+        // appBar: AppBar(
+        //   automaticallyImplyLeading:false,
+        //     title: Text(
+        //       'General Workout Statistics',
+        //       style: TextStyle(
+        //         fontSize: 20,
+        //         fontWeight: FontWeight.w500,
+        //       ),
+        //     ),
+        //     centerTitle: true,
+        //     toolbarHeight: 30,
+        //     backgroundColor: Colors.blue,
+        //     elevation: 4,
+        //     ),
         body: const Center(
           child: CircularProgressIndicator(),
         ),
@@ -170,23 +170,23 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
     }
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.8),
-      appBar: AppBar(
-          title: Text(
-            'General Workout Statistics',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          centerTitle: true,
-          toolbarHeight: 30,
-          backgroundColor: Colors.blue,
-          elevation: 4),
+      // appBar: AppBar(
+      //     title: Text(
+      //       'General Workout Statistics',
+      //       style: TextStyle(
+      //         fontSize: 20,
+      //         fontWeight: FontWeight.w500,
+      //       ),
+      //     ),
+      //     centerTitle: true,
+      //     toolbarHeight: 30,
+      //     backgroundColor: Colors.blue,
+      //     elevation: 4),
       body: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'lib/images/background2.jpg',
+            'lib/images/pattern_background.png',
             fit: BoxFit.cover,
           ),
           // This widget applies a filter to the background image
@@ -195,7 +195,7 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
                 sigmaX: 3.0, sigmaY: 3.0), // Adjust the blur intensity
             child: Container(
               color:
-                  Colors.black.withOpacity(0.2), // Darken the background a bit
+                  Colors.black.withOpacity(0.6), // Darken the background a bit
             ),
           ),
           Padding(
@@ -278,7 +278,21 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
       averagePercentageMap[category] = totalPercent / count;
     });
 
-    return averagePercentageMap;
+    // Calculate the normalization factor
+    double normalizationFactor = 0.0;
+    totalPercentageMap.values.forEach((percent) {
+      normalizationFactor += percent;
+    });
+
+    normalizationFactor = 1 / normalizationFactor;
+
+    // Create a new map for normalized percentages
+    Map<String, double> normalizedPercentageMap = {};
+    totalPercentageMap.forEach((category, totalPercent) {
+      normalizedPercentageMap[category] = totalPercent * normalizationFactor;
+    });
+
+    return normalizedPercentageMap;
   }
 
   Map<String, double> calculateAverageMuscleGroupPercentages(
@@ -308,7 +322,21 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
       averagePercentageMap[muscleGroup] = totalPercent / count;
     });
 
-    return averagePercentageMap;
+    // Calculate the normalization factor
+    double normalizationFactor = 0.0;
+    totalPercentageMap.values.forEach((percent) {
+      normalizationFactor += percent;
+    });
+
+    normalizationFactor = 1 / normalizationFactor;
+
+    // Create a new map for normalized percentages
+    Map<String, double> normalizedPercentageMap = {};
+    totalPercentageMap.forEach((muscleGroup, totalPercent) {
+      normalizedPercentageMap[muscleGroup] = totalPercent * normalizationFactor;
+    });
+
+    return normalizedPercentageMap;
   }
 
   Map<String, double> calculateDifficultyPercentages(
@@ -338,7 +366,21 @@ class _GeneralStatsPageState extends State<GeneralStatsPage> {
       averagePercentageMap[difficulty] = totalPercent / count;
     });
 
-    return averagePercentageMap;
+    // Calculate the normalization factor
+    double normalizationFactor = 0.0;
+    totalPercentageMap.values.forEach((percent) {
+      normalizationFactor += percent;
+    });
+
+    normalizationFactor = 1 / normalizationFactor;
+
+    // Create a new map for normalized percentages
+    Map<String, double> normalizedPercentageMap = {};
+    totalPercentageMap.forEach((difficulty, totalPercent) {
+      normalizedPercentageMap[difficulty] = totalPercent * normalizationFactor;
+    });
+
+    return normalizedPercentageMap;
   }
 
   Widget _buildPieChartSection(

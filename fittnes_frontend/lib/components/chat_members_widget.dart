@@ -38,7 +38,7 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/payingUser/getFollowingCoaches'),
+          'https://www.fit-stack.online/api/selfCoach/payingUser/getFollowingCoaches'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -80,12 +80,15 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
 
     // Initialize the socket with the access token
     socket = IO.io(
-      'http://localhost:8084',
+      // 'http://localhost:8084',
+      'https://chat-service.webpubsub.azure.com',
+
       IO.OptionBuilder()
           .setTransports(['websocket'])
+          .setPath('/clients/socketio/hubs/Hub')
           .disableAutoConnect()
-          .setExtraHeaders(
-              {HttpHeaders.authorizationHeader: 'Bearer $accessToken'})
+          // .setExtraHeaders(
+          //     {HttpHeaders.authorizationHeader: 'Bearer $accessToken'})
           .build(),
     );
     socket.connect();
@@ -103,7 +106,7 @@ class _ChatMembersWidgetState extends State<ChatMembersWidget> {
     for (final coach in followingCoaches) {
       final String coachEmail = coach.email;
       final Uri url = Uri.parse(
-          'http://localhost:8084/chatService/getLastMessage/$sourceEmail/$coachEmail');
+          'https://www.fit-stack.online/chatService/getLastMessage/$sourceEmail/$coachEmail');
 
       fetchTasks.add(http.get(url).then((response) {
         if (response.statusCode == 200) {

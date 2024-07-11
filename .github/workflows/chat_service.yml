@@ -85,4 +85,4 @@ jobs:
           context: ./chat-service
           file: ./chat-service/Dockerfile
           push: true
-          tags: tudormiron/chat-service:1.0.0
+          tags: tudormiron/chat-service:1.0.3

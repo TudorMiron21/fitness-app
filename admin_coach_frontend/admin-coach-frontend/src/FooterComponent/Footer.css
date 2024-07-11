@@ -6,6 +6,8 @@
     padding: 20px 0; /* Padding at the top and bottom */
     text-align: center; /* Center the footer content */
     font-size: 0.9em; /* Adjust the font size as necessary */
+    position: fixed;
+    bottom: 0;
   }
   
   .footer-content p {

@@ -7,7 +7,6 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-import seaborn as sns
 
 
 exercise_data = pd.read_csv( './exercise.csv' )
@@ -64,8 +63,6 @@ class CaloriesExercisesDatasetMultipleFeature(torch.utils.data.Dataset):
                 'labels': torch.tensor([item['Calories']],dtype=torch.float32)}
         
                
-
-
 train_set = CaloriesExercisesDatasetOneFeature(train_frame)
 test_set = CaloriesExercisesDatasetOneFeature(test_frame)
 
@@ -139,17 +136,17 @@ for epoch in range(NR_EPOCHS):
         epoch_losses.append(loss.item()) 
     log_info.append((epoch, np.mean(epoch_losses)))
     
-X = [x for x, loss in log_info]
-Y = [loss for x, loss in log_info]
-plt.plot(X,Y)
-plt.xlabel("Epoch")
-plt.ylabel("LOSS")
+# X = [x for x, loss in log_info]
+# Y = [loss for x, loss in log_info]
+# plt.plot(X,Y)
+# plt.xlabel("Epoch")
+# plt.ylabel("LOSS")
 
-X = [x for x, loss in log_info]
-Y = [loss for x, loss in log_info]
-plt.plot(X,Y)
-plt.xlabel("Epoch")
-plt.ylabel("LOSS")
+# X = [x for x, loss in log_info]
+# Y = [loss for x, loss in log_info]
+# plt.plot(X,Y)
+# plt.xlabel("Epoch")
+# plt.ylabel("LOSS")
 
 # plt.show()
 
@@ -179,10 +176,10 @@ with torch.no_grad():
         true_labels += labels.squeeze(dim=1).tolist()
         x += inputs.squeeze(dim=1).tolist()
 
-plt.figure(figsize=(8,6), dpi=100)
-plt.plot(x, true_labels, 'o', label='Ground Truth')
-plt.plot(x, eval_outputs, 'o', label='Prediction')
-plt.legend()
+# plt.figure(figsize=(8,6), dpi=100)
+# plt.plot(x, true_labels, 'o', label='Ground Truth')
+# plt.plot(x, eval_outputs, 'o', label='Prediction')
+# plt.legend()
 # plt.show()
 
 
@@ -209,14 +206,14 @@ with torch.no_grad():
         validation_x += inputs.squeeze(dim=1).tolist()
 
 # Plot the model's predictions against the true labels for the validation data
-plt.figure(figsize=(8,6), dpi=100)
-plt.plot(validation_x, validation_labels, 'o', label='Ground Truth')
-plt.plot(validation_x, validation_outputs, 'o', label='Prediction')
-plt.legend()
+# plt.figure(figsize=(8,6), dpi=100)
+# plt.plot(validation_x, validation_labels, 'o', label='Ground Truth')
+# plt.plot(validation_x, validation_outputs, 'o', label='Prediction')
+# plt.legend()
 # plt.show()
 
-print("Predictions:", outputs.squeeze(dim=1).tolist())
-print("True labels:", labels.squeeze(dim=1).tolist())
+# print("Predictions:", outputs.squeeze(dim=1).tolist())
+# print("True labels:", labels.squeeze(dim=1).tolist())
 
 
 

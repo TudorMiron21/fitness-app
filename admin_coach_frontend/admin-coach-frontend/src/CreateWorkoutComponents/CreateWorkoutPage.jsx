@@ -7,6 +7,7 @@ import { Footer } from "../FooterComponent/Footer";
 import axios from "axios";
 import { ExerciseCard } from "../ExerciseCardComponent/ExerciseCard";
 import { Spinner } from "../SpinnerComponents/Spinner";
+import { WaitForApprovalPage } from "../WaitForApprovalPageComponents/WaitForApprovalPage.jsx"; // Assuming this is in the same directory
 
 export const CreateWorkoutPage = () => {
   const initilaWorkoutState = {
@@ -25,6 +26,9 @@ export const CreateWorkoutPage = () => {
     difficultyNames: [],
     categoryNames: [],
   });
+
+  const [areCoachDetailsValid, setAreCoachDetailsValid] = useState(null);
+  const [isTokenValid, setIsTokenValid] = useState(false);
 
   const [exercises, setExercises] = useState([]);
 
@@ -114,10 +118,10 @@ export const CreateWorkoutPage = () => {
 
     try {
       console.log(
-        `https://fit-stack.online/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`
+        `https://www.fit-stack.online/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`
       );
       const response = await axios.get(
-        `https://fit-stack.online/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`,
+        `https://www.fit-stack.online/api/v1/adminCoachService/coach/getFilteredExercises?${queryParams.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -132,21 +136,38 @@ export const CreateWorkoutPage = () => {
   };
 
   useEffect(() => {
-    const checkTokenValid = async () => {
+    const checkCoachDetails = async () => {
       try {
+        const role = localStorage.getItem("role");
+
         const token = localStorage.getItem("access_token");
 
         if (token) {
-          // setIsTokenValid(await validateToken(token));
-          const isTokenValid = await validateToken(token);
-          if (!isTokenValid) navigate("/login");
-        } else navigate("/login");
+          setIsTokenValid(await validateToken(token));
+        }
+        if (role === "ROLE_COACH") {
+          const response = await axios.get(
+            "https://www.fit-stack.online/api/v1/adminCoachService/coach/checkAreCoachDetailsValid",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setAreCoachDetailsValid(response.data);
+        } else if (role === "ROLE_ADMIN") {
+          setAreCoachDetailsValid(true);
+        }
       } catch (error) {
         console.error("Error fetching coach details status", error);
+        // Handle the error state as needed, perhaps setting the state to false
+        setAreCoachDetailsValid(false);
       }
     };
-    checkTokenValid();
+
+    checkCoachDetails();
   }, []);
+
   const handleFormInputChange = (e) => {
     const { name, value } = e.target;
     setWorkoutForm((prevForm) => ({
@@ -202,7 +223,7 @@ export const CreateWorkoutPage = () => {
     );
     try {
       const response = await axios.post(
-        "https://fit-stack.online/api/v1/adminCoachService/coach/createWorkout",
+        "https://www.fit-stack.online/api/v1/adminCoachService/coach/createWorkout",
         formDataToSend,
         {
           headers: {
@@ -303,306 +324,324 @@ export const CreateWorkoutPage = () => {
     }
   };
 
-  return (
-    <div>
-      <NavBar />
-      <div
-        className={`create-workout-page ${
-          isExerciseContainerVisible ? "with-filters" : ""
-        }`}
-      >
-        {" "}
-        <div className="workout-form-container">
-          <h2>Create Workout</h2>
-          <form onSubmit={handleSubmitWorkout}>
-            <div className="input-group">
-              <label htmlFor="workoutName">Workout Name:</label>
-              <input
-                type="text"
-                id="workoutName"
-                name="workoutName"
-                value={workoutForm.workoutName}
-                onChange={handleFormInputChange}
-                placeholder="Workout Name"
-              />
-            </div>
-            <div className="input-group">
-              <label htmlFor="description">Description:</label>
-              <textarea
-                id="description"
-                name="description"
-                value={workoutForm.description}
-                onChange={handleFormInputChange}
-                placeholder="Workout Description"
-              ></textarea>
-            </div>
-
-            <div className="input-group">
-              <button
-                type="button"
-                className="button"
-                onClick={handleAddExercisesClick}
-              >
-                Add Exercises
-              </button>
-            </div>
-
-            <div className="exercise-list">
-              {addedExercises.map((exercise) => (
-                <div
-                  key={exercise.exerciseId}
-                  // onClick={() => addOrRemoveExercise(exercise)}
-                >
-                  <ExerciseCard exercise={exercise} focusEnabled={false} />
+  if (!isTokenValid) {
+    navigate("/login");
+    return;
+  } else {
+    // Conditional rendering based on the 'isCoachDetailsValid' state
+    if (areCoachDetailsValid === null) {
+      return <Spinner />;
+    } else if (areCoachDetailsValid) {
+      return (
+        <div>
+          <NavBar />
+          <div
+            className={`create-workout-page ${
+              isExerciseContainerVisible ? "with-filters" : ""
+            }`}
+          >
+            {" "}
+            <div className="workout-form-container">
+              <h2>Create Workout</h2>
+              <form onSubmit={handleSubmitWorkout}>
+                <div className="input-group">
+                  <label htmlFor="workoutName">Workout Name:</label>
+                  <input
+                    type="text"
+                    id="workoutName"
+                    name="workoutName"
+                    value={workoutForm.workoutName}
+                    onChange={handleFormInputChange}
+                    placeholder="Workout Name"
+                  />
                 </div>
-              ))}
-            </div>
+                <div className="input-group">
+                  <label htmlFor="description">Description:</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={workoutForm.description}
+                    onChange={handleFormInputChange}
+                    placeholder="Workout Description"
+                  ></textarea>
+                </div>
 
-            <div className="input-group">
-              <label htmlFor="cover-photo">Cover Photo:</label>
-              <input
-                type="file"
-                id="cover-photo"
-                name="coverPhoto"
-                onChange={handlePhotoChange}
-                accept="image/*"
-              />
-            </div>
-            {imagePreview && (
-              <div className="image-preview-container">
-                <label>Cover Photo Preview:</label>
-                <img src={imagePreview} alt="Cover Preview" />
-              </div>
-            )}
-            <div className="input-group">
-              <button className="button">Submit Workout</button>
-            </div>
-          </form>
-          {loading && <Spinner />}
+                <div className="input-group">
+                  <button
+                    type="button"
+                    className="button"
+                    onClick={handleAddExercisesClick}
+                  >
+                    Add Exercises
+                  </button>
+                </div>
 
-          {completionMessage && (
-            <div className="completion-message">{completionMessage}</div>
-          )}
-        </div>
-        <div
-          className={`exercise-filters-container ${
-            isExerciseContainerVisible ? "visible" : ""
-          }`}
-        >
-          {isFilterVisible && (
+                <div className="exercise-list">
+                  {addedExercises.map((exercise) => (
+                    <div
+                      key={exercise.exerciseId}
+                      // onClick={() => addOrRemoveExercise(exercise)}
+                    >
+                      <ExerciseCard exercise={exercise} focusEnabled={false} />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="input-group">
+                  <label htmlFor="cover-photo">Cover Photo:</label>
+                  <input
+                    type="file"
+                    id="cover-photo"
+                    name="coverPhoto"
+                    onChange={handlePhotoChange}
+                    accept="image/*"
+                  />
+                </div>
+                {imagePreview && (
+                  <div className="image-preview-container">
+                    <label>Cover Photo Preview:</label>
+                    <img src={imagePreview} alt="Cover Preview" />
+                  </div>
+                )}
+                <div className="input-group">
+                  <button className="button">Submit Workout</button>
+                </div>
+              </form>
+              {loading && <Spinner />}
+
+              {completionMessage && (
+                <div className="completion-message">{completionMessage}</div>
+              )}
+            </div>
             <div
-              className={`filters-content ${isFilterVisible ? "" : "hidden"}`}
+              className={`exercise-filters-container ${
+                isExerciseContainerVisible ? "visible" : ""
+              }`}
             >
-              {/* Exercise Name Input */}
-              <div className="input-group">
-                <input
-                  type="text"
-                  name="name"
-                  value={filters.name}
-                  onChange={handleFilterInputChange}
-                  placeholder="Exercise Name"
-                  className="exercise-name-input"
-                />
-              </div>
-
-              {/* Dropdown Filters */}
-              <div className="filter-item">
+              {isFilterVisible && (
                 <div
-                  className="dropdown-label"
-                  onClick={toggleMuscleGroupVisibility}
+                  className={`filters-content ${
+                    isFilterVisible ? "" : "hidden"
+                  }`}
                 >
-                  <label>Muscle Group</label>
-                  <span className="dropdown-toggle">
-                    {isMuscleGroupVisible ? "▲" : "▼"}
-                  </span>
-                </div>
-                {isMuscleGroupVisible && (
-                  <div className="checkboxes">
-                    {[
-                      "Forearms",
-                      "Quadriceps",
-                      "Abdominals",
-                      "Lats",
-                      "Middle Back",
-                      "Lower Back",
-                      "Shoulders",
-                      "Biceps",
-                      "Glutes",
-                      "Triceps",
-                      "Hamstrings",
-                      "Neck",
-                      "Chest",
-                      "Traps",
-                      "Calves",
-                      "Adductors",
-                      "Abductors",
-                    ].map((muscleGroup) => (
-                      <label key={muscleGroup}>
-                        <input
-                          type="checkbox"
-                          name="muscleGroup"
-                          value={muscleGroup}
-                          checked={filters.muscleGroupNames.includes(
-                            muscleGroup
-                          )}
-                          onChange={handleMuscleGroupFilterChange}
-                        />
-                        {muscleGroup}
-                      </label>
-                    ))}
+                  {/* Exercise Name Input */}
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      name="name"
+                      value={filters.name}
+                      onChange={handleFilterInputChange}
+                      placeholder="Exercise Name"
+                      className="exercise-name-input"
+                    />
                   </div>
-                )}
-              </div>
 
-              <div className="filter-item">
-                <div
-                  className="dropdown-label"
-                  onClick={toggleCategoryVisibility}
-                >
-                  <label>Category</label>
-                  <span className="dropdown-toggle">
-                    {isCategoryVisible ? "▲" : "▼"}
-                  </span>
-                </div>
-                {isCategoryVisible && (
-                  <div className="checkboxes">
-                    {[
-                      "Strongman",
-                      "Strength",
-                      "Olympic Weightlifting",
-                      "Powerlifting",
-                      "Cardio",
-                      "Plyometrics",
-                      "Stretching",
-                    ].map((category) => (
-                      <label key={category}>
-                        <input
-                          type="checkbox"
-                          name="category"
-                          value={category}
-                          checked={filters.categoryNames.includes(category)}
-                          onChange={handleCategoryFilterChange}
-                        />
-                        {category}
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="filter-item">
-                <div
-                  className="dropdown-label"
-                  onClick={toggleDifficultyVisibility}
-                >
-                  <label>Difficulty</label>
-                  <span className="dropdown-toggle">
-                    {isDifficultyVisible ? "▲" : "▼"}
-                  </span>
-                </div>
-                {isDifficultyVisible && (
-                  <div className="checkboxes">
-                    {["Beginner", "Intermediate", "Advanced"].map(
-                      (difficulty) => (
-                        <label key={difficulty}>
-                          <input
-                            type="checkbox"
-                            name="difficulty"
-                            value={difficulty}
-                            checked={filters.difficultyNames.includes(
-                              difficulty
-                            )}
-                            onChange={handleDifficultyFilterChange}
-                          />
-                          {difficulty}
-                        </label>
-                      )
+                  {/* Dropdown Filters */}
+                  <div className="filter-item">
+                    <div
+                      className="dropdown-label"
+                      onClick={toggleMuscleGroupVisibility}
+                    >
+                      <label>Muscle Group</label>
+                      <span className="dropdown-toggle">
+                        {isMuscleGroupVisible ? "▲" : "▼"}
+                      </span>
+                    </div>
+                    {isMuscleGroupVisible && (
+                      <div className="checkboxes">
+                        {[
+                          "Forearms",
+                          "Quadriceps",
+                          "Abdominals",
+                          "Lats",
+                          "Middle Back",
+                          "Lower Back",
+                          "Shoulders",
+                          "Biceps",
+                          "Glutes",
+                          "Triceps",
+                          "Hamstrings",
+                          "Neck",
+                          "Chest",
+                          "Traps",
+                          "Calves",
+                          "Adductors",
+                          "Abductors",
+                        ].map((muscleGroup) => (
+                          <label key={muscleGroup}>
+                            <input
+                              type="checkbox"
+                              name="muscleGroup"
+                              value={muscleGroup}
+                              checked={filters.muscleGroupNames.includes(
+                                muscleGroup
+                              )}
+                              onChange={handleMuscleGroupFilterChange}
+                            />
+                            {muscleGroup}
+                          </label>
+                        ))}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
 
-              <div className="filter-item">
-                <div
-                  className="dropdown-label"
-                  onClick={toggleEquipmentVisibility}
-                >
-                  <label>Equipment</label>
-                  <span className="dropdown-toggle">
-                    {isEquipmentVisible ? "▲" : "▼"}
-                  </span>
-                </div>
-                {isEquipmentVisible && (
-                  <div className="checkboxes">
-                    {[
-                      "Other",
-                      "Machine",
-                      "Barbell",
-                      "Dumbbell",
-                      "Body Only",
-                      "Kettlebells",
-                      "Cable",
-                      "E-Z Curl Bar",
-                      "Bands",
-                      "Medicine Ball",
-                      "Exercise Ball",
-                    ].map((equipment) => (
-                      <label key={equipment}>
-                        <input
-                          type="checkbox"
-                          name="equipment"
-                          value={equipment}
-                          checked={filters.equipmentNames.includes(equipment)}
-                          onChange={handleEquipmentFilterChange}
-                        />
-                        {equipment}
-                      </label>
-                    ))}
+                  <div className="filter-item">
+                    <div
+                      className="dropdown-label"
+                      onClick={toggleCategoryVisibility}
+                    >
+                      <label>Category</label>
+                      <span className="dropdown-toggle">
+                        {isCategoryVisible ? "▲" : "▼"}
+                      </span>
+                    </div>
+                    {isCategoryVisible && (
+                      <div className="checkboxes">
+                        {[
+                          "Strongman",
+                          "Strength",
+                          "Olympic Weightlifting",
+                          "Powerlifting",
+                          "Cardio",
+                          "Plyometrics",
+                          "Stretching",
+                        ].map((category) => (
+                          <label key={category}>
+                            <input
+                              type="checkbox"
+                              name="category"
+                              value={category}
+                              checked={filters.categoryNames.includes(category)}
+                              onChange={handleCategoryFilterChange}
+                            />
+                            {category}
+                          </label>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="filter-item">
-                <label htmlFor="isPrivate">Only Exercises Created By You</label>
-                <input
-                  type="checkbox"
-                  id="isPrivate"
-                  name="isPrivate"
-                  checked={filters.isExercisePrivate}
-                  onChange={handlePrivateCheckboxChange}
-                />
-              </div>
+                  <div className="filter-item">
+                    <div
+                      className="dropdown-label"
+                      onClick={toggleDifficultyVisibility}
+                    >
+                      <label>Difficulty</label>
+                      <span className="dropdown-toggle">
+                        {isDifficultyVisible ? "▲" : "▼"}
+                      </span>
+                    </div>
+                    {isDifficultyVisible && (
+                      <div className="checkboxes">
+                        {["Beginner", "Intermediate", "Advanced"].map(
+                          (difficulty) => (
+                            <label key={difficulty}>
+                              <input
+                                type="checkbox"
+                                name="difficulty"
+                                value={difficulty}
+                                checked={filters.difficultyNames.includes(
+                                  difficulty
+                                )}
+                                onChange={handleDifficultyFilterChange}
+                              />
+                              {difficulty}
+                            </label>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
 
+                  <div className="filter-item">
+                    <div
+                      className="dropdown-label"
+                      onClick={toggleEquipmentVisibility}
+                    >
+                      <label>Equipment</label>
+                      <span className="dropdown-toggle">
+                        {isEquipmentVisible ? "▲" : "▼"}
+                      </span>
+                    </div>
+                    {isEquipmentVisible && (
+                      <div className="checkboxes">
+                        {[
+                          "Other",
+                          "Machine",
+                          "Barbell",
+                          "Dumbbell",
+                          "Body Only",
+                          "Kettlebells",
+                          "Cable",
+                          "E-Z Curl Bar",
+                          "Bands",
+                          "Medicine Ball",
+                          "Exercise Ball",
+                        ].map((equipment) => (
+                          <label key={equipment}>
+                            <input
+                              type="checkbox"
+                              name="equipment"
+                              value={equipment}
+                              checked={filters.equipmentNames.includes(
+                                equipment
+                              )}
+                              onChange={handleEquipmentFilterChange}
+                            />
+                            {equipment}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="filter-item">
+                    <label htmlFor="isPrivate">
+                      Only Exercises Created By You
+                    </label>
+                    <input
+                      type="checkbox"
+                      id="isPrivate"
+                      name="isPrivate"
+                      checked={filters.isExercisePrivate}
+                      onChange={handlePrivateCheckboxChange}
+                    />
+                  </div>
+
+                  <div>
+                    <button
+                      onClick={handleApplyFilters}
+                      className="apply-filters-button"
+                    >
+                      Apply FIlters
+                    </button>
+                  </div>
+                </div>
+              )}
               <div>
-                <button
-                  onClick={handleApplyFilters}
-                  className="apply-filters-button"
-                >
-                  Apply FIlters
+                <button onClick={toggleFilter} className="button">
+                  {isFilterVisible ? "Hide Filters" : "Show Filters"}
                 </button>
               </div>
-            </div>
-          )}
-          <div>
-            <button onClick={toggleFilter} className="button">
-              {isFilterVisible ? "Hide Filters" : "Show Filters"}
-            </button>
-          </div>
 
-          <div className="exercise-list">
-            {exercises.map((exercise) => (
-              <div
-                key={exercise.exerciseId}
-                onClick={() => addOrRemoveExercise(exercise)}
-              >
-                <ExerciseCard exercise={exercise} focusEnabled={true} />
+              <div className="exercise-list">
+                {exercises.map((exercise) => (
+                  <div
+                    key={exercise.exerciseId}
+                    onClick={() => addOrRemoveExercise(exercise)}
+                  >
+                    <ExerciseCard exercise={exercise} focusEnabled={true} />
+                  </div>
+                ))}
               </div>
-            ))}
+              {/* Rest of the component */}
+            </div>
           </div>
-          {/* Rest of the component */}
+          {/* <Footer /> */}
         </div>
-      </div>
-      <Footer />
-    </div>
-  );
+      );
+    } else {
+      return <WaitForApprovalPage />;
+    }
+  }
 };

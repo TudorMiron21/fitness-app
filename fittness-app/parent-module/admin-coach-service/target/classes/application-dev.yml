@@ -2,6 +2,9 @@ server:
   port: 8083
 
 spring:
+  boot:
+    run:
+      jvmArguments: --add-exports java.base/sun.security.provider.certpath=ALL-UNNAMED
   datasource:
     url: jdbc:postgresql://localhost:5432/authorization
 
@@ -39,7 +42,13 @@ eureka:
 minio:
   accessKey: dAh2wTxgKQK3B6TPi20p
   secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
-  endpoint: http://192.168.147.140:9000
+#  endpoint: http://192.168.147.140:9000
+  endpoint: https://1f7f-109-166-130-164.ngrok-free.app
+
+#minio:
+#  accessKey: qhxiwuBBB2D3LeJhIr8I
+#  secretKey: iSgJZkaZZaV4zYVaPPVlmqjJmXdAwRCr1K64kCnF
+#  endpoint: https://172.205.120.186:443
 
 app:
   firebase-configuration-file: fitness-app-firebase-adminsdk.json

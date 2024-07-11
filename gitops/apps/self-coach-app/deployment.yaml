@@ -27,16 +27,16 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-self-coach-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/fitness-app-self-coach:1.0.7 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
+        image: docker.io/tudormiron/fitness-app-self-coach:1.0.17 #{"$imagepolicy": "flux-system:self-coach-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
         - containerPort: 8081
         resources:
           requests:
-            memory: "64Mi"
-            cpu: "50m"
-          limits:
-            memory: "256Mi"
+            memory: "512Mi"
             cpu: "100m"
+          limits:
+            memory: "1024Mi"
+            cpu: "200m"
       restartPolicy: Always

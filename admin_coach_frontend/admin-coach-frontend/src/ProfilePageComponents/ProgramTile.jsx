@@ -63,7 +63,7 @@ export const ProgramTile = ({ program, onEdit, onDelete }) => {
   const fetchDetailedProgramData = async () => {
     try {
       const response = await axios.get(
-        `https://fit-stack.online/api/v1/adminCoachService/coach/getDetailedProgram/${program.id}`,
+        `http://localhost:8080/api/v1/adminCoachService/coach/getDetailedProgram/${program.id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,

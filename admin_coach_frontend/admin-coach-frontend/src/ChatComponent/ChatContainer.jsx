@@ -34,7 +34,7 @@ export const Chat = ({ socket, source_email, destination_email, room }) => {
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8084/chatService/getMessages/${source_email}/${destination_email}`
+          `https://www.fit-stack.online/chatService/getMessages/${source_email}/${destination_email}`
         );
         const sortedMessages = response.data.messages.sort((a, b) => {
           const dateA = new Date(a.timestamp);

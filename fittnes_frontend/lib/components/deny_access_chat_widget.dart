@@ -48,7 +48,7 @@ class DenyAccessChatWidget extends StatelessWidget {
                 ),
                 onPressed: () async {
                   const url =
-                      'http://localhost:8080/api/selfCoach/paypal/getPayPalSubscriptionButton';
+                      'https://fit-stack.online/api/selfCoach/paypal/getPayPalSubscriptionButton';
                   await _launchAsInAppWebViewWithCustomHeaders(Uri.parse(url));
                 },
               ),

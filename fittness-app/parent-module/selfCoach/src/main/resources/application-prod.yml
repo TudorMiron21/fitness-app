@@ -19,7 +19,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: selfCoach
-
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
   thymeleaf:
     cache: false # true for production
     mode: HTML
@@ -30,11 +33,10 @@ spring:
     suffix: .html
 
 minio:
-  accessKey: cxCTna2MNyy1WP7zu3k7
-  secretKey: sg4PCcxgrutMyD7Ip31AxTbdPCseJU4oCH35idVm
-  endpoint: https://4.210.32.109:443
+  accessKey: dAh2wTxgKQK3B6TPi20p
+  secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
+  endpoint: https://f2a8-109-166-130-164.ngrok-free.app
   put-object-part-size: 5242880
-
 app:
   streaming:
     default-chunk-size: 3145728
