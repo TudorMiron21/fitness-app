@@ -50,8 +50,8 @@ public class AuthControllerIntegrationTest {
     @Test
     public void AuthController_register_ResponseEntity() throws Exception {
         RegisterRequest registerRequest = RegisterRequest.builder()
-                .firstname("test")
-                .lastname("test")
+                .firstName("test")
+                .lastName("test")
                 .email("test.email@test.com")
                 .password("testPass")
                 .role(Roles.USER)
@@ -71,8 +71,8 @@ public class AuthControllerIntegrationTest {
     public void AuthController_login_ResponseEntity() throws Exception {
         //first i need to register a user
         RegisterRequest registerRequest = RegisterRequest.builder()
-                .firstname("test")
-                .lastname("test")
+                .firstName("test")
+                .lastName("test")
                 .email("test.email1@test.com")
                 .password("testPass")
                 .role(Roles.USER)

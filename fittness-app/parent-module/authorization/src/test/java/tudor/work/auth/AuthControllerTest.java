@@ -59,8 +59,8 @@ public class AuthControllerTest {
         Roles role = Roles.USER;
         RegisterRequest request = RegisterRequest
                 .builder()
-                .firstname(firstName)
-                .lastname(lastName)
+                .firstName(firstName)
+                .lastName(lastName)
                 .email(email)
                 .password(password)
                 .role(role)
@@ -89,8 +89,8 @@ public class AuthControllerTest {
         Roles role = Roles.USER;
         RegisterRequest request = RegisterRequest
                 .builder()
-                .firstname(firstName)
-                .lastname(lastName)
+                .firstName(firstName)
+                .lastName(lastName)
                 .email(email)
                 .password(password)
                 .role(role)
