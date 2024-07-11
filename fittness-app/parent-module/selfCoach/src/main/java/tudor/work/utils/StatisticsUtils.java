@@ -201,11 +201,13 @@ public class StatisticsUtils {
                     return exercise1.getCaloriesBurned() > exercise2.getCaloriesBurned() ? exercise1 : exercise2;
 
                 } else if ("Stretching".equals(currentExercise.getCategory().getName())) {
-
                     return exercise1.getCurrNoSeconds() > exercise2.getCurrNoSeconds() ? exercise1 : exercise2;
                 } else if ("Plyometrics".equals(currentExercise.getCategory().getName())) {
                     return exercise1.getNoReps() > exercise2.getNoReps() ? exercise1 : exercise2;
-                } else {
+                } else if("Body Only".equals(currentExercise.getEquipment().getName())) {
+                    return exercise1.getNoReps() > exercise2.getNoReps() ? exercise1 : exercise2;
+                }
+                else{
                     //weight personal records based exercises
                     return exercise1.getWeight() > exercise2.getWeight() ? exercise1 : exercise2;
                 }
@@ -237,7 +239,9 @@ public class StatisticsUtils {
                 isTimeOriented = true;
             } else if (uhe.getExercise().getCategory().getName().equals("Plyometrics")) {
                 isNoRepsOriented = true;
-            } else {
+            } else if (uhe.getExercise().getEquipment().getName().equals("Body Only")) {
+                isNoRepsOriented = true;
+            }else {
                 isWeightOriented = true;
             }
 

@@ -40,13 +40,13 @@ public class JwtVerifierFilter extends OncePerRequestFilter {
         }
 
         //TODO:modifica aici
-        String username = template.getForObject("http://localhost:8082/api/v1/auth/getUsername?token=" + authHeader, String.class);
-
-        String[] authorities = template.getForObject("http://localhost:8082/api/v1/auth/getUserAuthorities?token=" + authHeader, String[].class);
-
-//        String username = template.getForObject("http://fitness-auth-service.default.svc.cluster.local:8082/api/v1/auth/getUsername?token=" + authHeader, String.class);
+//        String username = template.getForObject("http://localhost:8082/api/v1/auth/getUsername?token=" + authHeader, String.class);
 //
-//        String[] authorities = template.getForObject("http://fitness-auth-service.default.svc.cluster.local:8082/api/v1/auth/getUserAuthorities?token=" + authHeader, String[].class);
+//        String[] authorities = template.getForObject("http://localhost:8082/api/v1/auth/getUserAuthorities?token=" + authHeader, String[].class);
+
+        String username = template.getForObject("http://fitness-auth-service.default.svc.cluster.local:8082/api/v1/auth/getUsername?token=" + authHeader, String.class);
+
+        String[] authorities = template.getForObject("http://fitness-auth-service.default.svc.cluster.local:8082/api/v1/auth/getUserAuthorities?token=" + authHeader, String[].class);
 
         List<GrantedAuthority> simpleGrantedAuthorities = Arrays.stream(authorities)
                 .map(SimpleGrantedAuthority::new)

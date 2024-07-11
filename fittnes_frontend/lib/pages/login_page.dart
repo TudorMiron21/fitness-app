@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       String loginDataJson = json.encode(loginData);
 
       Uri url =
-          Uri.parse('http://192.168.54.182:8080/api/v1/auth/login'); // Use Uri.http
+          Uri.parse('https://www.fit-stack.online/api/v1/auth/login'); // Use Uri.http
 
       Response response =
           await post(url, headers: headers, body: loginDataJson);
@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
           String loginDataJson = json.encode(loginData);
 
           Uri url =
-              Uri.parse('http://192.168.54.182:8080/api/v1/auth/loginGoogle');
+              Uri.parse('https://www.fit-stack.online/api/v1/auth/loginGoogle');
 
           Response response =
               await post(url, headers: headers, body: loginDataJson);

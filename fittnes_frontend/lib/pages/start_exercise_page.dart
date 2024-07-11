@@ -252,7 +252,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
 
     final response = await http.post(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/saveModule'),
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/saveModule'),
       body: jsonEncode({
         "parentUserHistoryWorkoutId": widget.userHistoryWorkoutId.toString(),
         "noSets": numberOfSets
@@ -285,7 +285,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
 
     final response = await http.get(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/getUserDetails'),
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getUserDetails'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -365,7 +365,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
     final response = await http.put(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
+          'https://www.fit-stack.online/api/selfCoach/user/addExerciseToModule/$userHistoryModuleId'),
       body: jsonEncode({
         "exercise": widget.exercises[widget.exerciseIndex].id,
         "userHistoryModule": userHistoryModuleId.toString(),
@@ -398,7 +398,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
     final response = await http.put(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
+          'https://www.fit-stack.online/api/selfCoach/user/finishWorkout/$userHistoryWorkoutId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -432,7 +432,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     String email = JwtUtils.extractSubject(accessToken);
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email'),
+          'https://www.fit-stack.online/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -455,7 +455,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
       return lastEntryUserHistoryExerciseDto;
     } else {
       print(
-          'http://localhost:8080/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email');
+          'https://www.fit-stack.online/api/selfCoach/user/getLastEntryUserExerciseHistory/$workoutId/$email');
       throw Exception("workout with id $workoutId is finished");
     }
   }
@@ -472,7 +472,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
     final response = await http.put(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId'),
+          'https://www.fit-stack.online/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
@@ -486,7 +486,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
     if (response.statusCode != 200) {
       print(
-          'http://localhost:8080/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId');
+          'https://www.fit-stack.online/api/selfCoach/user/updateUserHistoryExercise/$userHistoryExerciseId');
       throw Exception(
           'Failed to update user history exercise. Status code: ${response.statusCode}');
     }
@@ -502,7 +502,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
     }
     final response = await http.put(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/updateUserHistoryModule/$userHistoryModuleId'),
+          'https://www.fit-stack.online/api/selfCoach/user/updateUserHistoryModule/$userHistoryModuleId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
@@ -857,7 +857,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
             ],
 
             if(exercise.exerciseVideoUrl.isNotEmpty)
-              _buildVideoSection('http://localhost:8080/api/selfCoach/user/videoStreaming/${exercise.id}')
+              _buildVideoSection('https://www.fit-stack.online/api/selfCoach/user/videoStreaming/${exercise.id}')
           ],
         ),
       ),

@@ -67,7 +67,7 @@ class _CoachProfileState extends State<CoachProfile> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/payingUser/getCoachWorkouts/$coachId'),
+          'https://www.fit-stack.online/api/selfCoach/payingUser/getCoachWorkouts/$coachId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -136,7 +136,7 @@ class _CoachProfileState extends State<CoachProfile> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/payingUser/getCoachPrograms/$coachId'),
+          'https://www.fit-stack.online/api/selfCoach/payingUser/getCoachPrograms/$coachId'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -223,7 +223,7 @@ class _CoachProfileState extends State<CoachProfile> {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8080/api/selfCoach/payingUser/isCoachFollowedByUser/$coachId'),
+            'https://www.fit-stack.online/api/selfCoach/payingUser/isCoachFollowedByUser/$coachId'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
@@ -267,7 +267,7 @@ class _CoachProfileState extends State<CoachProfile> {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8080/api/selfCoach/payingUser/getCoachDetails/$coachId'),
+            'https://www.fit-stack.online/api/selfCoach/payingUser/getCoachDetails/$coachId'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
@@ -305,7 +305,7 @@ class _CoachProfileState extends State<CoachProfile> {
     try {
       final response = await http.put(
         Uri.parse(
-            'http://localhost:8080/api/selfCoach/payingUser/toggleFollowCoach/$coachId'),
+            'https://www.fit-stack.online/api/selfCoach/payingUser/toggleFollowCoach/$coachId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
@@ -341,7 +341,7 @@ class _CoachProfileState extends State<CoachProfile> {
     }
 
     final response = await http.put(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/likeWorkout/' +
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/likeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -372,7 +372,7 @@ class _CoachProfileState extends State<CoachProfile> {
     // Use the workout.id to identify the workout to unlike
 
     final response = await http.delete(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/unlikeWorkout/' +
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/unlikeWorkout/' +
           workout.id.toString()),
       headers: {
         'Authorization': 'Bearer $accessToken',

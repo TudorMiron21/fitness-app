@@ -42,7 +42,7 @@ class _ProgramPageState extends State<ProgramPage> {
 
     final response = await http.post(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/startProgram/$programId'),
+          'https://www.fit-stack.online/api/selfCoach/user/startProgram/$programId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -65,7 +65,7 @@ class _ProgramPageState extends State<ProgramPage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/isProgramStarted/$programId'),
+          'https://www.fit-stack.online/api/selfCoach/user/isProgramStarted/$programId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -118,48 +118,55 @@ class _ProgramPageState extends State<ProgramPage> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Upper section with program details and start/continue button
             Container(
               padding: EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Program details section
-                  Row(
-                    children: [
-                      widget.program.coverPhotoUrl != null &&
-                              widget.program.coverPhotoUrl!.isNotEmpty
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                widget.program.coverPhotoUrl!,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Icon(Icons.fitness_center, size: 100),
-                      SizedBox(width: 16.0),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.program.name,
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  widget.program.coverPhotoUrl != null &&
+                          widget.program.coverPhotoUrl!.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            widget.program.coverPhotoUrl!,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
                           ),
-                          SizedBox(height: 8.0),
-                          Text(
-                              "Duration: ${widget.program.durationInDays} days"),
-                        ],
+                        )
+                      : Icon(Icons.fitness_center, size: 100),
+                  SizedBox(height: 16.0),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.program.name,
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      Text(widget.program.description),
+                      SizedBox(height: 8.0),
+                      Text("Duration: ${widget.program.durationInDays} days"),
+                      const SizedBox(
+                        height: 10.0,
                       ),
                     ],
                   ),
+                  //   ],
+                  // ),
                   // Start/continue program button
+
                   ElevatedButton(
                     onPressed: () async {
                       if (userHistoryProgramId == -1) {
@@ -192,6 +199,7 @@ class _ProgramPageState extends State<ProgramPage> {
                 ],
               ),
             ),
+
             Divider(), // Optional divider to separate from ListView
             // The ListView of workouts
             ListView.builder(
@@ -239,7 +247,9 @@ class _ProgramPageState extends State<ProgramPage> {
                             color: workout.name == "Rest Day"
                                 ? Colors.grey // Grey for rest days
                                 : (workoutIndex >
-                                       (index * 7 ) + position + 1) // Adjusted logic
+                                        (index * 7) +
+                                            position +
+                                            1) // Adjusted logic
                                     ? Colors
                                         .green // Color when condition is met
                                     : Colors.black, // Default black color

@@ -20,7 +20,10 @@ public class Program {
     private Long id;
 
     private String name;
+
+    @Column(length = 1024)
     private String description;
+
     private Integer durationInDays;
     private String coverPhotoUrl;
 

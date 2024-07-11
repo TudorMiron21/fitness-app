@@ -34,7 +34,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getAllNonExclusiveExercises'),
+          'https://www.fit-stack.online/api/selfCoach/user/getAllNonExclusiveExercises'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -100,7 +100,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     });
 
     final response = await http.post(
-        Uri.parse('http://localhost:8080/api/selfCoach/user/createUserWorkout'),
+        Uri.parse('https://www.fit-stack.online/api/selfCoach/user/createUserWorkout'),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json'

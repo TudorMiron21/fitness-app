@@ -34,7 +34,8 @@ export const CreateProgramPage = () => {
 
   const [programForm, setProgramForm] = useState(initialProgramState);
 
-  const [isSetDurationPressed, setIsSetDurationPressed] = useState(false);
+  // const [isSetDurationPressed, setIsSetDurationPressed] = useState(false);
+  const [completionMessage, setCompletionMessage] = useState("");
 
   const [isWorkoutContainerVisible, setIsWorkoutContainerVisible] =
     useState(false);
@@ -237,10 +238,19 @@ export const CreateProgramPage = () => {
               responseCoverPhotoUpload.status
             );
           }
+          setCompletionMessage("Program added successfully!");
+          setProgramForm(initialProgramState);
+          setWorkoutMap(new Map());
+          setImagePreview([]);
+          setIsWorkoutContainerVisible(false);
+        
         } catch (error) {
+          setCompletionMessage("Failed to add program. Please try again.");
+
           console.error("Error uploading cover photo:", error);
         }
-      } else {
+      } else {          
+        setCompletionMessage("Failed to add program. Please try again.");
         console.error("Program creation failed with status:", response.status);
       }
     } catch (error) {
@@ -350,9 +360,13 @@ export const CreateProgramPage = () => {
                 )}
 
                 <div className="program-input-group">
-                  <button className="button">Submit Workout</button>
+                  <button className="button">Submit Program</button>
                 </div>
               </form>
+              {loading && <Spinner />}
+              {completionMessage && (
+                <div className="completion-message">{completionMessage}</div>
+              )}
             </div>
 
             <div

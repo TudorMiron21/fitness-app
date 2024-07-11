@@ -64,7 +64,7 @@ Future<void> _fetchUserProfilePicture() async {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.54.182:8080/api/selfCoach/user/getProfilePicture'),
+          'https://www.fit-stack.online/api/selfCoach/user/getProfilePicture'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -97,7 +97,7 @@ Future<void> _fetchUserProfilePicture() async {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/user/getLeaderBoardEntryForUser'),
+          'https://www.fit-stack.online/api/selfCoach/user/getLeaderBoardEntryForUser'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -125,7 +125,7 @@ Future<void> _fetchUserProfilePicture() async {
     }
 
     final response = await http.get(
-      Uri.parse('http://localhost:8080/api/selfCoach/user/getUserAchievements'),
+      Uri.parse('https://www.fit-stack.online/api/selfCoach/user/getUserAchievements'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -153,7 +153,7 @@ Future<void> _fetchUserProfilePicture() async {
     var request = http.MultipartRequest(
       'PUT',
       Uri.parse(
-          'http://192.168.54.182:8080/api/selfCoach/user/uploadProfilePicture'),
+          'https://www.fit-stack.online/api/selfCoach/user/uploadProfilePicture'),
     );
 
     request.headers.addAll({
@@ -331,7 +331,7 @@ Future<void> _fetchUserProfilePicture() async {
                       ),
                       onPressed: () async {
                         const url =
-                            'http://localhost:8080/api/selfCoach/paypal/getPayPalSubscriptionButton';
+                            'https://www.fit-stack.online/api/selfCoach/paypal/getPayPalSubscriptionButton';
                         await _launchAsInAppWebViewWithCustomHeaders(
                             Uri.parse(url));
                       },

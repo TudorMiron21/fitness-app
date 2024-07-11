@@ -1,3 +1,4 @@
+// import 'dart:convert';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
@@ -15,7 +16,7 @@ class LastWorkoutStatsPage extends StatefulWidget {
 }
 
 class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
-  late WorkoutStatistics workoutStatistics;
+  WorkoutStatistics? workoutStatistics;
   bool isLoading = true;
 
   Future<void> getLastWorkoutStats() async {
@@ -29,7 +30,7 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
 
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8080/api/selfCoach/user/getLastWorkoutStatistics'),
+            'https://www.fit-stack.online/api/selfCoach/user/getLastWorkoutStatistics'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
@@ -38,11 +39,15 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         workoutStatistics = WorkoutStatistics.fromJson(data);
+      } else if (response.statusCode == 404) {
+        // Handle the case where no workout statistics are found
+        workoutStatistics = null;
       } else {
         throw Exception('Failed to load workout statistics');
       }
     } catch (e) {
       print('Error fetching workout statistics: $e');
+      workoutStatistics = null;
     } finally {
       if (mounted) {
         setState(() {
@@ -80,9 +85,38 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
         ),
       );
     }
-    final double totalVolume = workoutStatistics.totalVolume;
-    final String totalCaloriesBurned = workoutStatistics.totalCaloriesBurned.toStringAsFixed(2);
-    final int totalTimeInSeconds = workoutStatistics.totalTime;
+
+    if (workoutStatistics == null) {
+      return Scaffold(
+        appBar: AppBar(
+            title: Text(
+              'Last Workout Statistics',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            centerTitle: true,
+            toolbarHeight: 30,
+            backgroundColor: Colors.blue,
+            elevation: 4,
+            automaticallyImplyLeading: false),
+        body: Center(
+          child: Text(
+            'No last workout statistics available',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final double totalVolume = workoutStatistics!.totalVolume;
+    final String totalCaloriesBurned = workoutStatistics!.totalCaloriesBurned.toStringAsFixed(2);
+    final int totalTimeInSeconds = workoutStatistics!.totalTime;
 
     // Convert total time in seconds to hours:minutes:seconds format
     final int hours = totalTimeInSeconds ~/ 3600;
@@ -92,18 +126,6 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
         '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
 
     return Scaffold(
-      // appBar: AppBar(
-      //     title: Text(
-      //       'Last Workout Statistics',
-      //       style: TextStyle(
-      //         fontSize: 20,
-      //         fontWeight: FontWeight.w500,
-      //       ),
-      //     ),
-      //     centerTitle: true,
-      //     toolbarHeight: 30,
-      //     backgroundColor: Colors.blue,
-      //     elevation: 4),
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -112,53 +134,48 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
               image: DecorationImage(
                 image: AssetImage(
                     'lib/images/pattern_background.png'), // Replace with your asset image path
-                fit: BoxFit
-                    .cover, // This will fill the background of the SingleChildScrollView
+                fit: BoxFit.cover, // This will fill the background of the SingleChildScrollView
               ),
             ),
-          ), 
+          ),
           BackdropFilter(
             filter: ImageFilter.blur(
                 sigmaX: 3.0, sigmaY: 3.0), // Adjust the blur intensity
             child: Container(
-              color:
-                  Colors.black.withOpacity(0.6), // Darken the background a bit
+              color: Colors.black.withOpacity(0.6), // Darken the background a bit
             ),
           ),
-             SingleChildScrollView(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 8.0, // space between cards horizontally
-                  runSpacing: 8.0, // space between cards vertically
-                  children: <Widget>[
-                    _buildStatisticCard(
-                        context, 'Total Volume', '$totalVolume'),
-                    _buildStatisticCard(context, 'Calories Burned',
-                        '$totalCaloriesBurned kcal'),
-                    _buildStatisticCard(context, 'Total Time', formattedTime),
-                    _buildPieChartSection(
-                      context,
-                      'Category Percentage',
-                      workoutStatistics.categoryPercentage,
-                    ),
-                    _buildPieChartSection(
-                      context,
-                      'Muscle Group Percentage',
-                      workoutStatistics.muscleGroupPercentage,
-                    ),
-                    _buildPieChartSection(
-                      context,
-                      'Difficulty Percentage',
-                      workoutStatistics.difficultyPercentage,
-                    ),
-                    // ... other widgets you may want to display
-                  ],
-                ),
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8.0, // space between cards horizontally
+                runSpacing: 8.0, // space between cards vertically
+                children: <Widget>[
+                  _buildStatisticCard(context, 'Total Volume', '$totalVolume'),
+                  _buildStatisticCard(context, 'Calories Burned',
+                      '$totalCaloriesBurned kcal'),
+                  _buildStatisticCard(context, 'Total Time', formattedTime),
+                  _buildPieChartSection(
+                    context,
+                    'Category Percentage',
+                    workoutStatistics!.categoryPercentage,
+                  ),
+                  _buildPieChartSection(
+                    context,
+                    'Muscle Group Percentage',
+                    workoutStatistics!.muscleGroupPercentage,
+                  ),
+                  _buildPieChartSection(
+                    context,
+                    'Difficulty Percentage',
+                    workoutStatistics!.difficultyPercentage,
+                  ),
+                ],
               ),
             ),
-        
+          ),
         ],
       ),
     );
@@ -179,8 +196,7 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
             Text(
               value,
               style: Theme.of(context).textTheme.headline6?.copyWith(
-                    color:
-                        Colors.red.shade300, // This sets the text color to red
+                    color: Colors.red.shade300, // This sets the text color to red
                   ),
             ),
           ],
@@ -195,8 +211,7 @@ class _LastWorkoutStatsPageState extends State<LastWorkoutStatsPage> {
     List<PieChartSectionData> sections = percentages.entries.map((entry) {
       return PieChartSectionData(
         color: _getRandomColor(),
-        value: entry.value *
-            100, // Convert the decimal percentage to a full percentage
+        value: entry.value * 100, // Convert the decimal percentage to a full percentage
         title: '${(entry.value * 100).toStringAsFixed(1)}% ${entry.key}',
         radius: 50,
         titleStyle: TextStyle(

@@ -24,8 +24,8 @@ spring:
           uri: http://fitness-self-coach-service:8081
           predicates:
             - Path=/api/selfCoach/**
-          filters:
-            - JwtAuthenticationFilter
+#          filters:
+#            - JwtAuthenticationFilter
 
 
         - id: adminCoachService

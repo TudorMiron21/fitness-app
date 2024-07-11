@@ -28,6 +28,7 @@ public class Workout {
 
     private String name;
 
+    @Column(length = 1024)
     private String description;
 
     private String coverPhotoUrl;

@@ -7,7 +7,6 @@ spring:
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
       #      ddl-auto: create-drop
@@ -20,12 +19,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: selfCoach
-
   servlet:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
-
   thymeleaf:
     cache: false # true for production
     mode: HTML
@@ -39,15 +36,8 @@ minio:
   accessKey: dAh2wTxgKQK3B6TPi20p
   secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
 #  endpoint: http://192.168.147.140:9000
-  endpoint: https://b31f-109-166-130-164.ngrok-free.app
+  endpoint: https://1f7f-109-166-130-164.ngrok-free.app
   put-object-part-size: 5242880
-
-
-#minio:
-#  accessKey: qhxiwuBBB2D3LeJhIr8I
-#  secretKey: iSgJZkaZZaV4zYVaPPVlmqjJmXdAwRCr1K64kCnF
-#  endpoint: https://172.205.120.186:443
-#  put-object-part-size: 5242880
 
 app:
   streaming:
@@ -61,11 +51,9 @@ security:
   basic:
     enabled: false
 
-
 paypal:
   mode: sandbox
   client:
     id: Ach-mwpZQauApIvPKUPDPV_fls6TuT5emEmkB3fDtKu62CHZ1etTaEXOcuwuZ93YrFFZyER6YsWvd_8G
     secret: EDzjRV8hAl9dO-hrEFEOGyyHPK7pQfi-A9IwqKMEiMC3atxIBtDZdvJj6w_yUU_yZoYE9IEZ_NzMfhX7
     baseUrl: https://api-m.sandbox.paypal.com
-

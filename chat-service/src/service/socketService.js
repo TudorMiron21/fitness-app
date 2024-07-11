@@ -60,7 +60,7 @@ async function initializeSocket(server) {
     socket.on("send_message", async (data) => {
       const newMessage = new MessageModel({
         source_email: data.source_email,
-      
+
         destination_email: data.destination_email,
         text_content: data.text_content,
         image_content: "",

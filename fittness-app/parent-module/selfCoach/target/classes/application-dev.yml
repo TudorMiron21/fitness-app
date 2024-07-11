@@ -39,7 +39,7 @@ minio:
   accessKey: dAh2wTxgKQK3B6TPi20p
   secretKey: yj7gNRgHJGZlCZUJQYmTmxgnPc4XNW8UEIS6dc5o
 #  endpoint: http://192.168.147.140:9000
-  endpoint: https://b31f-109-166-130-164.ngrok-free.app
+  endpoint: https://1f7f-109-166-130-164.ngrok-free.app
   put-object-part-size: 5242880
 
 

@@ -29,7 +29,7 @@ class _DetailsState extends State<Details> {
       double goalWeight = double.parse(_goalWeightController.text);
 
       String url =
-          'http://localhost:8080/api/selfCoach/user/uploadUserDetails/$gender/$age/$height/$currentWeight/$goalWeight';
+          'https://www.fit-stack.online/api/selfCoach/user/uploadUserDetails/$gender/$age/$height/$currentWeight/$goalWeight';
 
       try {
         final response = await http.put(

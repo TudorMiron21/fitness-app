@@ -42,9 +42,9 @@ class _RegisterState extends State<Register> {
             'Content-Type': 'application/json',
           };
           Map<String, String> registerData = {
-            'firstname':
+            'firstName':
                 user.firstName ?? "", // Safe access using null-aware operator
-            'lastname':
+            'lastName':
                 user.lastName ?? "", // Safe access using null-aware operator
             'email': user.email ?? "", // Safe access using null-aware operator
             'role': "USER"
@@ -53,7 +53,7 @@ class _RegisterState extends State<Register> {
           String loginDataJson = json.encode(registerData);
 
           Uri url =
-              Uri.parse('http://192.168.0.229:8080/api/v1/auth/registerGoogle');
+              Uri.parse('https://www.fit-stack.online/api/v1/auth/registerGoogle');
 
           Response response =
               await post(url, headers: headers, body: loginDataJson);
@@ -123,8 +123,8 @@ class _RegisterState extends State<Register> {
         'Content-Type': 'application/json',
       };
       Map<String, String> registerData = {
-        'firstname': firstName,
-        'lastname': lastName,
+        'firstName': firstName,
+        'lastName': lastName,
         'email': email,
         'password': password,
         'role': "USER"
@@ -132,7 +132,7 @@ class _RegisterState extends State<Register> {
 
       String loginDataJson = json.encode(registerData);
 
-      Uri url = Uri.parse('http://192.168.0.229:8080/api/v1/auth/register');
+      Uri url = Uri.parse('https://www.fit-stack.online/api/v1/auth/register');
 
       Response response =
           await post(url, headers: headers, body: loginDataJson);

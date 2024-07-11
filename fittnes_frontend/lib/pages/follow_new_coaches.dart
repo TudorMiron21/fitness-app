@@ -50,7 +50,7 @@ class _FollowNewCoachesState extends State<FollowNewCoaches> {
 
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/selfCoach/payingUser/getNonFollowingCoaches'),
+          'https://www.fit-stack.online/api/selfCoach/payingUser/getNonFollowingCoaches'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
