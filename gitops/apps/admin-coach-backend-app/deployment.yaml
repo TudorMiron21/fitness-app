@@ -27,7 +27,7 @@ spec:
       # - name: fitness-app-auth-container
       - name: fitness-app-admin-coach-backend-container
         # image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        image: docker.io/tudormiron/fitness-app-admin-coach-backend:1.0.12 #{"$imagepolicy": "flux-system:admin-coach-backend-service-app-img-conf"}
+        image: docker.io/tudormiron/fitness-app-admin-coach-backend:1.0.13 #{"$imagepolicy": "flux-system:admin-coach-backend-service-app-img-conf"}
         imagePullPolicy: Always
         ports:
         # - containerPort: {{ .Values.port }}
