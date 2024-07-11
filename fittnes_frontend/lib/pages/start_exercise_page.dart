@@ -329,7 +329,7 @@ class _StartExercisePageState extends State<StartExercisePage> {
 
       // Send POST request to predict API
       final response = await http.post(
-        Uri.parse('http://localhost:5000/predict'),
+        Uri.parse('https://d273-109-166-130-164.ngrok-free.app/predict'),
         headers: {
           'Content-Type': 'application/json',
         },

@@ -28,8 +28,8 @@ df = df.drop_duplicates()
 df = df.where(pd.notnull(df), None)
 
 try:
-    # for index, exercise in df.iterrows():
-    for index, exercise in df.head(10).iterrows():
+    for index, exercise in df.iterrows():
+    # for index, exercise in df.head(10).iterrows():
         muscle_group_name = exercise['muscle_gp']
         query = select(muscle_group_table.c.id).where(muscle_group_table.c.name == muscle_group_name)
         result = session.execute(query).fetchone()  

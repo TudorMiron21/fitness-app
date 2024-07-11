@@ -129,7 +129,7 @@ export const ChatPage = () => {
           ) : null}
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
